@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>메인 페이지</h1>
+
+
+{% if request.user.is_authenticated %}
+    <h1> {{user.name}}</h1>
+    <a href="./mypage">마이페이지</a>
+    <a href="./logout">로그아웃</a>
+{% else %}
+    <a href="./login">로그인</a>
+{% endif %}
+
+
+
+{% endblock %}  
+
