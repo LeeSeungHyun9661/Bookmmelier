@@ -65,16 +65,3 @@ class User(AbstractBaseUser, PermissionsMixin):
    def __str__(self):
        return self.id
 
-# class MyUserAuth(object):
-#     def authenticate(self, **kwargs):
-#         print("kwargs:",kwargs)
-#         id = kwargs.get('id')
-#         password = kwargs.get('password')
-#         try:
-#             user = get_user_model().objects.get(id=id)
-#         except:
-#             raise Exception('Wrong ID')
-#         if str(user.password) == hashlib.sha256(password).hexdigest():
-#             return user
-#         else:
-#             raise Exception('Wrong Password')
