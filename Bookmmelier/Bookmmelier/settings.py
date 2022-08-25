@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -91,3 +92,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'dltmdgus9661@gmail.com' # GMAIL 주소
 EMAIL_HOST_PASSWORD = 'gatoqjthvdmspfmr' # GMAIL에서 사용되는 앱 비밀번호
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SESSION_EXPIRE_SECONDS = 3600 #마지막 활동 1시간 후 로그인 종료됨
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_TIMEOUT_REDIRECT = '/'

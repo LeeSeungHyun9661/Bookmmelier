@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %} 
+{% block content %}
+
+<h1>마이 페이지</h1>
+
+<h3>아이디: {{user.id}}</h3>
+<h3>이름  : {{user.name}}</h3>
+<h3>이메일: {{user.email}}</h3>
+<h3>성별  : {{user.gender}}</h3>
+<h3>나이  : {{user.age}}</h3>
+
+{% if user.type == 'nomal'%}
+    <a href="./changePassword">비밀번호수정</a>
+    <a href="./withdraw">회원탈퇴</a>
+{% else %}
+    <a href="./withdraw_kakao">회원탈퇴</a>
+{% endif %}
+
+{% endblock %}  

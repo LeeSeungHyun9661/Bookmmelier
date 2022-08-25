@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %} 
+{% block content %}
+<h1>회원탈퇴</h1>
+
+<h3>{{result}}</h3>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <label for ="input">'회원탈퇴'입력하기</label>
+    <input id = "input" type="text" name="input">
+    <br>
+    <button type="submit">회원탈퇴</button>
+</form>
+{% endblock %}

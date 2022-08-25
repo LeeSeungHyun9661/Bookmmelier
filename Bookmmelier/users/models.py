@@ -4,13 +4,11 @@ from django.contrib.auth import get_user_model
 import hashlib
 
 class UserManager(BaseUserManager):
-    def create_user(self, id, name, password, email,gender, age, hash):
+    def create_user(self, id, name, password, email,gender, age, hash, type):
         if not id:
             raise ValueError('Users must have an id')
         if not name:
             raise ValueError('Users must have an name')
-        if not password:
-            raise ValueError('Users must have an password')
         if not email:
             raise ValueError('Users must have an email address')
         if not gender:
@@ -24,7 +22,8 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             gender = gender,
             age = age,
-            hash = hash
+            hash = hash,
+            type = type
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -38,7 +37,8 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             password=password,
             gender = gender,
-            age = age
+            age = age,
+            type = 'super'
         )
         user.is_superuser = True
         user.is_staff = True
@@ -55,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
    age = models.CharField(max_length=10,unique=False,null=True)
    email = models.EmailField(max_length=255,unique=True,null=True)
    hash = models.CharField(max_length=100,unique=False,null=True)
+   type = models.CharField(max_length=30,unique=False,null=True)
    is_active = models.BooleanField(default=False)
    is_superuser = models.BooleanField(default=False)
    is_staff = models.BooleanField(default=False)
