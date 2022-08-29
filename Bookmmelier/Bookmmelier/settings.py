@@ -18,8 +18,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap4',
     'users',
-    'bootstrap4'
+    'books',
+    'reviews',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from django.contrib.auth import get_user_model
-import hashlib
 
 class UserManager(BaseUserManager):
     def create_user(self, id, name, password, email,gender, age, hash, type):
@@ -9,12 +7,6 @@ class UserManager(BaseUserManager):
             raise ValueError('Users must have an id')
         if not name:
             raise ValueError('Users must have an name')
-        if not email:
-            raise ValueError('Users must have an email address')
-        if not gender:
-            raise ValueError('Users must have an email address')
-        if not age:
-            raise ValueError('Users must have an email address')
 
         user = self.model(
             id = id,

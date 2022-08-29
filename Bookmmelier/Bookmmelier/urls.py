@@ -5,5 +5,7 @@ from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homeView.as_view(), name='home'),
-    path('', include('users.urls')),# 추가 부분
+    path('', include('users.urls')),
+    path('books/', include('books.urls')),
+    path('reviews/', include('reviews.urls')),
 ]

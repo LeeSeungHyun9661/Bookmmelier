@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content">
+    <!-- 제목 부분 -->
+    <div class="header">
+        <h2>도서 목록</h2>
+    </div>
+
+    <!-- 검색 부분 -->
+    <div>
+        <form action="{% url 'books'%}" method="GET">
+            <select name="type" id="type">
+                <option value="전체" selected="true">전체</option>
+                <option value="제목">제목</option>
+                <option value="작가">작가</option>
+                <option value="출판사">출판사</option>
+              </select>
+            <input id = "search" type="text" name="search">
+            <button type="submit">검색</button>
+        {%if search%}
+            <a>검색결과 : {{search}}</a>
+        {%endif%}
+    </div>
+
+    <!-- 도서목록 부분 -->
+    <div>
+        <table class="table-contents" style="padding:10px">
+            <thead>
+                <tr text-align = "center">
+                    <th>isbn</th>
+                    <th>vol</th>
+                    <th>title</th>
+                    <th>author</th>
+                    <th>publisher</th>
+                    <th>pub_date</th>
+                    <th>img_url</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if book_list %}
+                    {% for book in book_list %}
+                    <tr class="{% cycle '' 'even_bgcolor' %}">
+                        <td>{{book.isbn13}}</td>
+                        <td>{{book.vol}}</td>
+                        <td><a href="{% url 'book_detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
+                        <td>{{book.author}}</td>
+                        <td>{{book.publisher}}</td>
+                        <td>{{book.pub_date}}</td>       
+                        <td><img src="{{book.img_url}}" width="50", height="70"></td>
+                    </tr>                    
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>작성된 게시글이 없습니다.</td>
+                    </tr>
+            {% endif %}
+            </tbody>            
+        </table>    
+    </div>
+
+    <!-- 페이지 부분 -->
+    <div style="text-align:center">
+        <div class="pagination">    
+            <div style="width:35%; margin: 5px;">
+            {% if book_list.has_previous %}
+                {% if search %}
+                    <a class="abutton" href="?page=1&type={{type}}&search={{search}}">맨 앞으로</a>
+                    <a class="abutton" href="?page={{book_list.previous_page_number}}&type={{type}}&search={{search}}">이전</a>
+                {% else %}
+                    <a>검색어 없음 {{search}}</a>
+                    <a class="abutton" href="?page=1">맨 앞으로</a>
+                    <a class="abutton" href="?page={{ book_list.previous_page_number }}">이전</a>                    
+                {% endif %}
+            {% endif %}
+            </div>
+
+            <div style="width:30%; margin: 5px;">
+            {% for page in book_list.paginator.page_range %}
+                {% if page >= book_list.number|add:-2 and page <= book_list.number|add:2 %}
+                <span class="{% if page == book_list.number %}current{% endif %}">                    
+                    {% if search %}
+                        <a href="?page={{page}}&type={{type}}&search={{search}}">{{page}}</a>
+                    {% else %}
+                        <a href="?page={{page}}">{{page}}</a>                                  
+                    {% endif %}
+                </span>
+                {% elif page >= book_list.number|add:-3 and page <= book_list.number|add:3 %}
+                    ..
+                {% endif %}
+            {% endfor %}
+            </div>
+
+            <div style="width:35%; margin: 5px;">
+            {% if book_list.has_next %}
+                {% if search %}
+                    <a class="abutton" href="?page={{ book_list.next_page_number }}&type={{type}}&search={{search}}">다음</a>
+                    <a class="abutton" href="?page={{ book_list.paginator.num_pages }}&type={{type}}&search={{search}}">맨 뒤로</a>
+                {% else %}
+                    <a class="abutton" href="?page={{ book_list.next_page_number }}">다음</a>
+                    <a class="abutton" href="?page={{ book_list.paginator.num_pages }}">맨 뒤로</a>         
+                {% endif %}
+
+            {% endif %}
+            </div>
+
+        </div>  
+    </div>
+</div>
+
+{% endblock %}
