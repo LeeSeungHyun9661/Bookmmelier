@@ -19,5 +19,3 @@ class Book(models.Model):
         managed = False
         db_table = 'Bookmmelier_book'
     
-    def __str__(self):
-        return self.name

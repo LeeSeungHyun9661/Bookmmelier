@@ -2,7 +2,6 @@ from django.db import models
 from books.models import Book
 from users.models import User
 
-# Create your models here.
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)
     isbn13 = models.ForeignKey(Book, models.DO_NOTHING, db_column='isbn13')

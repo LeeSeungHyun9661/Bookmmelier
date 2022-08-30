@@ -9,8 +9,7 @@ class booksView(View):
     def get(self,request):
         page = int(request.GET.get('page', 1))
         search = request.GET.get('search', '')
-        if search:      
-            print("검색어 있음")     
+        if search:         
             type = request.GET.get('type', '')
             if type == '전체':
                 search_books = Book.objects.filter(

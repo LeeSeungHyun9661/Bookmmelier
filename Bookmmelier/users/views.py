@@ -5,6 +5,8 @@ from django.contrib.auth import login,authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib import auth
 from django.views.generic import View
+
+from users.forms import LoginForm
 from .models import *
 import os
 import requests
@@ -25,33 +27,15 @@ class loginView(View):
         if request.user.is_authenticated :
             return redirect('/')
         else:            
-            return render(request, 'login.html')
+            form = LoginForm
+            return render(request, 'login.html',{'form': form})
 
     def post(self,request):
-        id = request.POST['input_id']
-        pw = request.POST['input_pw']
-        context = {}
-
-        if not id:
-            context = {'result':'아이디를 입력해주세요'}
-        else:
-            if not pw:
-                context = {'result':'비밀번호를 입력해주세요'}
-            else:
-                try:
-                    user = authenticate(id = id,password = pw)  
-                    if user is not None:             
-                        if user.is_active:
-                            auth.login(request,user)
-                            return redirect ('/')
-                        else:
-                            context = {'result':'이메일을 통한 인증을 완료해주세요.'}                        
-                except Exception as e:
-                    if e.args[0] == 'Wrong ID':
-                        context = {'result':'존재하지 않는 아이디입니다.'}
-                    elif e.args[0] == 'Wrong Password':
-                        context = {'result':'비밀번호가 일치하지 않습니다.'}
-        return render(request, 'login.html',context)
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            auth.login(request,form.user)
+            return redirect('/')
+        return render(request, 'login.html',{'form': form})
 
 def kakaoLogin(request):
     client_id = KAKAO_CONFIG['KAKAO_REST_API_KEY']

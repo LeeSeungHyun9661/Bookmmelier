@@ -5,7 +5,7 @@
 
 <h3>{{result}}</h3>
 
-<form action="" method="POST">
+<form action="{% url 'users:withdraw_kakao' %}" method="POST">
     {% csrf_token %}
     <label for ="input">'회원탈퇴'입력하기</label>
     <input id = "input" type="text" name="input">

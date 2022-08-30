@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content">
+    <!-- 제목 부분 -->
+    <div class="header">
+        <h2>서평 구경</h2>
+        {%if search%}
+            <a>검색결과 : {{search}}</a>
+        {%endif%}
+    </div>
+
+    <!-- 리뷰 목록 부분 -->
+    <div>
+        <table class="table-contents" style="padding:10px">
+            <thead>
+                <tr text-align = "center">
+                    <th>book</th>
+                    <th>name</th>
+                    <th>title</th>
+                    <th>contents</th>
+                    <th>rate</th>
+                    <th>time_retouch</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if reviews_list %}
+                    {% for review in reviews_list %}
+                        <tr class="{% cycle '' 'even_bgcolor' %}">
+                            <td>{{review.isbn13.title}}</td>
+                            <td>{{review.user.name}}</td>
+                            <td>{{review.title}}</td>
+                            <td>{{review.contents}}</td>
+                            <td>{{review.rate}}</td>
+                            <td>{{review.time_retouch}}</td>
+                        </tr>                    
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>작성된 리뷰가 없습니다.</td>
+                    </tr>
+            {% endif %}
+            </tbody>            
+        </table>    
+    </div>
+
+    <!-- 페이지 부분 -->
+    <div style="text-align:center">
+        <div class="pagination">    
+            <div style="width:35%; margin: 5px;">
+            {% if reviews_list.has_previous %}
+                {% if search %}
+                    <a class="abutton" href="?page=1&type={{type}}&search={{search}}">맨 앞으로</a>
+                    <a class="abutton" href="?page={{reviews_list.previous_page_number}}&type={{type}}&search={{search}}">이전</a>
+                {% else %}
+                    <a>검색어 없음 {{search}}</a>
+                    <a class="abutton" href="?page=1">맨 앞으로</a>
+                    <a class="abutton" href="?page={{ reviews_list.previous_page_number }}">이전</a>                    
+                {% endif %}
+            {% endif %}
+            </div>
+
+            <div style="width:30%; margin: 5px;">
+            {% for page in reviews_list.paginator.page_range %}
+                {% if page >= reviews_list.number|add:-2 and page <= reviews_list.number|add:2 %}
+                <span class="{% if page == reviews_list.number %}current{% endif %}">                    
+                    {% if search %}
+                        <a href="?page={{page}}&type={{type}}&search={{search}}">{{page}}</a>
+                    {% else %}
+                        <a href="?page={{page}}">{{page}}</a>                                  
+                    {% endif %}
+                </span>
+                {% elif page >= reviews_list.number|add:-3 and page <= reviews_list.number|add:3 %}
+                    ..
+                {% endif %}
+            {% endfor %}
+            </div>
+
+            <div style="width:35%; margin: 5px;">
+            {% if reviews_list.has_next %}
+                {% if search %}
+                    <a class="abutton" href="?page={{ reviews_list.next_page_number }}&type={{type}}&search={{search}}">다음</a>
+                    <a class="abutton" href="?page={{ reviews_list.paginator.num_pages }}&type={{type}}&search={{search}}">맨 뒤로</a>
+                {% else %}
+                    <a class="abutton" href="?page={{ reviews_list.next_page_number }}">다음</a>
+                    <a class="abutton" href="?page={{ reviews_list.paginator.num_pages }}">맨 뒤로</a>         
+                {% endif %}
+
+            {% endif %}
+            </div>
+
+        </div>  
+    </div>
+</div>
+
+{% endblock %}

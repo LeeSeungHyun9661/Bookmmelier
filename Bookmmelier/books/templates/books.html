@@ -8,7 +8,7 @@
 
     <!-- 검색 부분 -->
     <div>
-        <form action="{% url 'books'%}" method="GET">
+        <form action="{% url 'books:books'%}" method="GET">
             <select name="type" id="type">
                 <option value="전체" selected="true">전체</option>
                 <option value="제목">제목</option>
@@ -43,7 +43,7 @@
                     <tr class="{% cycle '' 'even_bgcolor' %}">
                         <td>{{book.isbn13}}</td>
                         <td>{{book.vol}}</td>
-                        <td><a href="{% url 'book_detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
+                        <td><a href="{% url 'books:book_detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
                         <td>{{book.author}}</td>
                         <td>{{book.publisher}}</td>
                         <td>{{book.pub_date}}</td>       
