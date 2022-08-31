@@ -1,0 +1,101 @@
+<div id="table">
+    {%if search_input%}
+    <a>검색결과 : ({{search_type}}){{search_input}}</a>
+    {%endif%}
+
+    <!-- 도서목록 부분 -->
+    <div>
+        <table class="table-contents" style="padding:10px">
+            <thead>
+                <tr text-align="center">
+                    <th>title</th>
+                    <th>author</th>
+                    <th>publisher</th>
+                    <th>img_url</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if books_list %}
+                {% for book in books_list %}
+                <tr class="{% cycle '' 'even_bgcolor' %}">
+                    <td>{{book.title}}</td>
+                    <td>{{book.author}}</td>
+                    <td>{{book.publisher}}</td>
+                    <td><img src="{{book.img_url}}" width="50" , height="70"></td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td>검색 결과가 없습니다.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이지 부분 -->
+    <div style="text-align:center">
+        <div class="pagination" id="page">
+            {% if books_list.has_previous %}
+            <a class="first_page" type="button">맨 앞으로</a>
+            {% endif %}
+
+            <div style="width:30%; margin: 5px;">
+                {% for page in books_list.paginator.page_range %}
+                    {% if page >= books_list.number|add:-9 and page <= books_list.number|add:9 %} 
+                    <a class="now_page" type="button">{{page}}</a>
+                    {% elif page >= books_list.number|add:-10 and page <= books_list.number|add:10 %}
+                    {% endif %}
+                {%endfor %} 
+            </div>
+
+            {% if books_list.has_next %}
+            <a class="last_page" type="button">맨 뒤로</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>     
+    $('#search_button').click(function(){
+        $.ajax({
+            type:"get",
+            url: "{% url 'reviews:searchBooks' %}",
+            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
+            success:function(data){
+                $('#table').html(data)
+            }
+        })
+    })
+
+    $('.first_page').click(function(){
+        num_pages = parseInt($('.now_page').first().text());
+        page_click()
+    })   
+
+    $('.now_page').click(function(){
+        num_pages = parseInt($(this).text());
+        page_click()
+    })       
+    
+    $('.last_page').click(function(){
+        num_pages = parseInt($('.now_page').last().text());
+        page_click()
+    })   
+    
+    function page_click(){
+        $.ajax({
+            type:"get",
+            url: "{% url 'reviews:searchBooks' %}",
+            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
+            success:function(data){
+                $('#table').html(data)
+            },
+            error:function(request, status, error){
+                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            }
+        })
+        
+    }    
+</script>

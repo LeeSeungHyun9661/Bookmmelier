@@ -40,39 +40,41 @@ class reviewsView(View):
 class reviewswriteView(View):
     def get(self,request):
         if request.user.is_authenticated:
-            return render(request, 'review_write.html')
+            paginator = Paginator(Book.objects.all(), 10)                
+            books_list = paginator.get_page(1)
+            return render(request, 'review_write.html',{"books_list":books_list})
         else:
-            return redirect('/')     
-
+            return redirect('/login')   
     def post(self,request):
         return None
 
 def searchBooks(request):
-    context = {}
-    page = int(request.GET.get('page', 1))
-    search = request.GET.get('search_input', '')
-    if search:
-        type = request.GET.get('type', '')
-        if type == '전체':
-            search_books = Book.objects.filter(
-                Q(title__icontains = search) | 
-                Q(author__icontains = search) | 
-                Q(publisher__icontains = search)
-            )
-        elif type == '제목':
-            search_books =  Book.objects.filter(Q(title__icontains = search))
-        elif type == '작가':
-            search_books =  Book.objects.filter(Q(author__icontains = search))
-        elif type == '출판사':
-            search_books =  Book.objects.filter(Q(publisher__icontains = search))
-        paginator = Paginator(search_books, 10)
-        book_list = paginator.get_page(page)
-        context = {"book_list":book_list,"search":search,"type":type}
+    books = Book.objects.all()
+    page = int(request.GET.get('page', 1)) #페이지값 받아오기
+    search_input = request.GET.get('search_input', '') #검색어 받아오기
+    search_type = request.GET.get('search_type', '')
+    print("page:",page," search_input:",search_input," search_type:",search_type)
+
+    if request.is_ajax(): #ajax로 통신 -> 페이지 또는 검색
+        if search_input: #검색어가 있을 경우 - 해당 검색어로 필터링
+            if search_type == '전체':
+                books = Book.objects.filter(
+                    Q(title__icontains = search_input) | 
+                    Q(author__icontains = search_input) | 
+                    Q(publisher__icontains = search_input)
+                )
+            elif search_type == '제목':
+                books =  Book.objects.filter(Q(title__icontains = search_input))
+            elif search_type == '작가':
+                books =  Book.objects.filter(Q(author__icontains = search_input))
+            elif search_type == '출판사':
+                books =  Book.objects.filter(Q(publisher__icontains = search_input))
+        paginator = Paginator(books, 10)
+        books_list = paginator.get_page(page)
+        return render(request, 'books_search_table.html',{"books_list":books_list,"search_input":search_input,"search_type":search_type})
     else:
-        paginator = Paginator(Book.objects.all(), 10)                
-        book_list = paginator.get_page(page)        
-        context = {"book_list":book_list}
-    print("context:",context)
-    return render(request,'books_table.html',context)
-    
+        return None
+
+
+
 
