@@ -36,7 +36,6 @@ class reviewsView(View):
     def post(self,request):
         return None
 
-
 class reviewswriteView(View):
     def get(self,request):
         if request.user.is_authenticated:
