@@ -19,7 +19,7 @@
                 {% if books_list %}
                 {% for book in books_list %}
                 <tr class="{% cycle '' 'even_bgcolor' %}">
-                    <td>{{book.title}}</td>
+                    <td class="book_title" type="button" value="{{book.isbn13}}" data-dismiss="modal">{{book.title}}</td>
                     <td>{{book.author}}</td>
                     <td>{{book.publisher}}</td>
                     <td><img src="{{book.img_url}}" width="50" , height="70"></td>
@@ -43,9 +43,8 @@
 
             <div style="width:30%; margin: 5px;">
                 {% for page in books_list.paginator.page_range %}
-                    {% if page >= books_list.number|add:-9 and page <= books_list.number|add:9 %} 
+                    {% if page >= books_list.number|add:-3 and page <= books_list.number|add:3 %} 
                     <a class="now_page" type="button">{{page}}</a>
-                    {% elif page >= books_list.number|add:-10 and page <= books_list.number|add:10 %}
                     {% endif %}
                 {%endfor %} 
             </div>
@@ -91,11 +90,19 @@
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
             success:function(data){
                 $('#table').html(data)
-            },
-            error:function(request, status, error){
-                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            }
+        })        
+    }
+
+    $('.book_title').click(function(){   
+        alert($(this).attr('value'))
+        $.ajax({
+            type:"post",
+            url: "{% url 'reviews:review_write' %}",
+            data : {'isbn13': $(this).attr('value')},
+            success:function(data){
+                $('#selected_book').html(data)
             }
         })
-        
-    }    
+    })
 </script>

@@ -45,8 +45,6 @@ class booksView(View):
         print("POST")
         return None
 
-
-
 class booksdetailView(View):
     def get(self,request):
         isbn13 = request.GET.get('isbn13', '')

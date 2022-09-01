@@ -49,9 +49,8 @@
 
             <div style="width:30%; margin: 5px;">
                 {% for page in books_list.paginator.page_range %}
-                    {% if page >= books_list.number|add:-9 and page <= books_list.number|add:9 %} 
+                    {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %} 
                     <a class="now_page" type="button">{{page}}</a>
-                    {% elif page >= books_list.number|add:-10 and page <= books_list.number|add:10 %}
                     {% endif %}
                 {%endfor %} 
             </div>

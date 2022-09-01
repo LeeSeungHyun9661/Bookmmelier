@@ -32,7 +32,6 @@ class reviewsView(View):
             paginator = Paginator(Review.objects.all(), 10)                
             reviews_list = paginator.get_page(page)
             return render(request, 'reviews.html',{"reviews_list":reviews_list})
-
     def post(self,request):
         return None
 
@@ -45,7 +44,9 @@ class reviewswriteView(View):
         else:
             return redirect('/login')   
     def post(self,request):
-        return None
+        isbn13 = request.POST.get('isbn13', '')
+        selected_book = Book.objects.get(isbn13 = isbn13)
+        return render(request, 'review_selected_book.html',{"selected_book":selected_book})
 
 def searchBooks(request):
     books = Book.objects.all()
@@ -70,7 +71,7 @@ def searchBooks(request):
                 books =  Book.objects.filter(Q(publisher__icontains = search_input))
         paginator = Paginator(books, 10)
         books_list = paginator.get_page(page)
-        return render(request, 'books_search_table.html',{"books_list":books_list,"search_input":search_input,"search_type":search_type})
+        return render(request, 'review_write_search.html',{"books_list":books_list,"search_input":search_input,"search_type":search_type})
     else:
         return None
 
