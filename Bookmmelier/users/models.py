@@ -30,7 +30,8 @@ class UserManager(BaseUserManager):
             password=password,
             gender = gender,
             age = age,
-            type = 'super'
+            type = 'super',            
+            hash = None,
         )
         user.is_superuser = True
         user.is_staff = True
@@ -39,21 +40,24 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser, PermissionsMixin):  
-   objects = UserManager()
+    objects = UserManager()
 
-   id = models.CharField(primary_key=True, max_length=30,unique=True)
-   name = models.CharField(max_length=10,unique=False,null=True)
-   gender = models.CharField(max_length=10,unique=False,null=True)
-   age = models.CharField(max_length=10,unique=False,null=True)
-   email = models.EmailField(max_length=255,unique=True,null=True)
-   hash = models.CharField(max_length=100,unique=False,null=True)
-   type = models.CharField(max_length=30,unique=False,null=True)
-   is_active = models.BooleanField(default=False)
-   is_superuser = models.BooleanField(default=False)
-   is_staff = models.BooleanField(default=False)
+    id = models.CharField(primary_key=True, max_length=30,unique=True)
+    name = models.CharField(max_length=10,unique=False,null=True)
+    gender = models.CharField(max_length=10,unique=False,null=True)
+    age = models.CharField(max_length=10,unique=False,null=True)
+    email = models.EmailField(max_length=255,unique=True,null=True)
+    hash = models.CharField(max_length=100,unique=False,null=True)
+    type = models.CharField(max_length=30,unique=False,null=True)
+    is_active = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
-   USERNAME_FIELD = 'id'    
-   REQUIRED_FIELDS = ['name','gender','age','email']
+    USERNAME_FIELD = 'id'    
+    REQUIRED_FIELDS = ['name','gender','age','email']
 
-   def __str__(self):
-       return self.id
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = u'bookmmelier_users'

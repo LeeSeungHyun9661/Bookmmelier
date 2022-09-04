@@ -16,6 +16,4 @@ class Book(models.Model):
     like_users = models.ManyToManyField(User, related_name='like_books', blank=True)
 
     class Meta:
-        managed = False
-        db_table = 'Bookmmelier_book'
-    
+        db_table = u'bookmmelier_books'

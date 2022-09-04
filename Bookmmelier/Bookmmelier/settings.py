@@ -5,6 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
 AUTH_USER_MODEL = 'users.User'
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'users.backends.MyUserBackend',
@@ -18,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_summernote',
     'bootstrap4',
     'users',
     'books',
@@ -49,16 +51,25 @@ TEMPLATES = [
         },
     },
 ]
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'Bookmmelier',
+#         'USER': 'dipping',
+#         'PASSWORD': '$qnramffldp03)@',
+#         'HOST': 'dippingai.com',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Bookmmelier',
-        'USER': 'dltmdgus9661',
-        'PASSWORD': 'akdltlsldj!@#',
-        'HOST': 'dippingai.com',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
 SECRET_KEY = 'django-insecure-$clx2x7t60=er0!e+r@gnq(2bdqs$#*%v1!a!uv7pce4h3vp3f'
 WSGI_APPLICATION = 'Bookmmelier.wsgi.application'
 AUTH_PASSWORD_VALIDATORS = [
@@ -82,8 +93,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
-STATICFILES_DIRS=[BASE_DIR,"static",]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'Bookmmelier','static'),] 
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -92,12 +103,16 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'dltmdgus9661@gmail.com' # GMAIL 주소
-EMAIL_HOST_PASSWORD = 'gatoqjthvdmspfmr' # GMAIL에서 사용되는 앱 비밀번호
+EMAIL_HOST_PASSWORD = 'zzvrwardbcqwdwpj' # GMAIL에서 사용되는 앱 비밀번호
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SESSION_EXPIRE_SECONDS = 3600 #마지막 활동 1시간 후 로그인 종료됨
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_TIMEOUT_REDIRECT = '/'
 
-#글로벌 변수
-SEARCH_TYPES = ["전체","제목","작가","출판사"]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

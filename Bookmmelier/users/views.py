@@ -1,3 +1,4 @@
+import hashlib
 from django.shortcuts import render,redirect
 from django.contrib.sites.shortcuts  import get_current_site
 from django.core.mail import send_mail
@@ -5,8 +6,8 @@ from django.contrib.auth import login,authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib import auth
 from django.views.generic import View
-
 from users.forms import LoginForm
+
 from .models import *
 import os
 import requests

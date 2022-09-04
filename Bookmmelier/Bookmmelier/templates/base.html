@@ -7,18 +7,22 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script>
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+    <script>        
         $.ajaxSetup({
           headers: { "X-CSRFToken": '{{csrf_token}}' }
         });
-      </script>
-      
+    </script>
 
     <a href="/"> [북믈리에]</a>
     <a href="/books"> [도서검색]</a>
     <a href="/reviews"> [서평구경]</a>
     <a href="/reviews/write"> [서평쓰기]</a>
     <a href="/debates"> [독서토론]</a>
+    <a href="/admin"> [관리자]</a>
 
     <!-- 서평 부분 -->
     <a>
@@ -43,10 +47,13 @@
         <br>
     
     {% block style %}
+    <!-- 스타일 -->
     {% endblock %}
 </head>
+
 <body>
     {% block content %}
+    <!-- 내용 -->
     {% endblock %}
 </body>
 </html>

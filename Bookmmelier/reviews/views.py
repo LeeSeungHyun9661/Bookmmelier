@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from .models import *
 from django.core.paginator import Paginator
 from django.views.generic import View
 from django.db.models import Q
-from django.http import JsonResponse
-# Create your views here.
+from django.contrib import messages
+from reviews.forms import ReviewwriteFrom
 
 class reviewsView(View):
     def get(self,request):
@@ -40,13 +40,15 @@ class reviewswriteView(View):
         if request.user.is_authenticated:
             paginator = Paginator(Book.objects.all(), 10)                
             books_list = paginator.get_page(1)
-            return render(request, 'review_write.html',{"books_list":books_list})
+            forms = ReviewwriteFrom()
+            return render(request, 'review_write.html',{"books_list":books_list,"forms":forms})
         else:
             return redirect('/login')   
     def post(self,request):
-        isbn13 = request.POST.get('isbn13', '')
-        selected_book = Book.objects.get(isbn13 = isbn13)
-        return render(request, 'review_selected_book.html',{"selected_book":selected_book})
+        if request.is_ajax():
+            isbn13 = request.POST.get('isbn13', '')
+            selected_book = Book.objects.get(isbn13 = isbn13)
+            return render(request, 'review_selected_book.html',{"selected_book":selected_book})
 
 def searchBooks(request):
     books = Book.objects.all()
@@ -75,6 +77,18 @@ def searchBooks(request):
     else:
         return None
 
-
+def uploadreview(request):
+    if request.method == "GET":
+        return render(request, 'post/review_write.html')
+    elif request.method == "POST": 
+        isbn13 = request.POST.get("isbn13")
+        form = ReviewwriteFrom(request.POST)
+        if form.is_valid:  
+            review = form.save(commit=False)
+            review.user = request.user  
+            review.isbn13 = Book.objects.get(isbn13 = isbn13)
+            review.save()
+            return redirect('/reviews')                
+    return redirect('/')
 
 

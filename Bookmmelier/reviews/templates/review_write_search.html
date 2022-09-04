@@ -95,11 +95,10 @@
     }
 
     $('.book_title').click(function(){   
-        alert($(this).attr('value'))
         $.ajax({
             type:"post",
             url: "{% url 'reviews:review_write' %}",
-            data : {'isbn13': $(this).attr('value')},
+            data : {'isbn13': $(this).attr('value'),csrfmiddlewaretoken: '{{ csrf_token }}'},
             success:function(data){
                 $('#selected_book').html(data)
             }
