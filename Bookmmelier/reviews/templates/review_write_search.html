@@ -1,11 +1,13 @@
 <div id="table">
-    {%if search_input%}
-    <a>검색결과 : ({{search_type}}){{search_input}}</a>
-    {%endif%}
-
     <!-- 도서목록 부분 -->
     <div>
-        <table class="table-contents" style="padding:10px">
+        <table class="table-contents" style="padding:10px" id="books_table">
+            <!-- 검색 결과 -->
+            {%if search_input%}
+                <a>검색결과 : ({{search_type}}){{search_input}}</a>
+            {%endif%}
+
+            <!-- 테이블 헤드 -->
             <thead>
                 <tr text-align="center">
                     <th>title</th>
@@ -14,17 +16,17 @@
                     <th>img_url</th>
                 </tr>
             </thead>
-
+            <!-- 테이블 내용 -->
             <tbody>
                 {% if books_list %}
-                {% for book in books_list %}
-                <tr class="{% cycle '' 'even_bgcolor' %}">
-                    <td class="book_title" type="button" value="{{book.isbn13}}" data-dismiss="modal">{{book.title}}</td>
-                    <td>{{book.author}}</td>
-                    <td>{{book.publisher}}</td>
-                    <td><img src="{{book.img_url}}" width="50" , height="70"></td>
-                </tr>
-                {% endfor %}
+                    {% for book in books_list %}
+                    <tr class="{% cycle '' 'even_bgcolor' %}">
+                        <td class="book_title" type="button" value="{{book.isbn13}}" data-dismiss="modal">{{book.title}}</td>
+                        <td>{{book.author}}</td>
+                        <td>{{book.publisher}}</td>
+                        <td><img src="{{book.img_url}}" width="50" , height="70"></td>
+                    </tr>
+                    {% endfor %}
                 {% else %}
                 <tr>
                     <td>검색 결과가 없습니다.</td>
@@ -63,25 +65,15 @@
             url: "{% url 'reviews:searchBooks' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
             success:function(data){
-                $('#table').html(data)
+                alert(data)
+                // $('#books_table').html(data)
             }
         })
     })
 
-    $('.first_page').click(function(){
-        num_pages = parseInt($('.now_page').first().text());
-        page_click()
-    })   
-
-    $('.now_page').click(function(){
-        num_pages = parseInt($(this).text());
-        page_click()
-    })       
-    
-    $('.last_page').click(function(){
-        num_pages = parseInt($('.now_page').last().text());
-        page_click()
-    })   
+    $('.first_page').click(function(){num_pages = parseInt($('.now_page').first().text());page_click();}) 
+    $('.now_page').click(function(){num_pages = parseInt($(this).text());page_click();})       
+    $('.last_page').click(function(){num_pages = parseInt($('.now_page').last().text());page_click();})   
     
     function page_click(){
         $.ajax({
@@ -93,12 +85,11 @@
             }
         })        
     }
-
-    $('.book_title').click(function(){   
+    $('.book_title').click(function(){
         $.ajax({
             type:"post",
             url: "{% url 'reviews:review_write' %}",
-            data : {'isbn13': $(this).attr('value'),csrfmiddlewaretoken: '{{ csrf_token }}'},
+            data : {'isbn13': $(this).attr('value'),csrfmiddlewaretoken:'{{ csrf_token }}'},
             success:function(data){
                 $('#selected_book').html(data)
             }

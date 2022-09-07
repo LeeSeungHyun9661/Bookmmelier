@@ -4,39 +4,37 @@
     <a>검색결과 : ({{search_type}}){{search_input}}</a>
     {%endif%}
 
-    <!-- 도서목록 부분 -->
+    <!-- 서평 목록 부분 -->
     <div>
         <table class="table-contents" style="padding:10px">
             <thead>
                 <tr text-align="center">
-                    <th>isbn</th>
-                    <th>vol</th>
+                    <th>book</th>
+                    <th>name</th>
                     <th>title</th>
-                    <th>author</th>
-                    <th>publisher</th>
-                    <th>pub_date</th>
-                    <th>img_url</th>
+                    <th>contents</th>
+                    <th>rate</th>
+                    <th>time_retouch</th>
                 </tr>
-            </thead>
+            </thead>            
 
             <tbody>
-                {% if books_list %}
-                {% for book in books_list %}
-                <tr class="{% cycle '' 'even_bgcolor' %}">
-                    <td>{{book.isbn13}}</td>
-                    <td>{{book.vol}}</td>
-                    <td><a href="{% url 'books:book_detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
-                    <td>{{book.author}}</td>
-                    <td>{{book.publisher}}</td>
-                    <td>{{book.pub_date}}</td>
-                    <td><img src="{{book.img_url}}" width="50" , height="70"></td>
-                </tr>
+                {% if reviews_list %}
+                {% for review in reviews_list %}
+                    <tr class="{% cycle '' 'even_bgcolor' %}">
+                        <td>{{review.isbn13.title}}</td>
+                        <td>{{review.user.name}}</td>                        
+                        <td><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>
+                        <td>{{review.contents|slice:':100'|truncatechars:30|safe}}</td>
+                        <td>{{review.rate}}</td>
+                        <td>{{review.time_retouch}}</td>
+                    </tr>                    
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td>검색 결과가 없습니다.</td>
+                    <td>작성된 서평이 없습니다.</td>
                 </tr>
-                {% endif %}
+            {% endif %}
             </tbody>
         </table>
     </div>
@@ -44,19 +42,19 @@
     <!-- 페이지 부분 -->
     <div style="text-align:center">
         <div class="pagination" id="page">
-            {% if books_list.has_previous %}
+            {% if reviews_list.has_previous %}
             <a class="first_page" type="button">맨 앞으로</a>
             {% endif %}
 
             <div style="width:30%; margin: 5px;">
-                {% for page in books_list.paginator.page_range %}
-                    {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %} 
+                {% for page in reviews_list.paginator.page_range %}
+                    {% if page >= reviews_list.number|add:-5 and page <= reviews_list.number|add:5 %} 
                     <a class="now_page" type="button">{{page}}</a>
                     {% endif %}
                 {%endfor %} 
             </div>
 
-            {% if books_list.has_next %}
+            {% if reviews_list.has_next %}
             <a class="last_page" type="button">맨 뒤로</a>
             {% endif %}
         </div>
@@ -67,7 +65,7 @@
     $('#search_button').click(function(){
         $.ajax({
             type:"get",
-            url: "{% url 'books:books' %}",
+            url: "{% url 'reviews:reviews_list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
             success:function(data){
                 $('#table').html(data)
@@ -93,7 +91,7 @@
     function page_click(){
         $.ajax({
             type:"get",
-            url: "{% url 'books:books' %}",
+            url: "{% url 'reviews:reviews_list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
             success:function(data){
                 $('#table').html(data)

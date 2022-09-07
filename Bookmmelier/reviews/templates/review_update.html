@@ -15,9 +15,10 @@
 <div class="content">
     <!-- 제목 부분 -->
     <div class="header">
-        <h2>서평 쓰기</h2>
+        <h2>서평 수정 : {{review.review_id}}</h2>
     </div>
-    <a href="#" data-toggle="modal" data-target="#myModal">도서 불러오기</a>  
+    <a href="#" data-toggle="modal" data-target="#myModal">도서 불러오기</a>    
+
     <!-- 모달 -->
     <div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -41,12 +42,9 @@
             </div>
     
             <!-- Modal body -->
-            <div class="modal-body"  >
-                <!-- 도서목록 부분 -->
-                <div id="search_result_table">
-                    {% include 'review_write_search_result.html' %}
-                </div>                
-            </div> 
+            <div class="modal-body"  id="table">
+                {% include 'review_write_search.html' %}
+            </div>           
             
             <!-- Modal footer -->
             <div class="modal-footer">   
@@ -58,86 +56,48 @@
     </div>    
     <div id="modal"></div>   
     
-    
     <!-- 서평 작성 부분 -->
-    <form id="upload_review" method="POST">        
-        {% include 'review_write_selected_book.html' %}
+    <form id="upload_review" method="POST">
         {% csrf_token %}  
+        <div id="selected_book">
+            {% if selected_book %}
+                <h2>선택된 도서</h2>
+                <a>제목 : {{selected_book.title}}</a><br>
+                <a>작가 : {{selected_book.author}}</a><br>
+                <a>출판사{{selected_book.publisher}}</a><br>
+                <input type="hidden" name="isbn13" id="isbn13" value = "{{selected_book.isbn13}}">
+            {%endif%}
+        </div>
+
         {{forms|safe}}
+
         <button  type="submit" >작성완료</button>
     </form>
 
 </div>
 
 <script>
-
-    $('#search_button').click(function(){
-        $.ajax({
-            type:"get",
-            url: "{% url 'reviews:modal_search_Books' %}",
-            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
-            success:function(data){
-                $('#search_result_table').html(data);
-            }
-        })
-    })
-
-    $(document).on('click', '.first_page', function(){
-        num_pages = parseInt($('.now_page').first().text());
-            page_click();
-    })
-
-    $(document).on('click', '.last_page', function(){
-        num_pages = parseInt($('.now_page').last().text());
-        page_click();
-    })
-
-    $(document).on('click', '.now_page', function(){
-        num_pages = parseInt($(this).text());
-        page_click();
-    }) 
-
-    function page_click(){
-        $.ajax({
-            type:"get",
-            url: "{% url 'reviews:modal_search_Books' %}",
-            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
-            success:function(data){
-                $('#search_result_table').html(data);
-            }
-        })        
-    }
-
-    $(document).on('click', '.book_title', function(){
-        $.ajax({
-            type:"post",
-            url: "{% url 'reviews:modal_select_Books' %}",
-            data : {'isbn13': $(this).attr('value'),csrfmiddlewaretoken:'{{ csrf_token }}'},
-            success:function(data){
-                $('#selected_book').html(data)
-            }
-        })
-    }) 
-
     $('#upload_review').on('submit',function(){
         event.preventDefault();
-        form_array  = $(this).serialize();       
+        form_array  = $(this).serialize();        
         // 도서가 선택되지 않은 경우, 오류 반환
-        if ($('#isbn13').val() === undefined) alert("도서를 선택해주세요")
+
+        
+        alert('{{review.review_id}}')
+
+        if ($('#isbn13').val() === undefined) alert("도서를 선택해주세요") 
         // 조건을 만족한 경우 결과 반환
         else{
             $.ajax({
-                type:"POST",
-                url: "{% url 'reviews:review_write' %}",
+                type:"post",
+                url: "{% url 'reviews:updatereview' %}",
                 data : form_array,
                 success:function(data){
+                    alert(data)
                     alert("리뷰 작성이 완료되었습니다")
-                    console.log(data)
-
                 }
             })
         }
     });
-    
 </script>
 {% endblock %}

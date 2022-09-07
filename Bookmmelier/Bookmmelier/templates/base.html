@@ -1,3 +1,4 @@
+<!-- BASE template -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,12 +12,14 @@
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
+    <!-- ajax 통신에서 post-csrf 토큰 기능 정의 -->
     <script>        
         $.ajaxSetup({
           headers: { "X-CSRFToken": '{{csrf_token}}' }
         });
     </script>
 
+    <!-- 상단 매뉴바 -->
     <a href="/"> [북믈리에]</a>
     <a href="/books"> [도서검색]</a>
     <a href="/reviews"> [서평구경]</a>
@@ -24,19 +27,21 @@
     <a href="/debates"> [독서토론]</a>
     <a href="/admin"> [관리자]</a>
 
-    <!-- 서평 부분 -->
+    <!-- 서평 검색 부분 -->
     <a>
-    <form action="{% url 'reviews:reviews' %}" method="GET">
-        <select name="type" id="type">
-            <option value="전체" selected="true">전체</option>
-            <option value="도서">도서</option>
-            <option value="작성자">작성자</option>
-            <option value="내용">내용</option>
-            </select>
-        <input id = "search" type="text" name="search" placeholder="서평 검색">
-    </form>
+        <form action="{% url 'reviews:reviews_list' %}" method="POST">
+            {% csrf_token %}  
+            <select name="review_search_type" id="review_search_type">
+                <option value="전체" selected="true">전체</option>
+                <option value="도서">도서</option>
+                <option value="작성자">작성자</option>
+                <option value="내용">내용</option>
+                </select>
+            <input id = "review_search_input" type="text" name="review_search_input" placeholder="서평 검색">
+        </form>
     </a>
     
+    <!-- 로그인에 따른 매뉴 정의 -->
     {% if request.user.is_authenticated %}
         <a> {{user.name}}</a>
         <a href="/mypage"> [마이페이지]</a>
@@ -46,14 +51,18 @@
     {% endif %}
         <br>
     
+    <!-- 스타일 블록 -->
     {% block style %}
     <!-- 스타일 -->
     {% endblock %}
 </head>
 
 <body>
+    
+    <!-- 내용 블록 -->
     {% block content %}
     <!-- 내용 -->
     {% endblock %}
+
 </body>
 </html>

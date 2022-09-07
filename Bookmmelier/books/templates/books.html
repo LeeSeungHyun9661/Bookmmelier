@@ -1,3 +1,4 @@
+<!-- 도서 목록 페이지 -->
 {% extends 'base.html' %}
 {% block content %}
 <div class="content">
@@ -16,7 +17,9 @@
             <input id="search_input" type="search"/>
             <button id="search_button" type="submit">검색</button>      
         </div>  
+
     {% include 'books_table.html' %}
+
 </div>
 {% endblock %}
 

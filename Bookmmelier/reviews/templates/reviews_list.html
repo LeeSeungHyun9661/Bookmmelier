@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content">
+    <!-- 제목 부분 -->
+    <div class="header">
+        <h2>서평 구경</h2>
+    </div>
+
+    <!-- 서평 검색 부분 -->
+    <div>
+        <select name="search_type" id="search_type">
+            <option value="전체" selected="true">전체</option>
+            <option value="도서">도서</option>
+            <option value="작성자">작성자</option>
+            <option value="내용">내용</option>
+        </select>
+        <input id="search_input" type="search"/>
+        <button id="search_button" type="submit">검색</button>      
+    </div>  
+
+    <!-- 서평 목록 테이블 정의 -->
+    {% include 'reviews_table.html' %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content">
+    <div class="header">
+        <h2>서평 내용</h2>
+    </div>
+
+    <h1>제목 : {{review.title}}</h1>
+    <h3>작성자 : {{review.user.name}}</h3>
+    <h3>도서 : {{review.isbn13.title}}</h3>
+    <h3>시간 : {{review.time_retouch}}</h3>
+    <h3>내용 : {{review.contents | safe}}</h3>
+
+    {%if review.user == request.user %}        
+        <a href="{% url 'reviews:review_update'%}?review_id={{review.review_id}}"> [수정]</a>
+        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}"> [삭제]</a>
+    {%elif request.user.is_staff%}
+        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}"> [삭제]</a>
+    {%endif%}
+</div>
+
+{% endblock %}
