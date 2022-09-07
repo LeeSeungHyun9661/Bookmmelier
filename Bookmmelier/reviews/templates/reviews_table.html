@@ -9,6 +9,7 @@
         <table class="table-contents" style="padding:10px">
             <thead>
                 <tr text-align="center">
+                    <th>ID</th>
                     <th>book</th>
                     <th>name</th>
                     <th>title</th>
@@ -22,6 +23,7 @@
                 {% if reviews_list %}
                 {% for review in reviews_list %}
                     <tr class="{% cycle '' 'even_bgcolor' %}">
+                        <td>{{review.review_id}}</td>
                         <td>{{review.isbn13.title}}</td>
                         <td>{{review.user.name}}</td>                        
                         <td><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>

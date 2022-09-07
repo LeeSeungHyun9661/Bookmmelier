@@ -4,7 +4,7 @@ from django_summernote.fields import SummernoteTextField
 from django_summernote.widgets import SummernoteWidget,SummernoteInplaceWidget
 from reviews.models import Review
 
-
+# 리뷰 작성에 따른 모델폼
 class ReviewwriteFrom(forms.ModelForm):
     title = forms.CharField(label="제목",max_length=50,widget=forms.TextInput(attrs={'placeholder':'제목','id': 'post-text'}))
     contents = SummernoteTextField()

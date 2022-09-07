@@ -13,9 +13,9 @@
 
     {%if review.user == request.user %}        
         <a href="{% url 'reviews:review_update'%}?review_id={{review.review_id}}"> [수정]</a>
-        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}"> [삭제]</a>
+        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
     {%elif request.user.is_staff%}
-        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}"> [삭제]</a>
+        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
     {%endif%}
 </div>
 

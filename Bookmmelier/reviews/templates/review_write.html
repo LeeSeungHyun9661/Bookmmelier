@@ -130,14 +130,13 @@
                 type:"POST",
                 url: "{% url 'reviews:review_write' %}",
                 data : form_array,
-                success:function(data){
-                    alert("리뷰 작성이 완료되었습니다")
-                    console.log(data)
+                success:function(data){  
+                    alert("리뷰 작성이 완료되었습니다")  
+                    window.location.href = ("{% url 'reviews:review_detail' %}?review_id="+data["review_id"]);
 
                 }
             })
         }
-    });
-    
+    });    
 </script>
 {% endblock %}
