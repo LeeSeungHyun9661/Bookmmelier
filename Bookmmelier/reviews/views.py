@@ -4,7 +4,7 @@ from .models import *
 from django.core.paginator import Paginator
 from django.views.generic import View
 from django.db.models import Q
-from reviews.forms import ReviewwriteFrom
+from reviews.forms import ReviewWriteFrom
 from django.http import JsonResponse
 
 # _____리뷰 리스트 및 검색 페이지_____
@@ -32,9 +32,9 @@ class reviews_list_View(View):
                         Q(contents__icontains = search_input)
                     )
                 elif search_type == '도서':
-                    reviews =  Review.objects.filter(Q(title__icontains = search_input))
+                    reviews =  Review.objects.filter(Q(book__title__icontains = search_input))
                 elif search_type == '작성자':
-                    reviews =  Review.objects.filter(Q(user__icontains = search_input))
+                    reviews =  Review.objects.filter(Q(user__name__icontains = search_input))
                 elif search_type == '내용':
                     reviews =  Review.objects.filter(Q(contents__icontains = search_input))          
 
@@ -69,7 +69,7 @@ class reviews_list_View(View):
                 Q(contents__icontains = search_input)
             )
         elif search_type == '도서':
-            reviews =  Review.objects.filter(Q(title__icontains = search_input))
+            reviews =  Review.objects.filter(Q(book__title__icontains = search_input))
         elif search_type == '작성자':
             reviews =  Review.objects.filter(Q(user__name__icontains = search_input))
         elif search_type == '내용':
@@ -90,7 +90,7 @@ class reviews_write_View(View):
             paginator = Paginator(Book.objects.all(), 10)                
             books_list = paginator.get_page(1)
             #리뷰 작성 폼 호출
-            forms = ReviewwriteFrom()
+            forms = ReviewWriteFrom()
             return render(request, 'review_write.html',{"books_list":books_list,"forms":forms})
         else:
             return redirect('/login') 
@@ -98,7 +98,7 @@ class reviews_write_View(View):
     # 리뷰 작성 요청  
     def post(self,request):
         # 응답 받은 별괄를 form으로 저장
-        form = ReviewwriteFrom(request.POST)
+        form = ReviewWriteFrom(request.POST)
         #isbn을 통해 현재 입력받은 도서의 isbn 확인
         isbn13 = request.POST.get('isbn13')
         # form을 통해 입력이 올바른지 먼저 확인
@@ -108,7 +108,7 @@ class reviews_write_View(View):
             # 작성자의 정보를 현재 사용자와 연결
             review.user = request.user  
             # 리뷰의 도서를 isbn을 통해 검색한 도서 객체와 연결
-            review.isbn13 = Book.objects.get(isbn13 = isbn13)
+            review.book = Book.objects.get(isbn13 = isbn13)
             #데이터베이스에 저장함
             review.save()
             # 작성된 리뷰 페이지로 이동
@@ -131,7 +131,7 @@ class review_update_View(View):
                 #리뷰의 작성자가 현재 로그인중인 작성자와 동일한지 확인
                 if review.user == request.user: 
                     #리뷰 폼에 받은 정보를 담아서 폼에 저장
-                    forms = ReviewwriteFrom(instance=review)
+                    forms = ReviewWriteFrom(instance=review)
                     return render(request, 'review_update.html',{"books_list":books_list,"forms":forms,"review_id":review.review_id,"selected_book":review.isbn13})
         else:
             return redirect('/login')   
@@ -139,7 +139,7 @@ class review_update_View(View):
     # 리뷰 수정 요청
     def post(self,request):
         # 응답 받은 결과를 form으로 저장
-        form = ReviewwriteFrom(request.POST)
+        form = ReviewWriteFrom(request.POST)
         # isbn을 통해 현재 입력받은 도서의 isbn 확인
         isbn13 = request.POST.get('isbn13')
         # 수정 리뷰의 아이디 확인
@@ -154,7 +154,7 @@ class review_update_View(View):
                 review.rate = form.rate
                 review.is_shared = form.is_shared
                 # 도서가 갱신된 상태라면 반영
-                review.isbn13 = Book.objects.get(isbn13 = isbn13)
+                review.book = Book.objects.get(isbn13 = isbn13)
                 # 리뷰 데이터를 업데이트함
                 review.save(force_update=True)
                 return JsonResponse({"review_id":review_id})
@@ -166,7 +166,8 @@ class review_detail_View(View):
         review_id = request.GET.get('review_id', '')
         if Review.objects.filter(review_id = review_id).exists():
             review = Review.objects.get(review_id = review_id)
-            return render(request, 'review_detail.html',{"review":review})
+            comments = Comment.objects.filter(review_id = review.review_id)            
+            return render(request, 'review_detail.html',{"review":review,"comments":comments})
     def post(self,request):
         return None
 
@@ -213,3 +214,42 @@ def review_delete(request):
             return redirect("/reviews")
     return None
 
+# _____댓글 등록_____
+def comment_upload(request):
+    if request.is_ajax():
+        comment_text = request.POST.get("comment_text")
+        review = Review.objects.get(review_id = request.POST.get("review_id"))
+
+        Comment.objects.create(review = review,contents = comment_text, user = request.user)
+        comments = Comment.objects.filter(review = review) 
+
+        return render(request, 'review_detail_comments.html',{"comments":comments})
+
+# _____댓글 수정_____
+def comment_update(request):
+    if request.is_ajax():
+        comment_text = request.POST.get("comment_text")
+        comment_id = request.POST.get("comment_id")
+       
+        if Comment.objects.filter(comment_id = comment_id).exists():
+            comment = Comment.objects.get(comment_id = comment_id)
+            comment.contents = comment_text
+            comment.save()
+        
+            review = Review.objects.get(review_id = request.POST.get("review_id"))
+            comments = Comment.objects.filter(review = review)  
+            return render(request, 'review_detail_comments.html',{"comments":comments})
+
+# _____댓글 삭제_____
+def comment_delete(request):
+    if request.is_ajax():
+        comment_id = request.POST.get("comment_id")
+       
+        if Comment.objects.filter(comment_id = comment_id).exists():
+            comment = Comment.objects.get(comment_id = comment_id)
+            comment.delete()
+        
+            review = Review.objects.get(review_id = request.POST.get("review_id"))
+            comments = Comment.objects.filter(review = review)  
+            return render(request, 'review_detail_comments.html',{"comments":comments})
+        

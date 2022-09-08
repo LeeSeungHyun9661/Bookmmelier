@@ -2,10 +2,10 @@ from django import forms
 from django.contrib.auth import authenticate
 from django_summernote.fields import SummernoteTextField
 from django_summernote.widgets import SummernoteWidget,SummernoteInplaceWidget
-from reviews.models import Review
+from reviews.models import *
 
 # 리뷰 작성에 따른 모델폼
-class ReviewwriteFrom(forms.ModelForm):
+class ReviewWriteFrom(forms.ModelForm):
     title = forms.CharField(label="제목",max_length=50,widget=forms.TextInput(attrs={'placeholder':'제목','id': 'post-text'}))
     contents = SummernoteTextField()
     rate = forms.ChoiceField(label='별점',widget=forms.RadioSelect,choices=((1,'1'),(2,'2'),(3,'3'),(4,'4'),(5,'5')))

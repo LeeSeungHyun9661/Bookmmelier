@@ -24,7 +24,7 @@
                 {% for review in reviews_list %}
                     <tr class="{% cycle '' 'even_bgcolor' %}">
                         <td>{{review.review_id}}</td>
-                        <td>{{review.isbn13.title}}</td>
+                        <td>{{review.book.title}}</td>
                         <td>{{review.user.name}}</td>                        
                         <td><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>
                         <td>{{review.contents|slice:':100'|truncatechars:30|safe}}</td>
@@ -75,20 +75,20 @@
         })
     })
 
-    $('.first_page').click(function(){
+    $(document).on('click', '.first_page', function(){
         num_pages = parseInt($('.now_page').first().text());
-        page_click()
-    })   
+            page_click();
+    })
 
-    $('.now_page').click(function(){
-        num_pages = parseInt($(this).text());
-        page_click()
-    })       
-    
-    $('.last_page').click(function(){
+    $(document).on('click', '.last_page', function(){
         num_pages = parseInt($('.now_page').last().text());
-        page_click()
-    })   
+        page_click();
+    })
+
+    $(document).on('click', '.now_page', function(){
+        num_pages = parseInt($(this).text());
+        page_click();
+    })  
     
     function page_click(){
         $.ajax({
@@ -98,9 +98,6 @@
             success:function(data){
                 $('#table').html(data)
             },
-            error:function(request, status, error){
-                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            }
         })
         
     }    

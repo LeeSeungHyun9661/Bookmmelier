@@ -1,0 +1,73 @@
+<div id="review_comments">
+    {% if comments %}
+    <p><b>{{ comments|length }}개의 댓글이 있습니다.</b></p>
+        {%for comment in comments%}
+        <div id="comment" style="border:1px solid black;">
+            <h5>{{comment.user.name}} : [{{comment.time_write}}]</h5>
+            <input type="text" class="replyContent{{ comment.comment_id }}" value="{{comment.contents}}" readonly>           
+            {%if comment.user == request.user %}       
+                <div class="tdReplyUpdate{{ comment.comment_id }}"><input type="button" value="수정" onclick="replyUpdate('{{ comment.comment_id }}')"></div>
+                <div class="tdReplyDelete{{ comment.comment_id }}"><input type="button"  value="삭제" onclick="replyDelete('{{ comment.comment_id }}')"></div>
+                <div class="tdReplySubmit{{ comment.comment_id }}"  style="display:none"><input type="button"  value="수정 완료" onclick="replySubmit('{{comment.comment_id }}')"></div>
+                <div class="tdReplyUpdateCancel{{ comment.comment_id }}"  style="display:none"><input type="button"  value="취소" onclick="replyUpdateCancel('{{ comment.comment_id }}')"></div>
+            {%endif%}
+        </div>
+        {%endfor%}
+    {%else%}
+    <h5>댓글이 없습니다.</h5>
+    {%endif%}
+</div>
+
+<script>
+    const replyUpdateCancel = (comment_id) => {
+        let tdReplyUpdate = document.querySelector(`.tdReplyUpdate${comment_id}`);
+        let tdReplyDelete = document.querySelector(`.tdReplyDelete${comment_id}`);
+        let tdReplySubmit = document.querySelector(`.tdReplySubmit${comment_id}`);
+        let tdReplyUpdateCancel = document.querySelector(`.tdReplyUpdateCancel${comment_id}`);
+        let replyContent = document.querySelector(`.replyContent${comment_id}`)
+        tdReplyUpdate.style.display = 'inline-block';
+        tdReplyDelete.style.display = 'inline-block';
+        tdReplySubmit.style.display = 'none';
+        tdReplyUpdateCancel.style.display = 'none';
+        replyContent.readOnly = true;
+    }
+
+
+    const replyUpdate = (comment_id) => {
+        let tdReplyUpdate = document.querySelector(`.tdReplyUpdate${comment_id}`);
+        let tdReplyDelete = document.querySelector(`.tdReplyDelete${comment_id}`);
+        let tdReplySubmit = document.querySelector(`.tdReplySubmit${comment_id}`);
+        let tdReplyUpdateCancel = document.querySelector(`.tdReplyUpdateCancel${comment_id}`);
+        let replyContent = document.querySelector(`.replyContent${comment_id}`)
+        tdReplyUpdate.style.display = 'none';
+        tdReplyDelete.style.display = 'none';
+        tdReplySubmit.style.display = 'inline-block';
+        tdReplyUpdateCancel.style.display = 'inline-block';
+        replyContent.readOnly = false;
+    }
+
+    const replySubmit = (comment_id) =>{
+        let comment_text = document.querySelector(`.replyContent${comment_id}`).value;
+        $.ajax({
+                type:"POST",
+                url: "{% url 'reviews:comment_update' %}",
+                data : {'comment_id': comment_id,'comment_text': comment_text, csrfmiddlewaretoken:'{{ csrf_token }}','review_id':$('#review_id').val()},
+                success:function(data){  
+                    alert('댓글이 수정되었습니다.')
+                    $('#review_comments').html(data);
+                }
+        });
+    }
+
+    const replyDelete = (comment_id) =>{
+        $.ajax({
+                type:"POST",
+                url: "{% url 'reviews:comment_delete' %}",
+                data : {'comment_id': comment_id, csrfmiddlewaretoken:'{{ csrf_token }}','review_id':$('#review_id').val()},
+                success:function(data){  
+                    alert('댓글이 삭제되었습니다.')
+                    $('#review_comments').html(data);
+                }
+        });
+    }
+</script>

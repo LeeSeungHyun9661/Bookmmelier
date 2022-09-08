@@ -1,22 +1,62 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <div class="content">
-    <div class="header">
+    <div class="header"  style="border:1px solid black;">
         <h2>서평 내용</h2>
+        <h1>제목 : {{review.title}}</h1>
+        <h3>작성자 : {{review.user.name}}</h3>
+        <h3>도서 : {{review.book.title}}</h3>
+        <h3>시간 : {{review.time_retouch}}</h3>
+        <h3>내용 : {{review.contents | safe}}</h3>
     </div>
 
-    <h1>제목 : {{review.title}}</h1>
-    <h3>작성자 : {{review.user.name}}</h3>
-    <h3>도서 : {{review.isbn13.title}}</h3>
-    <h3>시간 : {{review.time_retouch}}</h3>
-    <h3>내용 : {{review.contents | safe}}</h3>
-
-    {%if review.user == request.user %}        
+    <!-- 작성자 권한에 따라  -->
+    <div style="border:1px solid black;">
+        {%if review.user == request.user %}        
         <a href="{% url 'reviews:review_update'%}?review_id={{review.review_id}}"> [수정]</a>
         <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
-    {%elif request.user.is_staff%}
-        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
-    {%endif%}
+        {%elif request.user.is_staff%}
+            <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
+        {%endif%}
+    </div>
+
+    <!-- 댓글 작성 -->
+    {% if request.user.is_authenticated %}
+        <form id="upload_comment" method="POST" style="border:1px solid black;">
+            {% csrf_token %} 
+            <h4>작성자 : {{user.name}}</h4>
+            <input type="text" name="comment_text" value="" id="comment_text"><br>            
+            <input type="hidden" name="review_id" id="review_id" value = "{{review.review_id}}">
+            <button  type="submit" >댓글작성</button>
+        </form>
+    {% else %}
+        <a href="/login">댓글 작성을 위해 로그인이 필요합니다.</a>
+    {% endif %}
+
+
+    <!-- 댓글 보기 -->
+    {% include 'review_detail_comments.html' %}
+
 </div>
+
+<script>
+    $('#upload_comment').on('submit',function(){
+        event.preventDefault();
+        var comment_text = $('#comment_text').val();
+        if (comment_text === "") alert("내용을 입력해주세요");
+        else {
+            $.ajax({
+                type:"POST",
+                url: "{% url 'reviews:comment_upload' %}",
+                data : {'comment_text':$('#comment_text').val(),'review_id':$('#review_id').val(),csrfmiddlewaretoken:'{{ csrf_token }}'},
+                success:function(data){  
+                    alert('댓글 작성이 완료되었습니다.')
+                    $('#review_comments').html(data);
+                }
+            })
+        } 
+    }); 
+</script>
 
 {% endblock %}
