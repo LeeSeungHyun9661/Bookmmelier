@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.db.models import Avg
 
 # Create your models here.
 
@@ -17,3 +18,6 @@ class Book(models.Model):
 
     class Meta:
         db_table = u'bookmmelier_books'
+
+    def ratings(self):
+        return self.reviews.aggregate(avg_score=Avg('rate'))['avg_score']

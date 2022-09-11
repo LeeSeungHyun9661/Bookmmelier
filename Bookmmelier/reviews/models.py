@@ -7,7 +7,7 @@ from django_summernote.fields import SummernoteTextField
 
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)
-    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='isbn13')
+    book = models.ForeignKey(Book, models.DO_NOTHING, related_name='reviews')
     user = models.ForeignKey(User, models.DO_NOTHING)
     time_write = models.DateTimeField(auto_now_add=True)
     time_retouch = models.DateTimeField(auto_now=True)

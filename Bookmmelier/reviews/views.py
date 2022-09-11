@@ -27,8 +27,8 @@ class reviews_list_View(View):
                 #검색어 구분에 따라 리뷰 데이터 필터링
                 if search_type == '전체':
                     reviews = Review.objects.filter(
-                        Q(title__icontains = search_input) | 
-                        Q(user__icontains = search_input) | 
+                        Q(book__title__icontains = search_input) | 
+                        Q(user__name__icontains = search_input) | 
                         Q(contents__icontains = search_input)
                     )
                 elif search_type == '도서':

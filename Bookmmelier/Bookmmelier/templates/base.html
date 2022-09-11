@@ -21,9 +21,9 @@
 
     <!-- 상단 매뉴바 -->
     <a href="/"> [북믈리에]</a>
-    <a href="/books"> [도서검색]</a>
-    <a href="/reviews"> [서평구경]</a>
-    <a href="/reviews/write"> [서평쓰기]</a>
+    <a href="{% url 'books:books_list' %}"> [도서검색]</a>
+    <a href="{% url 'reviews:reviews_list' %}"> [서평구경]</a>
+    <a href="{% url 'reviews:review_write' %}"> [서평쓰기]</a>
     <a href="/debates"> [독서토론]</a>
     <a href="/admin"> [관리자]</a>
 

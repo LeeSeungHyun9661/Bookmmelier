@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.db.models import Avg,Count,F
+from reviews.models import Review
 from .models import *
 from django.views.generic import View
 from django.db.models import Q
  
 # 도서 목록 페이지
-class booksView(View):
-    
+class booksView(View):    
     def get(self,request):
         # 전체 도서 불러오기
         books = Book.objects.all()
@@ -32,10 +33,12 @@ class booksView(View):
             paginator = Paginator(books, 10)
             books_list = paginator.get_page(page)
             return render(request, 'books_table.html',{"books_list":books_list,"search_input":search_input,"search_type":search_type})
-        else:
-            paginator = Paginator(books, 10)  
+        else:            
+            # books = books.annotate(review_count = Count('review'))
+
+            paginator = Paginator(books, 10)
             books_list = paginator.get_page(page)
-            return render(request, 'books.html',{"books_list":books_list})
+            return render(request, 'books_list.html',{"books_list":books_list})
 
     def post(self,request):
         print("POST")
