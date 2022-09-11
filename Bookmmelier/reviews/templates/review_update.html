@@ -123,7 +123,6 @@
     $('#update_review').on('submit',function(){
         event.preventDefault();
         form_array  = $(this).serialize();
-
         $.ajax({
             type:"POST",
             url: "{% url 'reviews:review_update' %}",

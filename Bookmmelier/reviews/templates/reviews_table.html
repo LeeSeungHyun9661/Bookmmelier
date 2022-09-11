@@ -1,14 +1,14 @@
 <!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
-<div id="table">
+<div id="table"  >
     {%if search_input%}
     <a>검색결과 : ({{search_type}}){{search_input}}</a>
     {%endif%}
 
     <!-- 서평 목록 부분 -->
     <div>
-        <table class="table-contents" style="padding:10px">
+        <table class="table-contents"  style="padding:10px; border-top: 3px solid #444444; border-collapse: collapse; margin:auto; width: 100%;">
             <thead>
-                <tr text-align="center">
+                <tr text-align="center" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
                     <th>ID</th>
                     <th>book</th>
                     <th>name</th>
@@ -22,7 +22,7 @@
             <tbody>
                 {% if reviews_list %}
                 {% for review in reviews_list %}
-                    <tr class="{% cycle '' 'even_bgcolor' %}">
+                    <tr class="{% cycle '' 'even_bgcolor' %}" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
                         <td>{{review.review_id}}</td>
                         <td>{{review.book.title}}</td>
                         <td>{{review.user.name}}</td>                        

@@ -14,12 +14,16 @@ class ReviewWriteFrom(forms.ModelForm):
     class Meta:
         model= Review
         fields = ['title','contents','rate','is_shared']
+        widgets = {
+            'contents': SummernoteWidget(),
+        }
 
 
     def clean(self):
         cleaned_data = super().clean()
         title = cleaned_data.get('title')
         contents = cleaned_data.get('contents')
+        print(contents)
         rate = cleaned_data.get('rate')
         is_shared = cleaned_data.get('is_shared')
 

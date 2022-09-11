@@ -132,7 +132,7 @@ class review_update_View(View):
                 if review.user == request.user: 
                     #리뷰 폼에 받은 정보를 담아서 폼에 저장
                     forms = ReviewWriteFrom(instance=review)
-                    return render(request, 'review_update.html',{"books_list":books_list,"forms":forms,"review_id":review.review_id,"selected_book":review.isbn13})
+                    return render(request, 'review_update.html',{"books_list":books_list,"forms":forms,"review_id":review.review_id,"selected_book":review.book})
         else:
             return redirect('/login')   
 

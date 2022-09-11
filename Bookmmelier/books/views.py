@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -17,6 +18,7 @@ class booksView(View):
         search_type = request.GET.get('search_type', '') #검색 유형 받아오기
 
         if request.is_ajax(): #ajax로 통신 -> 페이지 또는 검색
+            template = 'books_table.html'
             if search_input: #검색어가 있을 경우 - 해당 검색어로 필터링
                 if search_type == '전체':
                     books = Book.objects.filter(
@@ -30,15 +32,13 @@ class booksView(View):
                     books =  Book.objects.filter(Q(author__icontains = search_input))
                 elif search_type == '출판사':
                     books =  Book.objects.filter(Q(publisher__icontains = search_input))
-            paginator = Paginator(books, 10)
-            books_list = paginator.get_page(page)
-            return render(request, 'books_table.html',{"books_list":books_list,"search_input":search_input,"search_type":search_type})
         else:            
-            # books = books.annotate(review_count = Count('review'))
+            template = 'books_list.html'
 
-            paginator = Paginator(books, 10)
-            books_list = paginator.get_page(page)
-            return render(request, 'books_list.html',{"books_list":books_list})
+        paginator = Paginator(books, 10)
+        books_list = paginator.get_page(page)
+        context = {"books_list":books_list,"search_input":search_input,"search_type":search_type}
+        return render(request, template,context)
 
     def post(self,request):
         print("POST")

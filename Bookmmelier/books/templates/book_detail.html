@@ -3,10 +3,14 @@
 {% block content %}
 <h1>도서 페이지</h1>
 
-<img src="{{book.img_url}}" width="500" , height="700">
-<h1>{{book.title}}</h1>
-<h3>{{book.publisher}}</h3>
-<h3>{{book.author}}</h3>
-<h3>{{book.description}}</h3>
+<!-- 도서 정보 -->
+<div>
+    <img src="{{book.img_url}}" width="500" , height="700">
+    <h1>{{book.title}}</h1>
+    <h3>{{book.publisher}}</h3>
+    <h3>{{book.author}}</h3>
+    <h3>{{book.description}}</h3>
+</div>
+
 
 {% endblock %}

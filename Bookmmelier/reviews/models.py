@@ -12,7 +12,7 @@ class Review(models.Model):
     time_write = models.DateTimeField(auto_now_add=True)
     time_retouch = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=50)
-    contents = SummernoteTextField()
+    contents = models.TextField()
     rate = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     is_shared = models.IntegerField()
     class Meta:

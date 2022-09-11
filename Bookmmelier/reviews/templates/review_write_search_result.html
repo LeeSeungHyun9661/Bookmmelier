@@ -1,11 +1,11 @@
-<table class="table-contents" style="padding:10px">
+<table class="table-contents" style="padding:10px; border-top: 3px solid #444444; border-collapse: collapse; margin:auto; width: 100%;" >
     <!-- 검색 결과 -->
     {%if search_input%}
         <a>검색결과 : ({{search_type}}){{search_input}}</a>
     {%endif%}                
     <!-- 테이블 헤드 -->
     <thead>
-        <tr text-align="center">
+        <tr text-align="center" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
             <th>title</th>
             <th>author</th>
             <th>publisher</th>
@@ -16,7 +16,7 @@
     <tbody>
         {% if books_list %}
             {% for book in books_list %}
-            <tr class="{% cycle '' 'even_bgcolor' %}">
+            <tr class="{% cycle '' 'even_bgcolor' %}" style="padding:5px; border-bottom: 3px solid #444444; padding: 10px; text-align: center;">
                 <td class="book_title" type="button" value="{{book.isbn13}}" data-dismiss="modal">{{book.title}}</td>
                 <td>{{book.author}}</td>
                 <td>{{book.publisher}}</td>
