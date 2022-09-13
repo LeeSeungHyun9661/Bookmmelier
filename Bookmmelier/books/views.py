@@ -39,7 +39,6 @@ class booksView(View):
         books_list = paginator.get_page(page)
         context = {"books_list":books_list,"search_input":search_input,"search_type":search_type}
         return render(request, template,context)
-
     def post(self,request):
         print("POST")
         return None

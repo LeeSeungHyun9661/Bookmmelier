@@ -175,14 +175,28 @@ class review_update_View(View):
 # _____리뷰 상세보기 페이지_____
 class review_detail_View(View):
     def get(self,request):
+        context = {}
     # 리뷰 아이디를 통해 리뷰 데이터를 불러와 페이지에 전송
         review_id = request.GET.get('review_id', '')
         if Review.objects.filter(review_id = review_id).exists():
             review = Review.objects.get(review_id = review_id)
-            comments = Comment.objects.filter(review_id = review.review_id)            
-            return render(request, 'review_detail.html',{"review":review,"comments":comments})
+            context['review'] = review
+
+            comments = Comment.objects.filter(review_id = review.review_id) 
+            paginator = Paginator(comments, 5)
+            comments_list = paginator.get_page(1)  
+            context['comments_list'] = comments_list
+            return render(request, 'review_detail.html',context)
     def post(self,request):
-        return None
+        context = {}
+        if request.is_ajax(): #ajax로 통신 -> 페이지 또는 검색
+            review_id = request.POST.get('review_id', '')
+            page = request.POST.get('page', '')
+            comments = Comment.objects.filter(review_id = review_id) 
+            paginator = Paginator(comments, 5)
+            comments_list = paginator.get_page(page)
+            context['comments_list'] = comments_list
+            return render(request, 'review_detail_comments.html',context)
 
 # _____리뷰 작성 - 모달에서의 도서 선택_____
 def review_write_modal_select_book(request):
@@ -230,16 +244,20 @@ def review_delete(request):
 # _____댓글 등록_____
 def comment_upload(request):
     if request.is_ajax():
+        context = {}
         comment_text = request.POST.get("comment_text")
         review = Review.objects.get(review_id = request.POST.get("review_id"))
 
         Comment.objects.create(review = review,contents = comment_text, user = request.user)
         comments = Comment.objects.filter(review = review) 
-
-        return render(request, 'review_detail_comments.html',{"comments":comments})
+        paginator = Paginator(comments, 5)
+        comments_list = paginator.get_page(1)  
+        context['comments_list'] = comments_list
+        return render(request, 'review_detail_comments.html',context)
 # _____댓글 수정_____
 def comment_update(request):
     if request.is_ajax():
+        context = {}
         comment_text = request.POST.get("comment_text")
         comment_id = request.POST.get("comment_id")
        
@@ -249,12 +267,17 @@ def comment_update(request):
             comment.save()
         
             review = Review.objects.get(review_id = request.POST.get("review_id"))
-            comments = Comment.objects.filter(review = review)  
-            return render(request, 'review_detail_comments.html',{"comments":comments})
+            comments = Comment.objects.filter(review = review) 
+
+            paginator = Paginator(comments, 5)
+            comments_list = paginator.get_page(1)  
+            context['comments_list'] = comments_list 
+            return render(request, 'review_detail_comments.html',context)
 
 # _____댓글 삭제_____
 def comment_delete(request):
     if request.is_ajax():
+        context = {}
         comment_id = request.POST.get("comment_id")
        
         if Comment.objects.filter(comment_id = comment_id).exists():
@@ -263,5 +286,10 @@ def comment_delete(request):
         
             review = Review.objects.get(review_id = request.POST.get("review_id"))
             comments = Comment.objects.filter(review = review)  
-            return render(request, 'review_detail_comments.html',{"comments":comments})
+
+            paginator = Paginator(comments, 5)
+            comments_list = paginator.get_page(1)  
+            context['comments_list'] = comments_list 
+
+            return render(request, 'review_detail_comments.html',context)
         

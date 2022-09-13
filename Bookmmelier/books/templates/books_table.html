@@ -9,14 +9,15 @@
         <table class="table-contents" style="padding:10px; border-top: 3px solid #444444; border-collapse: collapse; margin:auto; width: 100%;">
             <thead>
                 <tr text-align="center" style="padding:5px; border-bottom: 3px solid #444444; padding: 10px; text-align: center;">
-                    <th>isbn</th>
-                    <th>vol</th>
-                    <th>title</th>
-                    <th>author</th>
-                    <th>publisher</th>
-                    <th>pub_date</th>
-                    <th>ratings</th>                  
-                    <th>img_url</th>
+                    <th>|isbn|</th>
+                    <th>|vol|</th>
+                    <th>|제목|</th>
+                    <th>|작가|</th>
+                    <th>|출판사|</th>
+                    <th>|출판년도|</th>
+                    <th>|평점|</th> 
+                    <th>|좋아요|</th>                  
+                    <th>|이미지|</th>
                 </tr>
             </thead>
 
@@ -34,7 +35,8 @@
                         <td>{{book.ratings|floatformat}}</td>  
                         {%else%}
                         <td>0</td>  
-                        {%endif%}               
+                        {%endif%}  
+                    <td>{{book.like_users.count}}</td>             
                     <td><img src="{{book.img_url}}" width="50" , height="70"></td>
                 </tr>
                 {% endfor %}
@@ -102,12 +104,11 @@
             url: "{% url 'books:books_list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
             success:function(data){
-                $('#table').html(data)
+                $('#table').html(data);
             },
             error:function(request, status, error){
                 alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
             }
-        })
-        
+        })        
     }    
 </script>

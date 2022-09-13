@@ -1,7 +1,7 @@
 <div id="review_comments">
-    {% if comments %}
-    <p><b>{{ comments|length }}개의 댓글이 있습니다.</b></p>
-        {%for comment in comments%}
+    {% if comments_list %}
+    <p><b>{{ comments_list|length }}개의 댓글이 있습니다.</b></p>
+        {%for comment in comments_list%}
         <div id="comment" style="border:1px solid black;">
             <h5>{{comment.user.name}} : [{{comment.time_write}}]</h5>
             <input type="text" class="replyContent{{ comment.comment_id }}" value="{{comment.contents}}" readonly>           
@@ -15,6 +15,28 @@
         {%endfor%}
     {%else%}
     <h5>댓글이 없습니다.</h5>
+    {%endif%}
+
+    <!-- 페이지 부분 -->
+    {% if comments_list.has_previous or comments_list.has_next %}
+        <div style="text-align:center">
+            <div class="pagination" id="page">
+                {% if comments_list.has_previous %}
+                <a class="first_page" type="button">맨 앞으로</a>
+                {% endif %}
+                <div style="width:30%; margin: 5px;">
+                    {% for page in comments_list.paginator.page_range %}
+                        {% if page >= comments_list.number|add:-5 and page <= comments_list.number|add:5 %} 
+                        <a class="now_page" type="button">{{page}}</a>
+                        {% endif %}
+                    {%endfor %} 
+                </div>
+
+                {% if comments_list.has_next %}
+                <a class="last_page" type="button">맨 뒤로</a>
+                {% endif %}
+            </div>
+        </div>
     {%endif%}
 </div>
 
@@ -70,4 +92,32 @@
                 }
         });
     }
+
+    
+    $(document).on('click', '.first_page', function(){
+        num_pages = parseInt($('.now_page').first().text());
+            page_click();
+    })
+
+    $(document).on('click', '.last_page', function(){
+        num_pages = parseInt($('.now_page').last().text());
+        page_click();
+    })
+
+    $(document).on('click', '.now_page', function(){
+        num_pages = parseInt($(this).text());
+        page_click();
+    })  
+    
+    function page_click(){
+        $.ajax({
+            type:"post",
+            url: "{% url 'reviews:review_detail' %}",
+            data : {csrfmiddlewaretoken:'{{ csrf_token }}','page':num_pages,'review_id':$('#review_id').val()},
+            success:function(data){
+                $('#review_comments').html(data)
+            },
+        })
+        
+    }    
 </script>
