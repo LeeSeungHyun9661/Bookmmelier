@@ -56,26 +56,3 @@ class booksdetailView(View):
             return render(request, 'book_detail.html',context)
     def post(self,request):
         return None
-
-# 좋아요
-def book_like(request):
-    context = {}
-    if request.is_ajax():
-        id = request.POST.get("id")
-        isbn13 = request.POST.get("isbn13")        
-        book = Book.objects.get(isbn13 = isbn13)
-        print(book.like_users.all)
-        book.like_users.add(id)
-        context["book"] = book
-
-        return render(request, 'book_detail_like.html',context)
-
-def book_dislike(request):
-    context = {}
-    if request.is_ajax():
-        id = request.POST.get("id")
-        isbn13 = request.POST.get("isbn13")        
-        book = Book.objects.get(isbn13 = isbn13)
-        book.like_users.remove(id)
-        context["book"] = book
-        return render(request, 'book_detail_like.html',context)

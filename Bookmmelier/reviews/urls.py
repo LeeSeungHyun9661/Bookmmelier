@@ -11,6 +11,8 @@ urlpatterns = [
     path('detail/comment_upload', comment_upload, name='comment_upload'),
     path('detail/comment_update', comment_update, name='comment_update'),
     path('detail/comment_delete', comment_delete, name='comment_delete'),
+    path('detail/like', review_like, name='review_like'),
+    path('detail/dislike', review_dislike, name='review_dislike'),
 
     path('write/', reviews_write_View.as_view(), name='review_write'),
     path('write/modal/searchBooks', review_write_modal_search_Books, name="modal_search_Books"),

@@ -2,7 +2,7 @@ from django.db import models
 from books.models import Book
 from users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django_summernote.fields import SummernoteTextField
+from django.conf import settings 
 
 
 class Review(models.Model):
@@ -15,6 +15,7 @@ class Review(models.Model):
     contents = models.TextField()
     rate = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     is_shared = models.IntegerField()
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_review')
     class Meta:
         db_table = u'bookmmelier_reviews'
 

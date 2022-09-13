@@ -254,6 +254,7 @@ def comment_upload(request):
         comments_list = paginator.get_page(1)  
         context['comments_list'] = comments_list
         return render(request, 'review_detail_comments.html',context)
+
 # _____댓글 수정_____
 def comment_update(request):
     if request.is_ajax():
@@ -293,3 +294,22 @@ def comment_delete(request):
 
             return render(request, 'review_detail_comments.html',context)
         
+# _____좋아요_____
+def review_like(request):
+    context = {}
+    if request.is_ajax():
+        review_id = request.POST.get("review_id")        
+        review = Review.objects.get(review_id = review_id)
+        review.like_users.add(request.user.id)
+        context["review"] = review
+        return render(request, 'review_detail_like.html',context)
+
+# _____좋아요 취소_____
+def review_dislike(request):
+    context = {}
+    if request.is_ajax():
+        review_id = request.POST.get("review_id")       
+        review = Review.objects.get(review_id = review_id)
+        review.like_users.remove(request.user.id)
+        context["review"] = review
+        return render(request, 'review_detail_like.html',context)

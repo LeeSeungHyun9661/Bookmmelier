@@ -12,10 +12,7 @@
     <h3>소개글 : {{book.description}}</h3>
 </div>
 
-<!-- 좋아요 -->
-{% include 'book_detail_like.html' %}
-
-<!-- 서평 분석 -->
+<!-- 최근 서평 -->
 <div style="border:1px solid black;">
 <h3><a href="{% url 'reviews:review_write' %}?isbn13={{book.isbn13}}">서평 쓰러가기</a></h3>
 {%if reviews %}
@@ -31,7 +28,6 @@
 {%endif%}
 </div>
 
-<!-- 최근 서평 -->
 
 <!-- 토론 -->
 {% endblock %}

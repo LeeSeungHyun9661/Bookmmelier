@@ -15,8 +15,7 @@
                     <th>|작가|</th>
                     <th>|출판사|</th>
                     <th>|출판년도|</th>
-                    <th>|평점|</th> 
-                    <th>|좋아요|</th>                  
+                    <th>|평점|</th>                
                     <th>|이미지|</th>
                 </tr>
             </thead>
@@ -35,8 +34,7 @@
                         <td>{{book.ratings|floatformat}}</td>  
                         {%else%}
                         <td>0</td>  
-                        {%endif%}  
-                    <td>{{book.like_users.count}}</td>             
+                        {%endif%}             
                     <td><img src="{{book.img_url}}" width="50" , height="70"></td>
                 </tr>
                 {% endfor %}

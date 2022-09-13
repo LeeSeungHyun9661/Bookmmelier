@@ -11,7 +11,7 @@
         <h3>내용 : {{review.contents | safe}}</h3>
     </div>
 
-    <!-- 작성자 권한에 따라  -->
+    <!-- 작성자 권한에 따라 수정 삭제 -->
     <div style="border:1px solid black;">
         {%if review.user == request.user %}        
         <a href="{% url 'reviews:review_update'%}?review_id={{review.review_id}}"> [수정]</a>
@@ -20,6 +20,9 @@
             <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
         {%endif%}
     </div>
+
+    <!-- 좋아요 -->
+    {% include 'review_detail_like.html' %}
 
     <!-- 댓글 작성 -->
     {% if request.user.is_authenticated %}
