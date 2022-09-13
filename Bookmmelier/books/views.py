@@ -46,23 +46,37 @@ class booksView(View):
 
 class booksdetailView(View):
     def get(self,request):
+        context={}
         isbn13 = request.GET.get('isbn13', '')
         if Book.objects.filter(isbn13 = isbn13).exists():
             book = Book.objects.get(isbn13 = isbn13)
-            return render(request, 'book_detail.html',{"book":book})
+            context["book"] = book
+            reviews =  Review.objects.filter(book = book)[:3]
+            if reviews:
+                context["reviews"] = reviews
+            return render(request, 'book_detail.html',context)
     def post(self,request):
         return None
 
 # 좋아요
-def likes(request,isbn13):
-    if request.user.is_authenticated:
-        book = get_object_or_404(Book, pk=isbn13)
-        if book.like_users.filter(pk=request.user.pk).exists():
-            book.like_users.remove(request.user.id)
-            print('unlike!')
-        else:
-            print(request.user.id)
-            book.like_users.add(request.user.id)
-            print('like!')
-            return redirect('/')
-    return redirect('/login')
+def book_like(request):
+    context = {}
+    if request.is_ajax():
+        id = request.POST.get("id")
+        isbn13 = request.POST.get("isbn13")        
+        book = Book.objects.get(isbn13 = isbn13)
+        print(book.like_users.all)
+        book.like_users.add(id)
+        context["book"] = book
+
+        return render(request, 'book_detail_like.html',context)
+
+def book_dislike(request):
+    context = {}
+    if request.is_ajax():
+        id = request.POST.get("id")
+        isbn13 = request.POST.get("isbn13")        
+        book = Book.objects.get(isbn13 = isbn13)
+        book.like_users.remove(id)
+        context["book"] = book
+        return render(request, 'book_detail_like.html',context)

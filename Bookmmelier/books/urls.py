@@ -6,5 +6,7 @@ app_name = "books"
 urlpatterns = [
     path('', booksView.as_view(), name='books_list'),
     path('detail/', booksdetailView.as_view(), name='book_detail'),
-    path('detail/likes/<str:isbn13>', likes, name='likes'),
+    
+    path('detail/like', book_like, name='book_like'),
+    path('detail/dislike', book_dislike, name='book_dislike'),
 ]

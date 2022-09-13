@@ -84,19 +84,31 @@ class reviews_list_View(View):
 class reviews_write_View(View): 
     # 페이지 접근   
     def get(self,request):
+        context={}
         #사용자가 현재 로그인중인지 확인
         if request.user.is_authenticated:
             #기본적인 도서 목록 데이터 호출
             paginator = Paginator(Book.objects.all(), 10)                
             books_list = paginator.get_page(1)
+            context["books_list"] = books_list
+
             #리뷰 작성 폼 호출
-            forms = ReviewWriteFrom()
-            return render(request, 'review_write.html',{"books_list":books_list,"forms":forms})
+            forms = ReviewWriteFrom()            
+            context["forms"] = forms
+
+            # 만약 사용자가 도서에서 서평 작성으로 넘어온 경우 도서가 이미 선택된 상태임
+            isbn13 = request.GET.get('isbn13','')
+            if isbn13:
+                selected_book = Book.objects.get(isbn13 = isbn13)        
+                context["selected_book"] = selected_book
+
+            return render(request, 'review_write.html', context)
         else:
-            return redirect('/login') 
+            return redirect('/login?next=' + request.path) 
     
     # 리뷰 작성 요청  
     def post(self,request):
+        context={}
         # 응답 받은 별괄를 form으로 저장
         form = ReviewWriteFrom(request.POST)
         #isbn을 통해 현재 입력받은 도서의 isbn 확인
@@ -112,7 +124,8 @@ class reviews_write_View(View):
             #데이터베이스에 저장함
             review.save()
             # 작성된 리뷰 페이지로 이동
-            return JsonResponse({"review_id":review.review_id})
+            context["review_id"] = review.review_id
+            return JsonResponse(context)
 
 # _____리뷰 수정 페이지_____
 class review_update_View(View):
@@ -134,7 +147,7 @@ class review_update_View(View):
                     forms = ReviewWriteFrom(instance=review)
                     return render(request, 'review_update.html',{"books_list":books_list,"forms":forms,"review_id":review.review_id,"selected_book":review.book})
         else:
-            return redirect('/login')   
+            return redirect('/login?next=' + request.path)   
 
     # 리뷰 수정 요청
     def post(self,request):
@@ -224,7 +237,6 @@ def comment_upload(request):
         comments = Comment.objects.filter(review = review) 
 
         return render(request, 'review_detail_comments.html',{"comments":comments})
-
 # _____댓글 수정_____
 def comment_update(request):
     if request.is_ajax():

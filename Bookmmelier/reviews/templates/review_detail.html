@@ -31,7 +31,7 @@
             <button  type="submit" >댓글작성</button>
         </form>
     {% else %}
-        <a href="/login">댓글 작성을 위해 로그인이 필요합니다.</a>
+        <a href="/login?next={{request.path}}?review_id={{review.review_id}}">댓글 작성을 위해 로그인이 필요합니다.</a>
     {% endif %}
 
 

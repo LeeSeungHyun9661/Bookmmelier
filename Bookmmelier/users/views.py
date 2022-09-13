@@ -27,15 +27,17 @@ class loginView(View):
     def get(self,request):
         if request.user.is_authenticated :
             return redirect('/')
-        else:            
-            form = LoginForm
-            return render(request, 'login.html',{'form': form})
+        else:      
+            next = request.GET.get("next",'')      
+            form = LoginForm()
+            return render(request, 'login.html',{'form': form,'next':next})
 
     def post(self,request):
         form = LoginForm(request.POST)
         if form.is_valid():
             auth.login(request,form.user)
-            return redirect('/')
+            next = request.POST.get("next",'')
+            return redirect(next)
         return render(request, 'login.html',{'form': form})
 
 def kakaoLogin(request):

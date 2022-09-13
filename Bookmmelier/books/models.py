@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import User
 from django.db.models import Avg
-
+from django.conf import settings 
 # Create your models here.
 
 class Book(models.Model):
@@ -14,7 +14,7 @@ class Book(models.Model):
     img_url = models.CharField(max_length=1000, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     kdc_class_no = models.CharField(max_length=20, blank=True, null=True)
-    like_users = models.ManyToManyField(User, related_name='like_books', blank=True)
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_posts')
 
     class Meta:
         db_table = u'bookmmelier_books'
