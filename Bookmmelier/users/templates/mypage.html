@@ -2,19 +2,45 @@
 {% load bootstrap4 %} 
 {% block content %}
 
-<h1>마이 페이지</h1>
+<!-- 사용자 정보 -->
+<div style="border-bottom: 3px solid #444444;">
+    <h1>마이 페이지</h1>
+    <h3>아이디: {{user.id}}</h3>
+    <h3>이름  : {{user.name}}</h3>
+    <h3>이메일: {{user.email}}</h3>
+    <h3>성별  : {{user.gender}}</h3>
+    <h3>나이  : {{user.age}}</h3>
+</div>
 
-<h3>아이디: {{user.id}}</h3>
-<h3>이름  : {{user.name}}</h3>
-<h3>이메일: {{user.email}}</h3>
-<h3>성별  : {{user.gender}}</h3>
-<h3>나이  : {{user.age}}</h3>
 
-{% if user.type == 'nomal'%}
+<!-- 사용자 편집 -->
+<div style="border-bottom: 3px solid #444444;">
+    {% if user.type == 'nomal'%}
     <a href="./changePassword">비밀번호수정</a>
     <a href="./withdraw">회원탈퇴</a>
-{% else %}
-    <a href="./withdraw_kakao">회원탈퇴</a>
+    {% else %}
+        <a href="./withdraw_kakao">회원탈퇴</a>
+    {% endif %}
+</div>
+
+<!-- 최근 작성한 서평 -->
+<div>
+    {%if reviews %}
+    <div style="border-bottom: 3px solid #444444;">
+        <h3>최근 서평</h3>
+        <a href="{% url 'users:user_reviews' %}"> 서평 더보기 </a>
+    </div>    
+
+    {%for review in reviews %}  
+    <div style="float:left">
+        <h6>도서 : {{review.book.title}}</h6>                        
+        <h6><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">제목 : {{review.title}}</a></h6>
+        <h6>내용 : {{review.contents|slice:':100'|truncatechars:30|safe}}</h6> 
+        <h6>좋아요 : {{review.like_users.count}}</h6>  
+        <h6>작성시간 : {{review.time_retouch}}</h6>
+    </div>
+    {%endfor%}
 {% endif %}
+</div>
 
 {% endblock %}  

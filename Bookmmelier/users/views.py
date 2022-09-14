@@ -6,7 +6,10 @@ from django.contrib.auth import login,authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib import auth
 from django.views.generic import View
+from reviews.models import Review
 from users.forms import LoginForm
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 from .models import *
 import os
@@ -198,8 +201,13 @@ class activateView(View):
 
 class mypageView(View):
     def get(self,request):
+        context = {}
         if request.user.is_authenticated:
-            return render(request, 'mypage.html')
+            reviews = Review.objects.filter(user = request.user)[:3]
+
+            context["reviews"] = reviews
+
+            return render(request, 'mypage.html',context)
         else:
             return redirect('/')
 
@@ -302,4 +310,50 @@ class withdraw_kakao(View):
 def logout(request):
     auth.logout(request)
     return redirect('/')
+
+class user_reviews(View):
+    # 페이지 일반 접근
+    def get(self,request): 
+        # 전체 도서의 DB 연결
+        reviews = Review.objects.filter(user = request.user)
+        #페이지 확인
+        page = int(request.GET.get('page', 1))
+        #입력된 검색어 확인
+        search_input = request.GET.get('search_input', '') 
+        #입력된 검색 유형 확인
+        search_type = request.GET.get('search_type', '')
+
+        #ajax로 통신 -> 페이지 또는 검색
+        if request.is_ajax(): 
+             #검색어가 있을 경우 검색어로 필터링
+            if search_input:
+                #검색어 구분에 따라 리뷰 데이터 필터링
+                if search_type == '전체':
+                    reviews = Review.objects.filter(
+                        Q(book__title__icontains = search_input) | 
+                        Q(user__name__icontains = search_input) | 
+                        Q(contents__icontains = search_input)
+                    )
+                elif search_type == '도서':
+                    reviews =  Review.objects.filter(Q(book__title__icontains = search_input))
+                elif search_type == '작성자':
+                    reviews =  Review.objects.filter(Q(user__name__icontains = search_input))
+                elif search_type == '내용':
+                    reviews =  Review.objects.filter(Q(contents__icontains = search_input))          
+
+            #페이지네이션을 통해 10개씩 페이지로 정리
+            paginator = Paginator(reviews, 10)
+            #페이지 번호에 따라 페이지네이션 된 결과물 불러오기
+            reviews_list = paginator.get_page(page)
+            #결과 전송
+            return render(request, 'mypage_reviews_table.html',{"reviews_list":reviews_list,"search_input":search_input,"search_type":search_type})
+        else: #ajax로 통신 아님 -> 기본적인 페이지 접근
+            paginator = Paginator(reviews, 10) 
+            #페이지 번호에 따라 페이지네이션 된 결과물 불러오기 
+            reviews_list = paginator.get_page(page)
+            #결과 전송
+            return render(request, 'mypage_reviews.html',{"reviews_list":reviews_list})  
+
+    def post(request):
+        return None
 

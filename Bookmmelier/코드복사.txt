@@ -1,0 +1,8 @@
+뷰 클래스
+
+class viewClassName(View):
+    def get(request):
+        return None
+    
+    def post(request):
+        return None

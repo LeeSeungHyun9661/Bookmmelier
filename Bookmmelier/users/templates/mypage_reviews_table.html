@@ -11,7 +11,6 @@
                 <tr text-align="center" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
                     <th>ID</th>
                     <th>book</th>
-                    <th>name</th>
                     <th>title</th>
                     <th>contents</th>
                     <th>rate</th>
@@ -25,10 +24,9 @@
                 {% for review in reviews_list %}
                     <tr class="{% cycle '' 'even_bgcolor' %}" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
                         <td>{{review.review_id}}</td>
-                        <td>{{review.book.title}}</td>
-                        <td>{{review.user.name}}</td>                        
+                        <td>{{review.book.title}}</td>                     
                         <td><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>
-                        <td>{{review.contents|striptags|safe|slice:':100'|truncatechars:30  }}</td>
+                        <td>{{review.contents|striptags|safe|slice:':100'|truncatechars:30 }}</td>
                         <td>{{review.rate}}</td> 
                         <td>{{review.like_users.count}}</td>  
                         <td>{{review.time_retouch}}</td>

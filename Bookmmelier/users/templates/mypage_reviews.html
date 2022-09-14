@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %} 
+{% block content %}
+
+<!-- 서평 검색 부분 -->
+<div>
+    <select name="search_type" id="search_type">
+        <option value="전체" selected="true">전체</option>
+        <option value="도서">도서</option>
+        <option value="작성자">작성자</option>
+        <option value="내용">내용</option>
+    </select>
+    <input id="search_input" type="search"/>
+    <button id="search_button" type="submit">검색</button>      
+</div>  
+
+<!-- 서평 목록 테이블 정의 -->
+{% include 'mypage_reviews_table.html' %}
+
+<!-- 작성한 서평 목록 -->
+
+{% endblock %}  
