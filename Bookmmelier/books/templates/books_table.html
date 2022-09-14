@@ -14,8 +14,7 @@
                     <th>|제목|</th>
                     <th>|작가|</th>
                     <th>|출판사|</th>
-                    <th>|출판년도|</th>
-                    <th>|평점|</th>                
+                    <th>|출판년도|</th>             
                     <th>|이미지|</th>
                 </tr>
             </thead>
@@ -29,12 +28,7 @@
                     <td><a href="{% url 'books:book_detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
                     <td>{{book.author}}</td>
                     <td>{{book.publisher}}</td>
-                    <td>{{book.pub_date}}</td>
-                        {% if book.ratings %}
-                        <td>{{book.ratings|floatformat}}</td>  
-                        {%else%}
-                        <td>0</td>  
-                        {%endif%}             
+                    <td>{{book.pub_date}}</td>     
                     <td><img src="{{book.img_url}}" width="50" , height="70"></td>
                 </tr>
                 {% endfor %}

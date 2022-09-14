@@ -51,7 +51,7 @@ class booksdetailView(View):
             book = Book.objects.get(isbn13 = isbn13)
             context["book"] = book
             reviews =  Review.objects.filter(book = book)[:3]
-            if reviews:
+            if reviews.exists():
                 context["reviews"] = reviews
             return render(request, 'book_detail.html',context)
     def post(self,request):

@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'users',
     'books',
     'reviews',
+    'debates',
 ]
 
 MIDDLEWARE = [
@@ -56,24 +57,23 @@ TEMPLATES = [
     },
 ]
 
-#데이터 베이스 경로 설정
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'Bookmmelier',
-#         'USER': 'dipping',
-#         'PASSWORD': '$qnramffldp03)@',
-#         'HOST': 'dippingai.com',
-#         'PORT': '3306',
-#     }
-# }
-
+# 데이터 베이스 경로 설정
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Bookmmelier',
+        'USER': 'dipping',
+        'PASSWORD': '$qnramffldp03)@',
+        'HOST': 'dippingai.com',
+        'PORT': '22913',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 SECRET_KEY = 'django-insecure-$clx2x7t60=er0!e+r@gnq(2bdqs$#*%v1!a!uv7pce4h3vp3f'
 WSGI_APPLICATION = 'Bookmmelier.wsgi.application'
 

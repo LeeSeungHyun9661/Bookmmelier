@@ -19,8 +19,10 @@
     {% for review in reviews %}
     <div style="border:1px solid black;">
         <h3></h3>                        
-        <h3><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.user.name}} : {{review.title}}</a></h3>
-        <h3>{{review.contents|slice:':100'|truncatechars:30|safe}} [평점 : {{review.rate}}]</h3>
+        <h3><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.user.name}} > {{review.title}}</a></h3>
+        <h3>평점 : {{review.rate}}</h3>
+        <h3>{{review.contents|slice:':100'|truncatechars:30|safe}}</h3>
+
     </div>
     {%endfor%}
 {%else%}

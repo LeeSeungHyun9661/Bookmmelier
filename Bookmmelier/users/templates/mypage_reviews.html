@@ -2,6 +2,10 @@
 {% load bootstrap4 %} 
 {% block content %}
 
+<div>
+    <h1>{{request.user.name}}님의 서평 목록</h1>
+</div>
+
 <!-- 서평 검색 부분 -->
 <div>
     <select name="search_type" id="search_type">

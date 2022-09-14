@@ -40,7 +40,10 @@ class loginView(View):
         if form.is_valid():
             auth.login(request,form.user)
             next = request.POST.get("next",'')
-            return redirect(next)
+            if next:
+                return redirect(next)
+            else:
+                return redirect('/')
         return render(request, 'login.html',{'form': form})
 
 def kakaoLogin(request):
