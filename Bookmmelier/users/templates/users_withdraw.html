@@ -1,0 +1,42 @@
+{% extends 'bookmmelier_base.html' %}
+{% load bootstrap4 %} 
+{% block content %}
+
+<!-- 회원탈퇴 입력 부분 -->
+<h1>회원탈퇴</h1>
+
+<div id="withdraw_forms">
+    <form id = "withdraw" method="POST">
+        {% csrf_token %}     
+        {% for field in forms %}
+            {{ field.label_tag }} {{ field }} 
+        {% endfor %}    
+        <div id="error_respond"></div>            
+        <button  type="submit">비밀번호 변경</button>
+    </form>
+</div>
+
+<script>
+    $('#withdraw').on('submit',function(){
+        event.preventDefault();
+        form_array = $(this).serialize();
+        $.ajax({
+            type:"POST",
+            url: "{% url 'users:withdraw' %}",
+            data : form_array,
+            success:function(data){ 
+                console.log(data)
+                var keys = Object.keys(data); 
+                if (keys =="success"){
+                    alert("회원 탈퇴가 완료되었습니다.")
+                    window.location.href = ("/mypage");
+                }else{          
+                    for (key in keys){        
+                        $("#error_respond").text(data[keys[key]])
+                    }      
+                }
+            }
+        })
+    }); 
+</script>
+{% endblock %}

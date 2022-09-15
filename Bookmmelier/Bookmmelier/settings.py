@@ -57,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-# 데이터 베이스 경로 설정
+# 회사 mysql 데이터베이스
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -68,12 +68,15 @@ DATABASES = {
         'PORT': '22913',
     }
 }
+
+# sqlite 데이터베이스를 사용할 경우
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+
 SECRET_KEY = 'django-insecure-$clx2x7t60=er0!e+r@gnq(2bdqs$#*%v1!a!uv7pce4h3vp3f'
 WSGI_APPLICATION = 'Bookmmelier.wsgi.application'
 
@@ -92,11 +95,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# 언어 설정
 LANGUAGE_CODE = 'ko-kr'
 TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 USE_TZ = True
 
+# Static 파일 경로
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'Bookmmelier','static'),] 
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
@@ -135,6 +140,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # 메시지 기능 설정
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+# 토론방 메시지 실시간 작동을 위한 프로세서
 TEMPLATE_CONTEXT_PROCESSORS=(
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",

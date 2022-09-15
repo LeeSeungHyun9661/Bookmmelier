@@ -7,12 +7,12 @@ from django.contrib.auth.hashers import check_password
 from django.contrib import auth
 from django.views.generic import View
 from reviews.models import Review
-from users.forms import LoginForm
+from users.forms import LoginForm,SignupForm, ChangePasswordForm, WithdrawForm
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponse,JsonResponse
 
 from .models import *
-import os
 import requests
 import random
 import re
@@ -26,25 +26,35 @@ kakao_login_uri = "https://kauth.kakao.com/oauth/authorize"
 kakao_token_uri = "https://kauth.kakao.com/oauth/token"
 kakao_profile_uri = "https://kapi.kakao.com/v2/user/me"
 
-class loginView(View):
+class login(View):
+    # GET -> 처음 로그인 페이지 접급
     def get(self,request):
+        context = {}
+        template_name = 'users_login.html'        
+        # 현재 사용자가 로그인 중이라면...
         if request.user.is_authenticated :
             return redirect('/')
         else:      
-            next = request.GET.get("next",'')      
-            form = LoginForm()
-            return render(request, 'login.html',{'form': form,'next':next})
+            # 이전 경로에 대한 정보를 받아옴
+            context["next"] = request.GET.get("next",'')  
+            # 로그인폼 지정
+            context["forms"] = LoginForm()          
+            return render(request, template_name,context)
 
-    def post(self,request):
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            auth.login(request,form.user)
-            next = request.POST.get("next",'')
-            if next:
-                return redirect(next)
-            else:
-                return redirect('/')
-        return render(request, 'login.html',{'form': form})
+    # POST -> 로그인 과정 진행
+    def post(self,request): 
+        # 폼을 기준으로 POST로 전달받은 값 전달
+        forms = LoginForm(request.POST)
+        # 폼 입력 조건을 만족한 경우
+        if forms.is_valid():
+            # 로그인
+            auth.login(request,forms.user)
+            # 이전 페이지에 대한 정보 전달
+            next = request.POST.get("next",'/')
+            return JsonResponse({"success":next})
+        else:
+            # 입력된 폼 조건 불만족 
+            return JsonResponse(forms.errors)
 
 def kakaoLogin(request):
     client_id = KAKAO_CONFIG['KAKAO_REST_API_KEY']
@@ -113,80 +123,58 @@ def kakaoCallback(request):
     auth.login(request,user,backend='users.backends.MyUserBackend')
     return redirect('/')
 
-class signupView(View):
+class signup(View):
+    # GET -> 처음 로그인 페이지 접급
     def get(self, request): 
+        context = {}
+        template_name = 'users_signup.html'
         if request.user.is_authenticated:
             return redirect('/')            
         else:
-            return render(request,'signup.html')  
+            # 회원가입 폼 전달
+            context["forms"] = SignupForm()
+            return render(request,template_name,context)  
 
-    def post(self, request):
-        id = request.POST['input_id']
-        name = request.POST['input_name']
-        pw = request.POST['input_pw']
-        pw_check = request.POST['input_pw_check']
-        email = request.POST['input_email']
-        gender = request.POST['input_gender']
-        age = request.POST['input_age']
-
-        context = {}
-        if not id or not name or not pw or not pw_check or not email or not gender or not age:
-            context = {'result':'모든 입력란을 채워주세요!'}
-        else:
-            print(id)
-            if re.search(r'^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{4,15}$/',(id)):
-                context = {'result':'올바른 아이디를 입력해주세요. (영문, 숫자, 언더바, 4~15자)'}
+    # POST -> 회원가입 과정 진행
+    def post(self, request): 
+        forms = SignupForm(request.POST)        
+        # 회원가입 폼의 입력이 적절한지 확인
+        if forms.is_valid():
+            user = forms.save(commit=False)                    
+            # 사용자 타입은 nomal로 지정
+            user.type = "nomal"     
+            # 메일 전송 확인   
+            if (send_email(request,user)):  
+                # 비밀번호 저장
+                user.set_password(forms.password)
+                # 회원가입 성공
+                user.save()
+                return JsonResponse({"success":""})
             else:
-                if re.search(r'^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/',(pw)):
-                    context = {'result':'올바른 비밀번호를 입력해주세요. (영문, 숫자, 특수문자 - 8~20자)'}
-                else:
-                    if pw != pw_check:
-                        context = {'result':'비밀번호가 일치하지 않습니다.'}
-                    else:
-                        if not re.search(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',(email)):
-                            context = {'result':'올바른 이메일 주소를 입력해주세요.'}
-                        else:        
-                            if User.objects.filter(id = id).exists():
-                                context = {'result':'이미 사용중인 아이디입니다.'}
-                            else:
-                                if User.objects.filter(email = email).exists():
-                                    context = {'result':'이미 사용중인 이메일입니다.'}
-                                else:
-                                    enc = hashlib.md5()      
-                                    enc.update(str(random.randint(1000,10000)).encode('utf-8')) #사용자 이메일의 임의 해시값을 생성함
-                                    hash = enc.hexdigest()     
+                # 이메일 전송 실패
+                return JsonResponse({"email":"이메일 전송에 실패했습니다."})
+        else:
+            # 입력된 폼 조건 불만족 
+            return JsonResponse(forms.errors)
 
-                                    domain = get_current_site(request).domain #현재 도메인 주소를 받아옴
-                                    email_contents = f"반갑습니다! {name}님\n\n아래 링크를 클릭하면 회원가입 인증이 완료됩니다.\n\n회원가입 링크 : http://{domain}/activate/{id}/{hash}\n\n감사합니다."            
-                                    mail = send_mail(subject='Bookmmelier Account Check', message=email_contents, from_email='dltmdgus@dippingai.com', recipient_list=[email]) #메일 작성 후 발송 실행
-                                    
-                                    if(mail) : #메일 전송이 성공적으로 완료된 경우
-                                        User.objects.create_user(
-                                            id=id,
-                                            name=name,
-                                            password=pw,
-                                            email=email,
-                                            gender=gender,
-                                            age=age,
-                                            hash=hash,
-                                            type = 'nomal')
-
-                                        context = {'result':'회원가입이 완료되었습니다.'}
-                                        return redirect('/login')
-                                    else:
-                                        context = {'result':'메일 전송 실패!'}
-        return render(request,'signup.html',context)
-
-class activateView(View):
+class activate(View):
+    # GET -> 파라미터가 없는 잘못된 접근
     def get(self,request):
         context = {'result' : '올바르지 않은 접근입니다.'}
-        return render(request,'activate.html',context)
+        template_name = 'users_activate.html'
+        return render(request,template_name,context)
 
+    # GET -> 파라미터가 있는 올바른 접근
     def get(self,request,id,hash):
         context = {}
+        template_name = 'users_activate.html'
+
+        # ID나 hash가 입력되지 않은 경우
         if not id or not hash :
             context = {'result' : '올바르지 않은 접근입니다.'}
         else :
+            
+            # 존재하는 ID일 경우
             if User.objects.filter(id = id).exists():
                 user = User.objects.get(id = id) #사용자 정보 확인
                 if user.is_active:
@@ -200,104 +188,91 @@ class activateView(View):
                         context = {'result' : '잘못된 활성화 값이 입력되었습니다!'}
             else:
                 context = {'result' : '존재하지 않는 계정입니다.'}
-        return render(request,'activate.html' ,context)
+        return render(request,template_name ,context)
 
-class mypageView(View):
+class mypage(View):
     def get(self,request):
         context = {}
+        template_name = 'users_mypage.html'
         if request.user.is_authenticated:
             reviews = Review.objects.filter(user = request.user)[:3]
-
             context["reviews"] = reviews
-
-            return render(request, 'mypage.html',context)
+            return render(request, template_name, context)
         else:
             return redirect('/')
+
+    def post(self,request):
+        return None
 
 class changePassword(View):
-    def get(self,request):
+    def get(self, request): 
+        context = {}
         if request.user.is_authenticated:
             if request.user.type == 'nomal':
-                return render(request, 'changePassword.html')
+                context["forms"] = ChangePasswordForm()
+                template_name = 'users_changePassword.html'
+                return render(request, template_name,context)
             else:
-                return redirect('/')
+                return render(request, template_name)
         else:
             return redirect('/')
 
-    def post(self,request):
-        input_pw = request.POST['input_pw']
-        change_pw = request.POST['change_pw']
-        change_pw_check = request.POST['change_pw_check']
-
-        context = {}
-
-        if not input_pw or not change_pw or not change_pw_check:
-            context = {'result':'모든 입력란을 채워주세요!'}
-        else:
+    def post(self, request): 
+        if request.user.type == 'nomal':
+            forms = ChangePasswordForm(request.POST)
             user = request.user
-            if check_password(input_pw,user.password):
-                if input_pw == change_pw:
-                    context = {'result':'변경 비밀번호가 현재 비밀번호와 일치합니다.'}
-                else:
-                    if re.search(r'^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/',(change_pw)):
-                        context = {'result':'올바른 비밀번호를 입력해주세요. (영문, 숫자, 특수문자 - 8~20자)'}
-                    else:
-                        if change_pw == change_pw_check:
-                            user.set_password(change_pw)
-                            user.save()
-                            auth.login(request,user,backend='users.backends.MyUserBackend')
-                            return redirect("/")
-                        else:
-                            context = {'result':'새 비밀번호가 일치하지 않습니다.'}
+            forms.setUser(user)
+            if forms.is_valid():
+                user.set_password(forms.new_password)
+                user.save()
+                auth.login(request,user,backend='users.backends.MyUserBackend')
+                return JsonResponse({"success":""})
             else:
-                context = {'result':'현재 비밀번호가 일치하지 않습니다.'}
-
-        return render(request, 'changePassword.html',context)
+                # 입력된 폼 조건 불만족 
+                return JsonResponse(forms.errors)
 
 class withdraw(View):
-    def get(self,request):
+    def get(self, request): 
+        context = {}
         if request.user.is_authenticated:
             if request.user.type == 'nomal':
-                return render(request, 'withdraw.html')
-            else :
-                return redirect('mypage/withdraw_kakao')
+                context["forms"] = WithdrawForm()
+                template_name = 'users_withdraw.html'
+                return render(request, template_name,context)
+            else:
+                return render(request, template_name)
         else:
             return redirect('/')
 
-    def post(self,request):
-            input_pw = request.POST['input_pw']
-            input_pw_check = request.POST['input_pw_check']
-            context = {}
-
-            if not input_pw or not input_pw_check:
-                context = {'result':'비밀번호를 입력해주세요!'}
+    def post(self, request): 
+        if request.user.type == 'nomal':
+            forms = WithdrawForm(request.POST)
+            user = request.user
+            forms.setUser(user)
+            if forms.is_valid():
+                user.delete()          
+                auth.logout(request)  
+                return JsonResponse({"success":""})
             else:
-                user = request.user
-                if input_pw == input_pw_check:
-                    if check_password(input_pw,user.password):
-                        user.delete()          
-                        auth.logout(request)             
-                        return redirect("/")
-                    else:
-                        context = {'result':'비밀번호가 올바르지 않습니다.'}                   
-                else:
-                    context = {'result':'비밀번호가 일치하지 않습니다.'}
-
-            return render(request, 'withdraw.html',context)
+                # 입력된 폼 조건 불만족 
+                return JsonResponse(forms.errors)
 
 class withdraw_kakao(View):
     def get(self,request):
+        template_name ='users_withdraw_kakao.html'
         if request.user.is_authenticated:
             if request.user.type == 'nomal':
-                return redirect('mypage/withdraw')
+                return redirect('mypage/withdraw',template_name)
             else :
-                return render(request, 'withdraw_kakao.html')
+                return render(request, )
         else:
             return redirect('/')
 
     def post(self,request):
-            input = request.POST['input']
             context = {}
+            template_name ='users_withdraw_kakao.html'
+
+            input = request.POST['input']
             if not input:
                 context = {'result':'확인 문장을 입력해주세요'}
             else:
@@ -308,13 +283,13 @@ class withdraw_kakao(View):
                     return redirect("/")                  
                 else:
                     context = {'result':'확인 문장이 일치하지 않습니다.'}
-            return render(request, 'withdraw_kakao.html',context)
+            return render(request, template_name,context)
 
 def logout(request):
     auth.logout(request)
     return redirect('/')
 
-class user_reviews(View):
+class reviews(View):
     # 페이지 일반 접근
     def get(self,request): 
         # 전체 도서의 DB 연결
@@ -349,14 +324,23 @@ class user_reviews(View):
             #페이지 번호에 따라 페이지네이션 된 결과물 불러오기
             reviews_list = paginator.get_page(page)
             #결과 전송
-            return render(request, 'mypage_reviews_table.html',{"reviews_list":reviews_list,"search_input":search_input,"search_type":search_type})
+            return render(request, 'users_mypage_reviews_table.html',{"reviews_list":reviews_list,"search_input":search_input,"search_type":search_type})
         else: #ajax로 통신 아님 -> 기본적인 페이지 접근
             paginator = Paginator(reviews, 10) 
             #페이지 번호에 따라 페이지네이션 된 결과물 불러오기 
             reviews_list = paginator.get_page(page)
             #결과 전송
-            return render(request, 'mypage_reviews.html',{"reviews_list":reviews_list})  
+            return render(request, 'users_mypage_reviews.html',{"reviews_list":reviews_list})  
 
     def post(request):
         return None
 
+def send_email(request,user):
+    enc = hashlib.md5()      
+    enc.update(str(random.randint(1000,10000)).encode('utf-8')) #사용자 이메일의 임의 해시값을 생성함
+    hash = enc.hexdigest()
+    user.hash = hash
+    domain = get_current_site(request).domain #현재 도메인 주소를 받아옴
+    email_contents = f"반갑습니다! {user.name}님\n\n아래 링크를 클릭하면 회원가입 인증이 완료됩니다.\n\n회원가입 링크 : http://{domain}/activate/{user.id}/{user.hash}\n\n감사합니다."            
+    mail = send_mail(subject='Bookmmelier Account Check', message=email_contents, from_email='dltmdgus@dippingai.com', recipient_list=[user.email]) #메일 작성 후 발송 실행
+    return mail

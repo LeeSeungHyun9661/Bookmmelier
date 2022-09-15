@@ -7,7 +7,6 @@ class UserManager(BaseUserManager):
             raise ValueError('Users must have an id')
         if not name:
             raise ValueError('Users must have an name')
-
         user = self.model(
             id = id,
             name = name,
@@ -20,9 +19,8 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
+        
     def create_superuser(self, id, name, password, email,gender, age):
-
         user = self.create_user(
             id = id,
             name = name,
@@ -60,4 +58,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.id
 
     class Meta:
-        db_table = u'bookmmelier_users'
+        db_table = u'users'

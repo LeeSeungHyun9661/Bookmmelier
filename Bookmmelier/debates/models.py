@@ -12,7 +12,7 @@ class Debate(models.Model):
     title = models.CharField(max_length=50)
     subtitle = models.TextField()
     class Meta:
-        db_table = u'bookmmelier_debate'
+        db_table = u'debates'
 
 class Message(models.Model):
     message_id = models.AutoField(primary_key=True)
@@ -21,7 +21,7 @@ class Message(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     contents = models.TextField()
     class Meta:
-        db_table = u'bookmmelier_debate_message'
+        db_table = u'debates_message'
 
     def last_30_messages(self, debate_id):
         return Message.objects.filter(debate_id=debate_id).order_by('time_created')[:30]

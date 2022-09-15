@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'bookmmelier_base.html' %}
 
 {% block style%}
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
@@ -121,7 +121,6 @@
     $('#upload_review').on('submit',function(){
         event.preventDefault();
         form_array  = $(this).serialize();
-        console.log(form_array)
         // 도서가 선택되지 않은 경우, 오류 반환
         if ($('#isbn13').val() === undefined) alert("도서를 선택해주세요")
         // 조건을 만족한 경우 결과 반환
@@ -133,7 +132,6 @@
                 success:function(data){  
                     alert("리뷰 작성이 완료되었습니다")  
                     window.location.href = ("{% url 'reviews:review_detail' %}?review_id="+data["review_id"]);
-
                 }
             })
         }

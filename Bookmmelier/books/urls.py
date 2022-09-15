@@ -4,6 +4,6 @@ from .views import *
 app_name = "books"
 
 urlpatterns = [
-    path('', booksView.as_view(), name='books_list'),
-    path('detail/', booksdetailView.as_view(), name='book_detail'),    
+    path('', books_list.as_view(), name='list'),
+    path('detail', books_detail.as_view(), name='detail'),    
 ]

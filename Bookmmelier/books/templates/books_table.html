@@ -1,5 +1,7 @@
-<!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
 <div id="table">
+    <!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
+
+    <!-- 검색 조건과 검색어에 대한 출력 -->
     {%if search_input%}
     <a>검색결과 : ({{search_type}}){{search_input}}</a>
     {%endif%}
@@ -14,7 +16,8 @@
                     <th>|제목|</th>
                     <th>|작가|</th>
                     <th>|출판사|</th>
-                    <th>|출판년도|</th>             
+                    <th>|출판년도|</th>            
+                    <th>|평점|</th>           
                     <th>|이미지|</th>
                 </tr>
             </thead>
@@ -25,10 +28,11 @@
                 <tr class="{% cycle '' 'even_bgcolor' %}"  style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
                     <td>{{book.isbn13}}</td>
                     <td>{{book.vol}}</td>
-                    <td><a href="{% url 'books:book_detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
+                    <td><a href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a></td>
                     <td>{{book.author}}</td>
                     <td>{{book.publisher}}</td>
                     <td>{{book.pub_date}}</td>     
+                    <td>{{book.ratings}}</td>     
                     <td><img src="{{book.img_url}}" width="50" , height="70"></td>
                 </tr>
                 {% endfor %}
@@ -41,13 +45,15 @@
         </table>
     </div>
 
-    <!-- 페이지 부분 -->
+    <!-- 페이지네이션 부분 -->
     <div style="text-align:center">
         <div class="pagination" id="page">
+            <!-- 페이지네이션 : 처음으로 -->
             {% if books_list.has_previous %}
             <a class="first_page" type="button">맨 앞으로</a>
             {% endif %}
 
+            <!-- 페이지네이션 : 각 페이지로 -->
             <div style="width:30%; margin: 5px;">
                 {% for page in books_list.paginator.page_range %}
                     {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %} 
@@ -56,6 +62,7 @@
                 {%endfor %} 
             </div>
 
+            <!-- 페이지네이션 : 마지막으로 -->
             {% if books_list.has_next %}
             <a class="last_page" type="button">맨 뒤로</a>
             {% endif %}
@@ -64,10 +71,11 @@
 </div>
 
 <script>     
+    // 검색에 따른 결과 반영 기능
     $('#search_button').click(function(){
         $.ajax({
             type:"get",
-            url: "{% url 'books:books_list' %}",
+            url: "{% url 'books:list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
             success:function(data){
                 $('#table').html(data)
@@ -75,25 +83,14 @@
         })
     })
 
-    $('.first_page').click(function(){
-        num_pages = parseInt($('.now_page').first().text());
-        page_click()
-    })   
-
-    $('.now_page').click(function(){
-        num_pages = parseInt($(this).text());
-        page_click()
-    })       
-    
-    $('.last_page').click(function(){
-        num_pages = parseInt($('.now_page').last().text());
-        page_click()
-    })   
-    
+    // 각 페이지네이션 버튼 클릭에 따른 결과 전달
+    $('.first_page').click(function(){num_pages = parseInt($('.now_page').first().text());page_click();})
+    $('.now_page').click(function(){num_pages = parseInt($(this).text());page_click();})       
+    $('.last_page').click(function(){num_pages = parseInt($('.now_page').last().text());page_click();}) 
     function page_click(){
         $.ajax({
             type:"get",
-            url: "{% url 'books:books_list' %}",
+            url: "{% url 'books:list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
             success:function(data){
                 $('#table').html(data);

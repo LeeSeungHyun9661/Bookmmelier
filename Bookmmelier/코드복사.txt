@@ -1,8 +1,13 @@
 뷰 클래스
 
 class viewClassName(View):
-    def get(request):
-        return None
+    def get(self,request):
+        context = {}
+        template_name = ""        
+        return render(request, template_name,context)
     
-    def post(request):
-        return None
+    def post(self,request):
+        context = {}
+        template_name = ""        
+        return render(request, template_name,context)
+

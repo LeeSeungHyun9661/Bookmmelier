@@ -7,7 +7,7 @@ from django.conf import settings
 
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)
-    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='isbn13')
+    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='isbn13',related_name='reviews')
     user = models.ForeignKey(User, models.DO_NOTHING)
     time_write = models.DateTimeField(auto_now_add=True)
     time_retouch = models.DateTimeField(auto_now=True)
@@ -17,7 +17,7 @@ class Review(models.Model):
     is_shared = models.IntegerField()
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_review')
     class Meta:
-        db_table = u'bookmmelier_reviews'
+        db_table = u'reviews'
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
@@ -26,4 +26,4 @@ class Comment(models.Model):
     time_write = models.DateTimeField(auto_now_add=True)
     contents = models.TextField()
     class Meta:
-        db_table = u'bookmmelier_comments'
+        db_table = u'reviews_comments'
