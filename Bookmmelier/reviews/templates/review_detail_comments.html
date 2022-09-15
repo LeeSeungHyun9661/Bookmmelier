@@ -1,3 +1,4 @@
+<!-- 리뷰 댓글 목록 표시 -->
 <div id="review_comments">
     {% if comments_list %}
     <p><b>{{ comments_list|length }}개의 댓글이 있습니다.</b></p>
@@ -17,7 +18,7 @@
     <h5>댓글이 없습니다.</h5>
     {%endif%}
 
-    <!-- 페이지 부분 -->
+    <!-- 페이지네이션 부분 -->
     {% if comments_list.has_previous or comments_list.has_next %}
         <div style="text-align:center">
             <div class="pagination" id="page">
@@ -113,7 +114,7 @@
     function page_click(){
         $.ajax({
             type:"post",
-            url: "{% url 'reviews:review_detail' %}",
+            url: "{% url 'reviews:detail' %}",
             data : {csrfmiddlewaretoken:'{{ csrf_token }}','page':num_pages,'review_id':$('#review_id').val()},
             success:function(data){
                 $('#review_comments').html(data)

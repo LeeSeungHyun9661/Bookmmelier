@@ -45,6 +45,7 @@ class books_list(View):
         print("POST")
         return None
 
+# 도서 상세 페이지
 class books_detail(View):
     def get(self,request):
         context={}

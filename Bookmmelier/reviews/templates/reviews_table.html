@@ -27,7 +27,7 @@
                         <td>{{review.review_id}}</td>
                         <td>{{review.book.title}}</td>
                         <td>{{review.user.name}}</td>                        
-                        <td><a href="{% url 'reviews:review_detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>
+                        <td><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>
                         <td>{{review.contents|striptags|safe|slice:':100'|truncatechars:30  }}</td>
                         <td>{{review.rate}}</td> 
                         <td>{{review.like_users.count}}</td>  
@@ -69,7 +69,7 @@
     $('#search_button').click(function(){
         $.ajax({
             type:"get",
-            url: "{% url 'reviews:reviews_list' %}",
+            url: "{% url 'reviews:list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
             success:function(data){
                 $('#table').html(data)
@@ -95,7 +95,7 @@
     function page_click(){
         $.ajax({
             type:"get",
-            url: "{% url 'reviews:reviews_list' %}",
+            url: "{% url 'reviews:list' %}",
             data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
             success:function(data){
                 $('#table').html(data)

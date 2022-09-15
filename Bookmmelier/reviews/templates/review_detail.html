@@ -14,10 +14,10 @@
     <!-- 작성자 권한에 따라 수정 삭제 -->
     <div style="border:1px solid black;">
         {%if review.user == request.user %}        
-        <a href="{% url 'reviews:review_update'%}?review_id={{review.review_id}}"> [수정]</a>
-        <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
+        <a href="{% url 'reviews:update'%}?review_id={{review.review_id}}"> [수정]</a>
+        <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
         {%elif request.user.is_staff%}
-            <a href="{% url 'reviews:review_delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
+            <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
         {%endif%}
     </div>
 
@@ -34,7 +34,7 @@
             <button  type="submit" >댓글작성</button>
         </form>
     {% else %}
-        <a href="/login?next={{request.path}}?review_id={{review.review_id}}">댓글 작성을 위해 로그인이 필요합니다.</a>
+        <a href="{%url 'users:login' %}?next={{request.path}}?review_id={{review.review_id}}">댓글 작성을 위해 로그인이 필요합니다.</a>
     {% endif %}
 
     <!-- 댓글 보기 -->
