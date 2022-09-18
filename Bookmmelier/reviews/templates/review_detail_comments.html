@@ -1,15 +1,27 @@
 <!-- 리뷰 댓글 목록 표시 -->
 <div id="review_comments">
+    
+    <!-- 댓글 목록 출력 -->
     {% if comments_list %}
+    <!-- 댓글 수 출력 -->
     <p><b>{{ comments_list|length }}개의 댓글이 있습니다.</b></p>
         {%for comment in comments_list%}
         <div id="comment" style="border:1px solid black;">
+            <!-- 댓글 작성자와 작성 시간 -->
             <h5>{{comment.user.name}} : [{{comment.time_write}}]</h5>
+            
+            <!-- 댓글 내용 출력 -->
             <input type="text" class="replyContent{{ comment.comment_id }}" value="{{comment.contents}}" readonly>           
+            
+            <!-- 댓글의 작성자가 사용자일 경우 수정, 삭제 버튼을 보여줌 -->
             {%if comment.user == request.user %}       
+                <!-- 수정 버튼 -->
                 <div class="tdReplyUpdate{{ comment.comment_id }}"><input type="button" value="수정" onclick="replyUpdate('{{ comment.comment_id }}')"></div>
+                <!-- 삭제 버튼 -->
                 <div class="tdReplyDelete{{ comment.comment_id }}"><input type="button"  value="삭제" onclick="replyDelete('{{ comment.comment_id }}')"></div>
+                <!-- 수정 완료 버튼 : 수정 버튼 클릭시 나타남 -->
                 <div class="tdReplySubmit{{ comment.comment_id }}"  style="display:none"><input type="button"  value="수정 완료" onclick="replySubmit('{{comment.comment_id }}')"></div>
+                <!-- 수정 취소 버튼 : 수정 버튼 클릭시 나타남 -->
                 <div class="tdReplyUpdateCancel{{ comment.comment_id }}"  style="display:none"><input type="button"  value="취소" onclick="replyUpdateCancel('{{ comment.comment_id }}')"></div>
             {%endif%}
         </div>
@@ -19,10 +31,10 @@
     {%endif%}
 
     <!-- 페이지네이션 부분 -->
+    <!-- 댓글이 앞 뒤 페이지가 있는 경우 (5개 이상인 경우에 대해) 페이지네이션 표시 -->
     {% if comments_list.has_previous or comments_list.has_next %}
         <div style="text-align:center">
             <div class="pagination" id="page">
-                
                 {% if comments_list.has_previous %}
                 <a class="first_page" type="button">맨 앞으로</a>
                 {% endif %}
@@ -43,6 +55,7 @@
 </div>
 
 <script>
+    // 댓글 수정 취소 기능
     const replyUpdateCancel = (comment_id) => {
         let tdReplyUpdate = document.querySelector(`.tdReplyUpdate${comment_id}`);
         let tdReplyDelete = document.querySelector(`.tdReplyDelete${comment_id}`);
@@ -56,7 +69,7 @@
         replyContent.readOnly = true;
     }
 
-
+    // 댓글 수정 시작 기능 
     const replyUpdate = (comment_id) => {
         let tdReplyUpdate = document.querySelector(`.tdReplyUpdate${comment_id}`);
         let tdReplyDelete = document.querySelector(`.tdReplyDelete${comment_id}`);
@@ -70,6 +83,7 @@
         replyContent.readOnly = false;
     }
 
+    // 댓글 수정 완료 기능
     const replySubmit = (comment_id) =>{
         let comment_text = document.querySelector(`.replyContent${comment_id}`).value;
         $.ajax({
@@ -83,6 +97,7 @@
         });
     }
 
+    // 댓글 삭제 기능
     const replyDelete = (comment_id) =>{
         $.ajax({
                 type:"POST",
@@ -95,7 +110,7 @@
         });
     }
 
-    
+    // 페이지네이션 기능
     $(document).on('click', '.first_page', function(){
         num_pages = parseInt($('.now_page').first().text());
             page_click();

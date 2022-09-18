@@ -104,7 +104,8 @@ class reviews_write_View(View):
 
             return render(request, 'review_write.html', context)
         else:
-            return redirect('/login?next=' + request.path) 
+            isbn13 = request.GET.get('isbn13','')
+            return redirect('/login?next=' + request.path+ '?isbn=' + isbn13) 
     
     # 리뷰 작성 요청  
     def post(self,request):

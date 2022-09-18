@@ -45,12 +45,14 @@ class login(View):
     def post(self,request): 
         # 폼을 기준으로 POST로 전달받은 값 전달
         forms = LoginForm(request.POST)
+        print(forms)
         # 폼 입력 조건을 만족한 경우
         if forms.is_valid():
             # 로그인
             auth.login(request,forms.user)
             # 이전 페이지에 대한 정보 전달
             next = request.POST.get("next",'/')
+            print(next)
             return JsonResponse({"success":next})
         else:
             # 입력된 폼 조건 불만족 

@@ -11,7 +11,8 @@
         {% for field in forms %}
             {{ field.label_tag }} {{ field }} 
         {% endfor %}    
-        <div id="error_respond"></div>            
+        <div id="error_respond"></div>   
+        <input type="hidden" id="next" name="next" value='{{next}}'>
         <button  type="submit">로그인</button>
     </form>
 </div>

@@ -1,16 +1,21 @@
 <!-- 리뷰 좋아요 기능 -->
 <div id="review_like">
-    <p>{{ review.like_users.count}}명이 좋아합니다.</p>   
+    <!-- 리뷰 좋아요 인원수 -->
+    <p>{{ review.like_users.count}}명이 좋아합니다.</p>  
+     <!--사용자가 로그인 중인 경우에 좋아요, 취소 버튼 보여주기  -->
     {% if request.user.is_authenticated %}
         {% if request.user in review.like_users.all %}
+            <!-- 좋아요 취소 -->
             <input type="button" value="좋아요 취소" onclick="review_dislike('{{review.review_id}}')">
         {% else %}
+            <!-- 좋아요 -->
             <input type="button" value="좋아요" onclick="review_like('{{review.review_id}}')">        
         {% endif %}
     {%endif%}
 </div>
 
 <script>
+    // 좋아요 기능
     const review_like = (review_id) =>{
         $.ajax({
                 type:"POST",
@@ -22,6 +27,7 @@
                 }
         });
     }
+    // 좋아요 취소 기능
     const review_dislike = (review_id) =>{
         $.ajax({
                 type:"POST",

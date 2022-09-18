@@ -19,8 +19,8 @@ class books_list(View):
         page = int(request.GET.get('page', 1)) #페이지값 받아오기
         search_input = request.GET.get('search_input', '') #검색어 받아오기
         search_type = request.GET.get('search_type', '') #검색 유형 받아오기
-
-        if request.is_ajax(): #ajax로 통신 : 페이지네이션 또는 검색
+        # ajax로 통신 : 페이지네이션 또는 검색
+        if request.is_ajax(): 
             template_name = 'books_table.html'
             if search_input: #검색어가 있을 경우 - 해당 검색어로 필터링
                 if search_type == '전체':
@@ -31,6 +31,7 @@ class books_list(View):
                     books =  Book.objects.filter(Q(author__icontains = search_input))
                 elif search_type == '출판사':
                     books =  Book.objects.filter(Q(publisher__icontains = search_input))
+        # GET 통신 : 페이지 불러오가
         else:            
             template_name = 'books_list.html'
 
@@ -50,8 +51,9 @@ class books_detail(View):
     def get(self,request):
         context={}
         template_name = 'books_detail.html' 
-
-        isbn13 = request.GET.get('isbn13', '') # 도서 isbn13 받아오기
+        
+        # 도서 isbn13 받아오기
+        isbn13 = request.GET.get('isbn13', '') 
 
         if Book.objects.filter(isbn13 = isbn13).exists(): 
             book = Book.objects.get(isbn13 = isbn13) # 도서 객채 추가
