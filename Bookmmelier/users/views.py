@@ -304,7 +304,7 @@ class reviews(View):
         search_type = request.GET.get('search_type', '')
 
         #ajax로 통신 -> 페이지 또는 검색
-        if request.is_ajax(): 
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': 
              #검색어가 있을 경우 검색어로 필터링
             if search_input:
                 #검색어 구분에 따라 리뷰 데이터 필터링

@@ -20,7 +20,7 @@ class books_list(View):
         search_input = request.GET.get('search_input', '') #검색어 받아오기
         search_type = request.GET.get('search_type', '') #검색 유형 받아오기
         # ajax로 통신 : 페이지네이션 또는 검색
-        if request.is_ajax(): 
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': 
             template_name = 'books_table.html'
             if search_input: #검색어가 있을 경우 - 해당 검색어로 필터링
                 if search_type == '전체':
@@ -43,8 +43,7 @@ class books_list(View):
         return render(request, template_name,context)
 
     def post(self,request):
-        print("POST")
-        return None
+        return redirect("books:list")
 
 # 도서 상세 페이지
 class books_detail(View):
@@ -65,8 +64,9 @@ class books_detail(View):
                 context["reviews"] = reviews
             return render(request, template_name ,context)
         else:
+            return redirect("books:list")
             # 도서를 찾을 수 없습니다!
-            return None
+            # return None
 
     def post(self,request):
-        return None
+        return redirect("books:list")

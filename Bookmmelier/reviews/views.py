@@ -21,7 +21,7 @@ class reviews_list_View(View):
         search_type = request.GET.get('search_type', '')
 
         #ajax로 통신 -> 페이지 또는 검색
-        if request.is_ajax(): 
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': 
              #검색어가 있을 경우 검색어로 필터링
             if search_input:
                 #검색어 구분에 따라 리뷰 데이터 필터링
@@ -190,7 +190,7 @@ class review_detail_View(View):
             return render(request, 'review_detail.html',context)
     def post(self,request):
         context = {}
-        if request.is_ajax(): #ajax로 통신 -> 페이지 또는 검색
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': #ajax로 통신 -> 페이지 또는 검색
             review_id = request.POST.get('review_id', '')
             page = request.POST.get('page', '')
             comments = Comment.objects.filter(review_id = review_id) 
@@ -201,7 +201,7 @@ class review_detail_View(View):
 
 # _____리뷰 작성 - 모달에서의 도서 선택_____
 def review_write_modal_select_book(request):
-    if request.is_ajax(): 
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': 
         isbn13 = request.POST.get('isbn13', '')
         selected_book = Book.objects.get(isbn13 = isbn13)
         return render(request, 'review_write_selected_book.html',{"selected_book":selected_book})
@@ -213,7 +213,7 @@ def review_write_modal_search_Books(request):
     search_input = request.GET.get('search_input', '') #검색어 받아오기
     search_type = request.GET.get('search_type', '')
 
-    if request.is_ajax(): #ajax로 통신 -> 페이지 또는 검색        
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': #ajax로 통신 -> 페이지 또는 검색        
         print("ajax 통신 확인")   
         if search_input: #검색어가 있을 경우 - 해당 검색어로 필터링
             if search_type == '전체':
@@ -244,7 +244,7 @@ def review_delete(request):
 
 # _____댓글 등록_____
 def comment_upload(request):
-    if request.is_ajax():
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         context = {}
         comment_text = request.POST.get("comment_text")
         review = Review.objects.get(review_id = request.POST.get("review_id"))
@@ -258,7 +258,7 @@ def comment_upload(request):
 
 # _____댓글 수정_____
 def comment_update(request):
-    if request.is_ajax():
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         context = {}
         comment_text = request.POST.get("comment_text")
         comment_id = request.POST.get("comment_id")
@@ -278,7 +278,7 @@ def comment_update(request):
 
 # _____댓글 삭제_____
 def comment_delete(request):
-    if request.is_ajax():
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         context = {}
         comment_id = request.POST.get("comment_id")
        
@@ -298,7 +298,7 @@ def comment_delete(request):
 # _____좋아요_____
 def review_like(request):
     context = {}
-    if request.is_ajax():
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         review_id = request.POST.get("review_id")        
         review = Review.objects.get(review_id = review_id)
         review.like_users.add(request.user.id)
@@ -308,7 +308,7 @@ def review_like(request):
 # _____좋아요 취소_____
 def review_dislike(request):
     context = {}
-    if request.is_ajax():
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         review_id = request.POST.get("review_id")       
         review = Review.objects.get(review_id = review_id)
         review.like_users.remove(request.user.id)
