@@ -1,0 +1,30 @@
+<!--  작성 페이지 : 선택된 도서 -->
+<div id="selected_book">
+  {% if selected_book %}
+  <h2>선택된 도서</h2>
+  <a>제목 : {{selected_book.title}}</a><br />
+  <a>작가 : {{selected_book.author}}</a><br />
+  <a>출판사{{selected_book.publisher}}</a><br />
+  <input type="hidden" name="isbn13" id="isbn13" value="{{selected_book.isbn13}}"/>
+
+  <a href="{% url 'debates:create'%}?isbn13={{selected_book.isbn13}}">해당 도서로 토론 시작하기</a></td>
+
+
+    
+    {% if debates_list %}
+    <p><b>{{ debates_list|length }}개의 토론이 있습니다.</b></p>
+      {% for debate in debates_list %}
+      <td>{{debate.debate_id}}</td>
+      <td>{{debate.owner}}</td>
+      <td>{{debate.time_created}}</td>
+      <td><a href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">{{debate.title}}</a></td>
+      <td>{{debate.time_created}}</td>
+      {% endfor %}
+    {%else%}
+    <h5>만들어진 토론이 없습니다!</h5>
+    {%endif%}
+
+  {%else%}
+  <h5>선택된 도서가 없습니다</h5>
+  {%endif%}
+</div>

@@ -6,8 +6,8 @@ from django.conf import settings
 
 class Debate(models.Model):
     debate_id = models.AutoField(primary_key=True)
-    book = models.ForeignKey(Book, models.DO_NOTHING)
-    owner = models.ForeignKey(User, models.DO_NOTHING)
+    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='isbn13',related_name='debates')
+    user = models.ForeignKey(User, models.DO_NOTHING)
     time_created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=50)
     subtitle = models.TextField()

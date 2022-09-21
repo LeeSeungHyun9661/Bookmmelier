@@ -1,13 +1,27 @@
-{% extends 'base.html' %}
+{% extends 'bookmmelier_base.html' %}
 {% block content %}
 <div class="content">
     <!-- 토폰 상세 정보 -->
+    <div class="header"  style="border:1px solid black;">
+        <h2>토론방</h2>
+        <h1>제목 : {{debate.title}}</h1>
+        <h1>부제목 : {{debate.subtitle}}</h1>
+        <h3>방주인 : {{debate.user.name}}</h3>
+        <h3>도서 : {{debate.book.title}}</h3>
+        <h3>시간 : {{debate.time_created}}</h3>
+    </div>
     
-    <!-- 메시지 갱신 -->
+    {%if request.user == debate.user %}
+    <a href=""> [토론 삭제] </a>
+    <a href=""> [토론 편집] </a>
+    {%endif%}
+    
+    <!-- 메시지 작성 -->  
+    <h2>메시지 작성</h2>
 
     <!-- 메시지 목록 -->
-
-    <!-- 메시지 작성 -->    
+    <h2>메시지 목록</h2>
+  
 </div>
 
 {% endblock %}

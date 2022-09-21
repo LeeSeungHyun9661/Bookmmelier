@@ -1,0 +1,11 @@
+<div id="selected_book">
+    {% if selected_book %}
+    <h2>선택된 도서</h2>
+    <a>제목 : {{selected_book.title}}</a><br />
+    <a>작가 : {{selected_book.author}}</a><br />
+    <a>출판사 : {{selected_book.publisher}}</a><br />
+    <input type="hidden" name="isbn13" id="isbn13" value="{{selected_book.isbn13}}"/>   
+    {%else%}
+    <h2>선택된 도서가 없습니다.</h2>      
+    {%endif%}
+  </div>
