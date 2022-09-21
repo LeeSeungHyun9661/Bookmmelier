@@ -1,0 +1,79 @@
+<div id="debates_messages">
+    <!-- 메시지 목록 -->
+    <h2>메시지 목록</h2>
+    {%if messages %}
+        <div class="messages_scroll" style="overflow-y:auto; text-align:center; height:350px;">            
+            {% for message in messages %}
+            <div>
+                <h6>{{message.user}}</h6>
+                <h6>{{message.time_created}}</h6>
+                <br>
+                <h6>{{message.contents}}</h6>
+                <br>
+            </div>
+            {% endfor %}
+        </div>
+    {%else%}
+        <h5>토론이 하나도 없습니다.</h5>
+    {%endif%}        
+
+
+<!-- 메시지 작성 -->  
+<h2>메시지 작성</h2>
+<input id="message-input" type="text" size="100"/>
+<input id="message-submit" type="button" value="Send"/>
+
+</div>
+
+<script>
+    $(document).ready(function(){
+        var scrollTop = $(".messages_scroll").scrollTop();
+        var innerHeight = $(".messages_scroll").innerHeight();
+        var scrollHeight =  $(".messages_scroll").prop('scrollHeight');
+        console.log("scrollTop",scrollTop," || innerHeight",innerHeight," || scrollHeight",scrollHeight) 
+        $(".messages_scroll").scrollTop($(".messages_scroll").prop('scrollHeight'));
+	//실행될 코드
+    });
+    
+    $("#message-submit").click(function () {
+      contents = $("#message-input").val()
+      $.ajax({
+        type: "post",
+        url: "{% url 'debates:detail' %}",
+        data: {
+          debate_id: "{{debate.debate_id}}",
+          contents: contents,
+          csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function (data) {
+          $("#debates_messages").html(data);
+        },
+      });
+    });
+
+    $(".messages_scroll").scroll(function(){
+        var scrollTop = $(this).scrollTop();
+        var innerHeight = $(this).innerHeight();
+        var scrollHeight =   $(this).prop('scrollHeight');
+        if (scrollTop == 0) {            
+            var scrollHeight = $(this).prop('scrollHeight');
+            reload_messages(scrollHeight)          
+        }
+    })
+
+    function reload_messages(scrollHeight){
+        console.log(scrollHeight) 
+        $.ajax({
+            type:"GET",
+            url: "{% url 'debates:detail' %}",
+            data : {
+                debate_id: "{{debate.debate_id}}",
+                length: '{{messages_size}}'
+            },
+            success:function(data){
+                $('#debates_messages').html(data);
+                $(".messages_scroll").scrollTop(scrollHeight);
+            }
+        })        
+    }    
+  </script>

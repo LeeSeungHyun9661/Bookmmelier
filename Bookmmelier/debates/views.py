@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from books.models import Book
 from debates.forms import DebateCreateFrom
-from debates.models import Debate
+from debates.models import Debate, Message
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
@@ -71,19 +71,62 @@ class debates_create(View):
 class debates_detail(View):
     def get(self,request):
         context = {}
-        template_name = "debates_detail.html"
-
+        # 토론방 정보 불러오기
         debate_id = request.GET.get('debate_id','')
         debate = Debate.objects.get(debate_id = debate_id)
 
-        if debate:
-            template_name = "debates_detail.html"
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            
+            template_name = "debates_messages.html"
+
+            debate_id = request.GET.get('debate_id','')
+            debate = Debate.objects.get(debate_id = debate_id)
+            
+            length = int(request.GET.get('length',''))
+
+
+            messages = Message.objects.filter(debate = debate).order_by('time_created')[:length+5]   
+            context["messages"] = reversed(messages)
+            context["messages_size"] = len(messages)
             context["debate"] = debate
+            
             return render(request, template_name,context)
+
+        else:
+            if debate:
+                # 토론 방에 대한 정보 저장
+                template_name = "debates_detail.html"
+                context["debate"] = debate
+
+                # 토론 방에 연결괸 메시지 불러오기
+                messages = Message.objects.filter(debate = debate).order_by('time_created')[:5]
+                context["messages"] = reversed(messages)
+                context["messages_size"] = len(messages)
+
+                return render(request, template_name,context)
+
+
+        
     def post(self,request):
         context = {}
-        template_name = ""        
-        return render(request, template_name,context)
+        template_name = 'debates_messages.html'
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            print(request.POST)
+            debate_id = request.POST.get('debate_id','')
+            debate = Debate.objects.get(debate_id = debate_id)
+
+            message = Message()
+            message.debate = debate
+            message.contents = request.POST.get('contents')
+            message.user = request.user
+            message.save()
+
+            messages = Message.objects.filter(debate = debate).order_by('time_created')[:5]    
+            context["messages"] = reversed(messages)
+            context["messages_size"] = len(messages)
+            context["debate"] = debate
+            
+            return render(request, template_name,context)
 
 
 # _____토론 목록 - 모달에서의 도서 선택_____
