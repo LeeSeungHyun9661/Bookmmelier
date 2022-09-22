@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from books.models import Book
 from debates.forms import DebateCreateFrom
@@ -32,20 +32,24 @@ class debates_create(View):
         context = {}
         template_name = "debates_create.html"
 
+        if request.user.is_authenticated:
         # 토론 생성 폼
-        forms = DebateCreateFrom()
-        context["forms"] = forms
-        
-        # 도서 목록 불러오기
-        paginator = Paginator(Book.objects.all(), 10)                
-        books_list = paginator.get_page(1)
-        context["books_list"] = books_list
+            forms = DebateCreateFrom()
+            context["forms"] = forms
+            
+            # 도서 목록 불러오기
+            paginator = Paginator(Book.objects.all(), 10)                
+            books_list = paginator.get_page(1)
+            context["books_list"] = books_list
 
-        isbn13 = request.GET.get('isbn13','')
-        if isbn13:
-            selected_book = Book.objects.get(isbn13 = isbn13)
-            context["selected_book"] = selected_book
-        return render(request, template_name,context)
+            isbn13 = request.GET.get('isbn13','')
+            if isbn13:
+                selected_book = Book.objects.get(isbn13 = isbn13)
+                context["selected_book"] = selected_book
+            return render(request, template_name,context)
+        else:
+            isbn13 = request.GET.get('isbn13','')
+            return redirect('/login?next=' + request.path+ '?isbn=' + isbn13) 
 
     # 토론 생성
     def post(self,request):
@@ -75,37 +79,25 @@ class debates_detail(View):
         debate_id = request.GET.get('debate_id','')
         debate = Debate.objects.get(debate_id = debate_id)
 
-        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-            
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':  
+
             template_name = "debates_messages.html"
-
             debate_id = request.GET.get('debate_id','')
-            debate = Debate.objects.get(debate_id = debate_id)
-            
-            length = int(request.GET.get('length',''))
+            page = int(request.GET.get('page',''))
 
+            print(request.GET)
 
-            messages = Message.objects.filter(debate = debate).order_by('time_created')[:length+5]   
-            context["messages"] = reversed(messages)
-            context["messages_size"] = len(messages)
-            context["debate"] = debate
-            
-            return render(request, template_name,context)
-
+            debate = Debate.objects.get(debate_id = debate_id)            
+            messages = Message.objects.filter(debate = debate).order_by('time_created')[(page-1) * 10 : page * 10]
+            context["messages_list"] = list(messages.values())
+            return JsonResponse(context)   
         else:
             if debate:
                 # 토론 방에 대한 정보 저장
                 template_name = "debates_detail.html"
                 context["debate"] = debate
-
                 # 토론 방에 연결괸 메시지 불러오기
-                messages = Message.objects.filter(debate = debate).order_by('time_created')[:5]
-                context["messages"] = reversed(messages)
-                context["messages_size"] = len(messages)
-
                 return render(request, template_name,context)
-
-
         
     def post(self,request):
         context = {}

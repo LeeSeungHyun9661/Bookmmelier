@@ -1,40 +1,96 @@
 <div id="debates_messages">
     <!-- 메시지 목록 -->
     <h2>메시지 목록</h2>
-    {%if messages %}
-        <div class="messages_scroll" style="overflow-y:auto; text-align:center; height:350px;">            
-            {% for message in messages %}
+    <div class="messages_scroll" style="overflow-y:auto; text-align:center; height:350px;">          
+    {%if messages_list %}          
+            {% for message in messages_list %}
             <div>
                 <h6>{{message.user}}</h6>
-                <h6>{{message.time_created}}</h6>
-                <br>
-                <h6>{{message.contents}}</h6>
-                <br>
+                <h6>{{message.time_created}}</h6><br>
+                <h6>{{message.contents}}</h6><br>
             </div>
             {% endfor %}
-        </div>
     {%else%}
         <h5>토론이 하나도 없습니다.</h5>
-    {%endif%}        
+    {%endif%}
+    </div>
 
-
-<!-- 메시지 작성 -->  
-<h2>메시지 작성</h2>
-<input id="message-input" type="text" size="100"/>
-<input id="message-submit" type="button" value="Send"/>
+    <!-- 메시지 작성 -->  
+    <h2>메시지 작성</h2>
+    <input id="message-input" type="text" size="100"/>
+    <input id="message-submit" type="button" value="Send"/>
 
 </div>
 
 <script>
-    $(document).ready(function(){
-        var scrollTop = $(".messages_scroll").scrollTop();
-        var innerHeight = $(".messages_scroll").innerHeight();
-        var scrollHeight =  $(".messages_scroll").prop('scrollHeight');
-        console.log("scrollTop",scrollTop," || innerHeight",innerHeight," || scrollHeight",scrollHeight) 
-        $(".messages_scroll").scrollTop($(".messages_scroll").prop('scrollHeight'));
-	//실행될 코드
-    });
+    // 메시지 페이지 번호
+    var page = 1;
+
+    // 처음 페이지 접근시
+    $(document).ready(function(){ 
+        getList(page);
+        page++;
+    });  
     
+    // 스크롤 작동시 기능
+    $(".messages_scroll").scroll(function(){
+        // 현재 스크롤이 가장 상단에 도착할 경우
+        if ($(this).scrollTop() == 0) {
+            console.log("상단")        
+            getList(page);
+            page++;     
+        }
+    })
+
+    // 메시지 데이터 불러오기
+    function getList(page){     
+        $.ajax({
+            type : 'GET',  
+            dataType : 'json', 
+            url: "{% url 'debates:detail' %}",
+            data : {
+                debate_id: "{{debate.debate_id}}",
+                page : page
+            },
+            success : function(data) {
+                var html = "";
+                var messages_list = data["messages_list"]
+
+                length = messages_list.length
+                console.log(length)
+                for (index in messages_list){                    
+                    message = messages_list[index]                    
+                    html += "<div><h6>" + message.user_id + "</h6>"
+                    html += "<h6>" + message.time_created + "</h6><br>"
+                    html += "<h6>" + message.contents + "</h6><br></div>"
+                }
+                if (page!=1){          
+                    html += $(".messages_scroll").html();           
+                }                                
+                $(".messages_scroll").html(html);
+    //             if (returnData.startNum<=returnData.totCnt){
+    //                 if(data.length>0){
+    //                 // for문을 돌면서 행을 그린다.
+    //                 }else{
+    //                 //데이터가 없을경우
+    //                 }
+    //             }
+    //             html = html.replace(/%20/gi, " ");
+    //             if (page==1){  //페이지가 1이 아닐경우 데이터를 붙힌다.
+    //                 $("#list").html(html); 
+    //             }else{
+    //                 $("#busStopList").append(html);
+    //             }
+                $(".messages_scroll").scrollTop($(".messages_scroll").prop('scrollHeight'));
+           },error:function(e){
+               if(e.status==300){
+                   alert("데이터를 가져오는데 실패하였습니다.");
+               };
+           }
+        }); 
+    }
+
+    // 메시지 업로드 기능
     $("#message-submit").click(function () {
       contents = $("#message-input").val()
       $.ajax({
@@ -51,16 +107,6 @@
       });
     });
 
-    $(".messages_scroll").scroll(function(){
-        var scrollTop = $(this).scrollTop();
-        var innerHeight = $(this).innerHeight();
-        var scrollHeight =   $(this).prop('scrollHeight');
-        if (scrollTop == 0) {            
-            var scrollHeight = $(this).prop('scrollHeight');
-            reload_messages(scrollHeight)          
-        }
-    })
-
     function reload_messages(scrollHeight){
         console.log(scrollHeight) 
         $.ajax({
@@ -76,4 +122,4 @@
             }
         })        
     }    
-  </script>
+</script>
