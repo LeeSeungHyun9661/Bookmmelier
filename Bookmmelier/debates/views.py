@@ -6,6 +6,7 @@ from debates.models import Debate, Message
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
+from django.forms.models import model_to_dict
 # Create your views here.
 
 
@@ -85,11 +86,15 @@ class debates_detail(View):
             debate_id = request.GET.get('debate_id','')
             page = int(request.GET.get('page',''))
 
-            print(request.GET)
-
             debate = Debate.objects.get(debate_id = debate_id)            
-            messages = Message.objects.filter(debate = debate).order_by('time_created')[(page-1) * 10 : page * 10]
-            context["messages_list"] = list(messages.values())
+            messages = Message.objects.filter(debate = debate).order_by('-time_created')
+                        #페이지네이션을 통해 10개씩 페이지로 정리
+            paginator = Paginator(messages, 5)
+            #페이지 번호에 따라 페이지네이션 된 결과물 불러오기
+            messages_list = paginator.get_page(page)
+            
+            context["messages_list"] = list(messages_list.object_list.values())
+            context["has_next"] = messages_list.has_next()
             return JsonResponse(context)   
         else:
             if debate:
@@ -113,12 +118,9 @@ class debates_detail(View):
             message.user = request.user
             message.save()
 
-            messages = Message.objects.filter(debate = debate).order_by('time_created')[:5]    
-            context["messages"] = reversed(messages)
-            context["messages_size"] = len(messages)
-            context["debate"] = debate
-            
-            return render(request, template_name,context)
+            message = message.__dict__
+            message.pop('_state')
+            return JsonResponse(message, safe=False)   
 
 
 # _____토론 목록 - 모달에서의 도서 선택_____
