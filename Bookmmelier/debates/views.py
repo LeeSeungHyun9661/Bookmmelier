@@ -21,8 +21,8 @@ class debates_list(View):
         paginator = Paginator(Book.objects.all(), 10)                
         books_list = paginator.get_page(1)
         context["books_list"] = books_list
-
         return render(request, template_name,context)
+
     def post(self,request):
         context = {}
         template_name = ""        
@@ -50,7 +50,7 @@ class debates_create(View):
             return render(request, template_name,context)
         else:
             isbn13 = request.GET.get('isbn13','')
-            return redirect('/login?next=' + request.path+ '?isbn=' + isbn13) 
+            return redirect('/login?next=' + request.path+ '?isbn13=' + isbn13) 
 
     # 토론 생성
     def post(self,request):
@@ -74,39 +74,48 @@ class debates_create(View):
             return JsonResponse(context)
 
 class debates_detail(View):
+    messages = {}
+
     def get(self,request):
         context = {}
         # 토론방 정보 불러오기
         debate_id = request.GET.get('debate_id','')
         debate = Debate.objects.get(debate_id = debate_id)
 
-        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':  
+        # 토론 페이지의 토론 불러오기
+        if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            template_name = "debates_messages_item.html"
 
-            template_name = "debates_messages.html"
             debate_id = request.GET.get('debate_id','')
-            page = int(request.GET.get('page',''))
+            message_id = request.GET.get('message_id','')
+            page = int(request.GET.get('page',1))
 
-            debate = Debate.objects.get(debate_id = debate_id)            
+            debate = Debate.objects.get(debate_id = debate_id)
             messages = Message.objects.filter(debate = debate).order_by('-time_created')
-                        #페이지네이션을 통해 10개씩 페이지로 정리
+            
+            #페이지네이션을 통해 10개씩 페이지로 정리
             paginator = Paginator(messages, 5)
             #페이지 번호에 따라 페이지네이션 된 결과물 불러오기
             messages_list = paginator.get_page(page)
-            
-            context["messages_list"] = list(messages_list.object_list.values())
+        
             context["has_next"] = messages_list.has_next()
-            return JsonResponse(context)   
+            context["length"] = len(messages_list)
+            context["messages_list"] = reversed(messages_list)
+            print("page:",page,"messages_list",messages_list)
+
+            return render(request, template_name,context)
+        # 토론 페이지 처음 접근 
         else:
             if debate:
                 # 토론 방에 대한 정보 저장
                 template_name = "debates_detail.html"
                 context["debate"] = debate
                 # 토론 방에 연결괸 메시지 불러오기
+                self.messages = Message.objects.filter(debate = debate).order_by('-time_created')                
                 return render(request, template_name,context)
         
+    # 메시지 작성 기능
     def post(self,request):
-        context = {}
-        template_name = 'debates_messages.html'
         if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
             print(request.POST)
             debate_id = request.POST.get('debate_id','')
@@ -120,6 +129,7 @@ class debates_detail(View):
 
             message = message.__dict__
             message.pop('_state')
+
             return JsonResponse(message, safe=False)   
 
 

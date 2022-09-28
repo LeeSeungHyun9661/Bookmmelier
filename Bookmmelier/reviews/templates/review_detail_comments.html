@@ -16,13 +16,21 @@
             <!-- 댓글의 작성자가 사용자일 경우 수정, 삭제 버튼을 보여줌 -->
             {%if comment.user == request.user %}       
                 <!-- 수정 버튼 -->
-                <div class="tdReplyUpdate{{ comment.comment_id }}"><input type="button" value="수정" onclick="replyUpdate('{{ comment.comment_id }}')"></div>
+                <div class="tdReplyUpdate{{ comment.comment_id }}">
+                    <input type="button" value="수정" onclick="replyUpdate('{{ comment.comment_id }}')">
+                </div>
                 <!-- 삭제 버튼 -->
-                <div class="tdReplyDelete{{ comment.comment_id }}"><input type="button"  value="삭제" onclick="replyDelete('{{ comment.comment_id }}')"></div>
+                <div class="tdReplyDelete{{ comment.comment_id }}">
+                    <input type="button"  value="삭제" onclick="replyDelete('{{ comment.comment_id }}')">
+                </div>
                 <!-- 수정 완료 버튼 : 수정 버튼 클릭시 나타남 -->
-                <div class="tdReplySubmit{{ comment.comment_id }}"  style="display:none"><input type="button"  value="수정 완료" onclick="replySubmit('{{comment.comment_id }}')"></div>
+                <div class="tdReplySubmit{{ comment.comment_id }}"  style="display:none">
+                    <input type="button"  value="수정 완료" onclick="replySubmit('{{comment.comment_id }}')">
+                </div>
                 <!-- 수정 취소 버튼 : 수정 버튼 클릭시 나타남 -->
-                <div class="tdReplyUpdateCancel{{ comment.comment_id }}"  style="display:none"><input type="button"  value="취소" onclick="replyUpdateCancel('{{ comment.comment_id }}')"></div>
+                <div class="tdReplyUpdateCancel{{ comment.comment_id }}"  style="display:none">
+                    <input type="button"  value="취소" onclick="replyUpdateCancel('{{ comment.comment_id }}')">
+                </div>
             {%endif%}
         </div>
         {%endfor%}

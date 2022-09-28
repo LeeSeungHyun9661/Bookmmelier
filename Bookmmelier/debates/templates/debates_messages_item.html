@@ -1,0 +1,30 @@
+{%if messages_list%}
+    {% for message in messages_list %}
+    <div style='border: 3px solid black; height: 100px; line-height:50%; text-align:center;'>
+        <p>{{message.user_id}} : {{message.time_created}} </p>
+        <input type="text" class="replyContent{{ message.message_id }}" value="{{message.contents}}" readonly>
+        {%if message.user == request.user %}       
+                    <!-- 수정 버튼 -->
+                    <div class="tdReplyUpdate{{ message.message_id }}">
+                        <input type="button" value="수정" onclick="replyUpdate('{{ message.message_id }}')">
+                    </div>
+                    <!-- 삭제 버튼 -->
+                    <div class="tdReplyDelete{{ message.message_id }}">
+                        <input type="button"  value="삭제" onclick="replyDelete('{{ message.message_id }}')">
+                    </div>
+                    <!-- 수정 완료 버튼 : 수정 버튼 클릭시 나타남 -->
+                    <div class="tdReplySubmit{{ message.message_id }}"  style="display:none">
+                        <input type="button"  value="수정 완료" onclick="replySubmit('{{message.message_id }}')">
+                    </div>
+                    <!-- 수정 취소 버튼 : 수정 버튼 클릭시 나타남 -->
+                    <div class="tdReplyUpdateCancel{{ message.message_id }}"  style="display:none">
+                        <input type="button"  value="취소" onclick="replyUpdateCancel('{{ message.message_id }}')">
+                    </div>
+        {%endif%}
+    </div>
+    {%endfor%}    
+    <input type="hidden" id="has_next" name="has_next" value="{{has_next}}">
+    <input type="hidden" id="length" name="length" value="{{length}}">
+{%else %}
+    <h5>토론이 하나도 없습니다.</h5>
+{%endif%}
