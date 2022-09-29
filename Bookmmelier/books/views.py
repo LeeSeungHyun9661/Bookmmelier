@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Avg,Count,F
+from debates.models import Debate
 from reviews.models import Review
 from .models import *
 from django.views.generic import View
@@ -57,16 +58,22 @@ class books_detail(View):
         if Book.objects.filter(isbn13 = isbn13).exists(): 
             book = Book.objects.get(isbn13 = isbn13) # 도서 객채 추가
             context["book"] = book
-            reviews =  Review.objects.filter(book = book)[:3]
+
 
             # 도서 관련 리뷰가 있을 경우 추가
+            reviews =  Review.objects.filter(book = book)[:3]
             if reviews.exists():
                 context["reviews"] = reviews
+
+            # 도서 관련 토론이 있을 경우 추가
+            debates =  Debate.objects.filter(book = book)[:3]
+            if debates.exists():
+                context["debates"] = debates
+
             return render(request, template_name ,context)
         else:
-            return redirect("books:list")
             # 도서를 찾을 수 없습니다!
-            # return None
+            return redirect("books:list")
 
     def post(self,request):
         return redirect("books:list")

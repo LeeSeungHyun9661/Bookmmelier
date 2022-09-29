@@ -9,8 +9,8 @@ urlpatterns = [
     path('modal/selectBooks', debates_list_select_book, name="list_select_Books"),
 
     path('create', debates_create.as_view(), name='create'),
-    path('create', debates_delete, name='delete'),
-    path('create', debates_update.as_view(), name='update'),
+    path('delete', debates_delete, name='delete'),
+    path('update', debates_update.as_view(), name='update'),
     path('create/modal/searchBooks', debates_list_search_Books, name="create_search_Books"),
     path('create/modal/selectBooks', debates_create_select_book, name="create_select_Books"),
 

@@ -23,7 +23,6 @@
 
     // 처음 페이지 접근시
     $(document).ready(function () {
-      //wda//
       getList();
       page++;
     });
@@ -59,7 +58,6 @@
           page: page,
         },
         success: function (data) {
-          console.log("불러오기3", page);
           $(".scroll").prepend(data);
           has_next = $("#has_next").val() == "True";
           length = $("#length").val();
@@ -69,16 +67,7 @@
           else $(".scroll").scrollTop($(".scroll").prop("scrollHeight") - height);
         },
         error: function (request, error) {
-          console.log(
-            "code:" +
-            request.status +
-            "\n" +
-            "message:" +
-            request.responseText +
-            "\n" +
-            "error:" +
-            error
-          );
+          console.log("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
         },
       });
     }
@@ -95,13 +84,6 @@
           csrfmiddlewaretoken: "{{ csrf_token }}",
         },
         success: function (data) {
-          // $(".scroll").html("");
-          // current_page = page;
-          // for (page = 1; page <= current_page; ++page) {
-          //   getList();
-          // }
-          // has_next = $("#has_next").val() == "True";
-          // $(".scroll").scrollTop($(".scroll").prop("scrollHeight") - height);
           resetMessages();
           has_next = $("#has_next").val() == "True";
           $("#message-input").val("");
@@ -141,11 +123,9 @@
       messageContent.readOnly = false;
     };
 
-    // 댓글 수정 완료 기능
+    // 메시지 수정 완료 기능
     const messageSubmit = (message_id) => {
-      console.log("수정 시작")
       let message_text = document.querySelector(`.messageContent${message_id}`).value;
-      console.log(message_text)
       $.ajax({
         type: "POST",
         url: "{% url 'debates:update_message' %}",
@@ -162,7 +142,7 @@
       });
     };
 
-    // 댓글 삭제 기능
+    // 메시지 삭제 기능
     const messageDelete = (message_id) => {
       $.ajax({
         type: "POST",

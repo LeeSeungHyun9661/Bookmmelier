@@ -1,130 +1,141 @@
 <!-- 리뷰 수정 페이지 -->
 {% extends 'bookmmelier_base.html' %}
-
 {% block content %}
 <div class="content">
-    <!-- 제목 부분 -->
-    <h2>서평 수정</h2>
+	<!-- 제목 부분 -->
+	<div class="header">
+		<h2>서평 수정</h2>
+	</div>
 
-    <!-- 도서 선택 또는 변경에 대한 모달 불러오기 버튼 -->
-    <a href="#" data-toggle="modal" data-target="#myModal">도서 변경하기</a>  
-    
-    <!-- 모달 -->
-    <div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-          <div class="modal-content">
-          
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">도서 검색</h4>
-                <div>
-                    <select name="search_type" id="search_type">
-                        <option value="전체">전체</option>
-                        <option value="제목">제목</option>
-                        <option value="작가">작가</option>
-                        <option value="출판사">출판사</option>
-                    </select>
-                    <input id="search_input" type="search"/>
-                    <button id="search_button" type="submit">검색</button>      
-                </div>
-                                
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-    
-            <!-- Modal body -->
-            <div class="modal-body"  >
-                <!-- 도서목록 부분 -->
-                <div id="search_result_table">
-                    {% include 'review_write_search_result.html' %}
-                </div>                
-            </div> 
-            
-            <!-- Modal footer -->
-            <div class="modal-footer">   
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-            
-          </div>
-        </div>
-    
-    </div>    
-    <div id="modal">
-    </div>   
-    
-    
-    <!-- 서평 수정하는 부분 -->
-    <form id="update_review" method="POST">        
-        <input type="hidden" name="review_id" id="review_id" value = "{{review_id}}">
-        {% include 'review_write_selected_book.html' %}
-        {% csrf_token %}  
-        {{forms|safe}}
-        <button  type="submit" >수정완료</button>
-    </form>
+	<!-- 도서 선택 또는 변경에 대한 모달 불러오기 버튼 -->
+	<a href="#" data-toggle="modal" data-target="#myModal">도서 변경하기</a>
+
+	<!-- 모달 -->
+	<div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-xl modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">도서 검색</h4>
+					<div>
+						<select name="search_type" id="search_type">
+							<option value="전체">전체</option>
+							<option value="제목">제목</option>
+							<option value="작가">작가</option>
+							<option value="출판사">출판사</option>
+						</select>
+						<input id="search_input" type="search" />
+						<button id="search_button" type="submit">검색</button>
+					</div>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<!-- 도서목록 부분 -->
+					<div id="search_result_table">
+						{% include 'review_write_search_result.html' %}
+					</div>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+	<div id="modal">
+	</div>
+
+
+	<!-- 서평 수정하는 부분 -->
+	<form id="update_review" method="POST">
+		<input type="hidden" name="review_id" id="review_id" value="{{review_id}}">
+		{% include 'review_write_selected_book.html' %}
+		{% csrf_token %}
+		{{forms|safe}}
+		<button type="submit">수정완료</button>
+	</form>
 
 </div>
 
 <script>
+	$('#search_button').click(function () {
+		$.ajax({
+			type: "get",
+			url: "{% url 'reviews:modal_search_Books' %}",
+			data: {
+				'search_input': $('#search_input').val(),
+				'search_type': $('#search_type').val()
+			},
+			success: function (data) {
+				$('#search_result_table').html(data);
+			}
+		})
+	})
 
-    $('#search_button').click(function(){
-        $.ajax({
-            type:"get",
-            url: "{% url 'reviews:modal_search_Books' %}",
-            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
-            success:function(data){
-                $('#search_result_table').html(data);
-            }
-        })
-    })
+	$(document).on('click', '.first_page', function () {
+		num_pages = parseInt($('.now_page').first().text());
+		page_click();
+	})
 
-    $(document).on('click', '.first_page', function(){
-        num_pages = parseInt($('.now_page').first().text());
-            page_click();
-    })
+	$(document).on('click', '.last_page', function () {
+		num_pages = parseInt($('.now_page').last().text());
+		page_click();
+	})
 
-    $(document).on('click', '.last_page', function(){
-        num_pages = parseInt($('.now_page').last().text());
-        page_click();
-    })
+	$(document).on('click', '.now_page', function () {
+		num_pages = parseInt($(this).text());
+		page_click();
+	})
 
-    $(document).on('click', '.now_page', function(){
-        num_pages = parseInt($(this).text());
-        page_click();
-    }) 
+	function page_click() {
+		$.ajax({
+			type: "get",
+			url: "{% url 'reviews:modal_search_Books' %}",
+			data: {
+				'search_input': $('#search_input').val(),
+				'search_type': $('#search_type').val(),
+				'page': num_pages
+			},
+			success: function (data) {
+				$('#search_result_table').html(data);
+			}
+		})
+	}
 
-    function page_click(){
-        $.ajax({
-            type:"get",
-            url: "{% url 'reviews:modal_search_Books' %}",
-            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
-            success:function(data){
-                $('#search_result_table').html(data);
-            }
-        })        
-    }
+	$(document).on('click', '.book_title', function () {
+		$.ajax({
+			type: "post",
+			url: "{% url 'reviews:modal_select_Books' %}",
+			data: {
+				'isbn13': $(this).attr('value'),
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			},
+			success: function (data) {
+				$('#selected_book').html(data)
+			}
+		})
+	})
 
-    $(document).on('click', '.book_title', function(){
-        $.ajax({
-            type:"post",
-            url: "{% url 'reviews:modal_select_Books' %}",
-            data : {'isbn13': $(this).attr('value'),csrfmiddlewaretoken:'{{ csrf_token }}'},
-            success:function(data){
-                $('#selected_book').html(data)
-            }
-        })
-    }) 
-
-    $('#update_review').on('submit',function(){
-        event.preventDefault();
-        form_array  = $(this).serialize();
-        $.ajax({
-            type:"POST",
-            url: "{% url 'reviews:update' %}",
-            data : form_array,
-            success:function(data){  
-                alert("리뷰 수정이 완료되었습니다")  
-                window.location.href = ("{% url 'reviews:detail' %}?review_id="+data["review_id"]);
-            }
-        })
-    });    
+	$('#update_review').on('submit', function () {
+		event.preventDefault();
+		form_array = $(this).serialize();
+		$.ajax({
+			type: "POST",
+			url: "{% url 'reviews:update' %}",
+			data: form_array,
+			success: function (data) {
+				alert("리뷰 수정이 완료되었습니다")
+				window.location.href = ("{% url 'reviews:detail' %}?review_id=" + data[
+					"review_id"]);
+			}
+		})
+	});
 </script>
 {% endblock %}

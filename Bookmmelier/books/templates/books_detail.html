@@ -13,21 +13,39 @@
 </div>
 
 <!-- 도서 관련 서평 -->
-<div style="border:1px solid black;">
+<div style="border:3px solid black;">
 	<!-- 서평 작성 -->
-	<h3><a href="{% url 'reviews:write' %}?isbn13={{book.isbn13}}">서평 쓰러가기</a></h3>
+	<h6><a href="{% url 'reviews:write' %}?isbn13={{book.isbn13}}">서평 쓰러가기</a></h6>
 	<!-- 서평 3개 출력 -->
-	 {%if reviews %} {% for review in reviews %}
-	<div style="border:1px solid black;">
-		<h3></h3>
-		<h3><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">{{review.user.name}} > {{review.title}}</a></h3>
+	{%if reviews %} {% for review in reviews %}
+	<div >
+		<h3><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">{{review.user.name}} > {{review.title}}</a>
+		</h3>
 		<h3>평점 : {{review.rate}}</h3>
 		<h3>{{review.contents|slice:':100'|truncatechars:30|safe}}</h3>
 	</div>
-	 {%endfor%} {%else%}
+	{%endfor%} {%else%}
 	<h3>작성된 서평이 없습니다.</h3>
-	 {%endif%}
+	{%endif%}
 </div>
+
+<!-- 도서 관련 토론 -->
+<div style="border:3px solid black;">
+	<!-- 토론 생성 -->
+	<h6><a href="{% url 'debates:create'%}?isbn13={{selected_book.isbn13}}">토론 시작하기</a></h6>
+	<!-- 토론 3개 출력 -->
+	{%if debates %} {% for debate in debates %}
+	<div >
+		<h3><a href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">제목 : {{debate.title}}</a></h3>
+		<h3>주제 : {{debate.subtitle}}</h3>
+		<h3>참여자 수 : {{debate.user_count}}</h3>
+		<h3>메시지 수 : {{debate.message_count}}</h3>
+	</div>
+	{%endfor%} {%else%}
+	<h3>시작된 토론이 없습니다.</h3>
+	{%endif%}
+</div>
+
 
 <!-- 도서 관련 토론 -->
 

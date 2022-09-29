@@ -1,7 +1,7 @@
 from django.db import models
 from books.models import Book
 from users.models import User
-from django.conf import settings 
+from django.db.models import Count
 
 
 class Debate(models.Model):
@@ -14,14 +14,16 @@ class Debate(models.Model):
     class Meta:
         db_table = u'debates'
 
+    def message_count(self):
+        return self.messages.aggregate(count=Count('user'))['count']
+    def user_count(self):
+        return self.messages.aggregate(count=Count('user',distinct=True))['count']
+
 class Message(models.Model):
     message_id = models.AutoField(primary_key=True)
-    debate = models.ForeignKey(Debate, models.CASCADE, db_column='debate_id')
+    debate = models.ForeignKey(Debate, models.CASCADE, db_column='debate_id',related_name='messages')
     user = models.ForeignKey(User, models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
     contents = models.TextField()
     class Meta:
         db_table = u'debates_message'
-
-    def last_30_messages(self, debate_id):
-        return Message.objects.filter(debate_id=debate_id).order_by('time_created')[:30]

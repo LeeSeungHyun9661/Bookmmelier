@@ -15,7 +15,6 @@ class debates_list(View):
         context = {}
         template_name = "debates_list.html"
         debates = Debate.objects.all()
-
         context["debates"] = debates
       
         paginator = Paginator(Book.objects.all(), 10)                
@@ -34,7 +33,7 @@ class debates_create(View):
         template_name = "debates_create.html"
 
         if request.user.is_authenticated:
-        # 토론 생성 폼
+            # 토론 생성 폼
             forms = DebateCreateFrom()
             context["forms"] = forms
             
@@ -73,18 +72,50 @@ class debates_create(View):
             context["debate_id"] = debate.debate_id 
             return JsonResponse(context)
 
-
 class debates_update(View):
     def get(self,request):
         context = {}
-        template_name = ""        
-        return render(request, template_name,context)
+        template_name = "debates_update.html"
+        if request.user.is_authenticated:
+            # 도서 목록 불러오기
+            paginator = Paginator(Book.objects.all(), 10)                
+            books_list = paginator.get_page(1)
+            context["books_list"] = books_list
+
+            debate_id = request.GET.get('debate_id', '')
+            #현재 존재하는 리뷰인지 확인
+            if Debate.objects.filter(debate_id = debate_id).exists():
+                debate = Debate.objects.get(debate_id = debate_id) 
+                context["debate_id"] = debate.debate_id
+
+                if debate.user == request.user: 
+                    #리뷰 폼에 받은 정보를 담아서 폼에 저장
+                    forms = DebateCreateFrom(instance=debate)
+                    context["forms"] = forms
+                    context["selected_book"] = debate.book                    
+                    return render(request, template_name,context)
+        else:
+            return redirect('/login?next=' + request.path)
     
     def post(self,request):
-        context = {}
-        template_name = ""        
-        return render(request, template_name,context)
-
+        # 응답 받은 결과를 form으로 저장
+        form = DebateCreateFrom(request.POST)
+        # isbn을 통해 현재 입력받은 도서의 isbn 확인
+        isbn13 = request.POST.get('isbn13')
+        # 수정 리뷰의 아이디 확인
+        debate_id = request.POST.get('debate_id')    
+        # 현재 수정중인 리뷰가 존재하는지 확인
+        if Debate.objects.filter(debate_id = debate_id).exists():
+            debate = Debate.objects.get(debate_id = debate_id)
+            # 폼의 정보가 적절한지 확인
+            if form.is_valid():
+                debate.title = form.title
+                debate.subtitle = form.subtitle
+                # 도서가 갱신된 상태라면 반영
+                debate.book = Book.objects.get(isbn13 = isbn13)
+                # 리뷰 데이터를 업데이트함
+                debate.save(force_update=True)
+                return JsonResponse({"debate_id":debate_id})
 
 class debates_detail(View):
     messages = {}
@@ -100,7 +131,6 @@ class debates_detail(View):
             template_name = "debates_messages_item.html"
 
             debate_id = request.GET.get('debate_id','')
-            message_id = request.GET.get('message_id','')
             page = int(request.GET.get('page',1))
 
             debate = Debate.objects.get(debate_id = debate_id)
@@ -218,8 +248,6 @@ def debates_list_search_Books(request):
         return render(request, template_name,context)
 
 def debates_delete_message(request):
-    context = {}
-    template_name = ""
     if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         message_id = request.POST.get("message_id")
 
@@ -229,7 +257,6 @@ def debates_delete_message(request):
             return HttpResponse("OK")
 
 def debates_update_message(request):
-    print("수정 시작")
     if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         message_text = request.POST.get("message_text")
         message_id = request.POST.get("message_id")
@@ -242,4 +269,10 @@ def debates_update_message(request):
     return HttpResponse("False")
 
 def debates_delete(request):
+    debate_id = request.GET.get('debate_id', '')
+    if Debate.objects.filter(debate_id = debate_id).exists():
+        debate = Debate.objects.get(debate_id = debate_id)
+        if debate.user == request.user :
+            debate.delete()
+            return redirect("/debates")
     return None
