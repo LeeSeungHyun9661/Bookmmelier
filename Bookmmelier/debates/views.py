@@ -5,7 +5,7 @@ from debates.forms import DebateCreateFrom
 from debates.models import Debate, Message
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 # Create your views here.
 
@@ -72,6 +72,19 @@ class debates_create(View):
             # 작성된 리뷰 페이지로 이동
             context["debate_id"] = debate.debate_id 
             return JsonResponse(context)
+
+
+class debates_update(View):
+    def get(self,request):
+        context = {}
+        template_name = ""        
+        return render(request, template_name,context)
+    
+    def post(self,request):
+        context = {}
+        template_name = ""        
+        return render(request, template_name,context)
+
 
 class debates_detail(View):
     messages = {}
@@ -204,19 +217,29 @@ def debates_list_search_Books(request):
         
         return render(request, template_name,context)
 
-
-
-def debates_upload_message(request):
-    context = {}
-    template_name = ""
-    return render(request, template_name,context)
-
 def debates_delete_message(request):
     context = {}
     template_name = ""
-    return render(request, template_name,context)
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        message_id = request.POST.get("message_id")
+
+        if Message.objects.filter(message_id = message_id).exists():
+            message = Message.objects.get(message_id = message_id)
+            message.delete()
+            return HttpResponse("OK")
 
 def debates_update_message(request):
-    context = {}
-    template_name = ""
-    return render(request, template_name,context)
+    print("수정 시작")
+    if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        message_text = request.POST.get("message_text")
+        message_id = request.POST.get("message_id")
+
+        if Message.objects.filter(message_id = message_id).exists():
+            message = Message.objects.get(message_id = message_id)
+            message.contents = message_text
+            message.save()
+            return HttpResponse("OK")
+    return HttpResponse("False")
+
+def debates_delete(request):
+    return None

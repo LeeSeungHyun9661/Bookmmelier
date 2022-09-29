@@ -2,7 +2,7 @@
 {% block content %}
 <div class="content">
     <!-- 토폰 상세 정보 -->
-    <div class="header"  style="border:1px solid black;">
+    <div class="header" style="border:1px solid black;">
         <h2>토론방</h2>
         <h1>제목 : {{debate.title}}</h1>
         <h1>부제목 : {{debate.subtitle}}</h1>
@@ -10,13 +10,15 @@
         <h3>도서 : {{debate.book.title}}</h3>
         <h3>시간 : {{debate.time_created}}</h3>
     </div>
-    
+
+    <!-- 토론 제작자가 사용자일 경우 -->
     {%if request.user == debate.user %}
-    <a href=""> [토론 삭제] </a>
-    <a href=""> [토론 편집] </a>
+    <!-- 삭제 및 편집 가능 -->
+    <a href="{% url 'debates:delete'%}?debate_id={{debate.debate_id}}"> [토론 삭제] </a>
+    <a href="{% url 'debates:update'%}?debate_id={{debate.debate_id}}"> [토론 편집] </a>
     {%endif%}
 
     {% include 'debates_messages.html' %}
- 
+
 </div>
 {% endblock %}

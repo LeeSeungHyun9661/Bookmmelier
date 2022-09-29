@@ -1,5 +1,4 @@
 <!-- 토론 생성 페이지 -->
-
 {% extends 'bookmmelier_base.html' %} 
 
 {% block content %}
@@ -9,7 +8,7 @@
     <h1>토론 생성</h1>
   </div>
 
-    <!-- 도서 선택 모달 -->
+    <!-- 도서 검섹 및 선택 모달 -->
     <a href="#" data-toggle="modal" data-target="#myModal">도서 불러오기</a>
     <div
       class="modal fade"
@@ -67,6 +66,7 @@
 </div>
 
 <script>
+  // 모달 내부에서 도서 검색 버튼 기능
   $("#search_button").click(function () {
     $.ajax({
       type: "get",
@@ -81,21 +81,12 @@
     });
   });
 
-  $(document).on("click", ".first_page", function () {
-    num_pages = parseInt($(".now_page").first().text());
-    page_click();
-  });
+  // 모달 내부에서 도서 페이지 이동 기능
+  $(document).on("click", ".first_page", function () { num_pages = parseInt($(".now_page").first().text()); page_click(); });
+  $(document).on("click", ".last_page", function () {num_pages = parseInt($(".now_page").last().text()); page_click(); });
+  $(document).on("click", ".now_page", function () {num_pages = parseInt($(this).text()); page_click(); });
 
-  $(document).on("click", ".last_page", function () {
-    num_pages = parseInt($(".now_page").last().text());
-    page_click();
-  });
-
-  $(document).on("click", ".now_page", function () {
-    num_pages = parseInt($(this).text());
-    page_click();
-  });
-
+  // 도서 페이지 이동 버튼
   function page_click() {
     $.ajax({
       type: "get",
@@ -111,6 +102,7 @@
     });
   }
 
+  // 모달 내부에서 도서 선택에 따른 결과 반환 기능 
   $(document).on("click", ".book_title", function () {
     $.ajax({
       type: "post",
@@ -125,6 +117,7 @@
     });
   });
 
+  // 토론 생성 요청
   $("#create_debate").on("submit", function () {
     event.preventDefault();
     form_array = $(this).serialize();
@@ -137,9 +130,9 @@
         url: "{% url 'debates:create' %}",
         data: form_array,
         success: function (data) {
-          alert("토론 생성이 완료되었습니다");
-          window.location.href =
-            "{% url 'debates:detail' %}?debate_id=" + data["debate_id"];
+          alert("토론 생성이 완료되었습니다");          
+          // 해당 토론 생성시 페이지 이동
+          window.location.href = "{% url 'debates:detail' %}?debate_id=" + data["debate_id"];
         },
       });
     }

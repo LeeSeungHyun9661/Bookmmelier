@@ -1,150 +1,181 @@
+<!-- 토론 메시지 목록 -->
 <div id="debates_messages">
-    <!-- 메시지 목록 -->
-    <h2>메시지 목록</h2>    
-    <div class="messages">   
-        <div class="scroll" style="overflow-y:auto; text-align:center; height:400px;">
-        </div> 
-    </div>
-    <!-- 메시지 작성 -->  
-    {%if request.user.is_authenticated %}
-        <h2>메시지 작성</h2>
-        <input id="message-input" type="text" size="100"/>
-        <input id="message-submit" type="button" value="Send"/>
-    {%else%}
-        <a href="{% url 'users:login'%}?next={{request.path}}?debate_id={{debate.debate_id}}"> [로그인]</a>
-    {%endif%} 
-</div>
+  <!-- 메시지 목록 -->
+  <h2>메시지 목록</h2>
+  <div class="messages">
+    <div class="scroll" style="overflow-y: auto; text-align: center; height: 400px"></div>
+  </div>
+  <!-- 메시지 작성 -->
+  {%if request.user.is_authenticated %}
+  <h2>메시지 작성</h2>
+  <input id="message-input" type="text" size="100" />
+  <input id="message-submit" type="button" value="Send" />
+  {%else%}
+  <a href="{% url 'users:login'%}?next={{request.path}}?debate_id={{debate.debate_id}}">
+    [로그인]</a>
+  {%endif%}
 
-<script>
+  <script>
     // 메시지 페이지 번호
-    var page = 1;
+    var page = 1;
     var has_next = false;
     var height = 400;
 
     // 처음 페이지 접근시
-    $(document).ready(function(){
-        console.log("불러오기1",page) 
-        getList();
-        console.log("불러오기2",page) 
-        page++;  
+    $(document).ready(function () {
+      //wda//
+      getList();
+      page++;
     });
 
     // 스크롤 기능
-    $(".scroll").scroll(function(){
-        // console.log($(".scroll").prop('scrollHeight'))
-        // console.log($(".scroll").scrollTop())
-        if ($(this).scrollTop() == 0) {
-            if(has_next){   
-                getList();
-                page++;  
-            }
+    $(".scroll").scroll(function () {
+      if ($(this).scrollTop() == 0) {
+        if (has_next) {
+          getList();
+          page++;
         }
-    })
+      }
+    });
 
-    // 리스트 불러오기 기능
-    function getList(){
-        $.ajax({
-            type : 'GET', 
-            url: "{% url 'debates:detail' %}",
-            data : {
-                debate_id: "{{debate.debate_id}}",
-                page : page
-            },
-            success : function(data) {    
-                console.log("불러오기3",page) 
-                $(".scroll").prepend(data);       
-                has_next = ($("#has_next").val() == 'True');
-                length = $("#length").val();
-                
-                // 스크롤 이동
-                if (page != 1) $(".scroll").scrollTop(100*length);
-                else $(".scroll").scrollTop($(".scroll").prop('scrollHeight') - height);
-                
-            },
-            error:function(request, error) {
-                console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            } 
-        }); 
+    // 메시지를 처음부터 다시 불러오는 기능
+    function resetMessages() {
+      $(".scroll").html("");
+      current_page = page;
+      for (page = 1; page <= current_page; ++page) {
+        getList();
+      }
+      $(".scroll").scrollTop($(".scroll").prop("scrollHeight") - height);
+    }
+
+    // 메시지 목록 불러오기 기능
+    function getList() {
+      $.ajax({
+        type: "GET",
+        url: "{% url 'debates:detail' %}",
+        async: false,
+        data: {
+          debate_id: "{{debate.debate_id}}",
+          page: page,
+        },
+        success: function (data) {
+          console.log("불러오기3", page);
+          $(".scroll").prepend(data);
+          has_next = $("#has_next").val() == "True";
+          length = $("#length").val();
+
+          // 스크롤 이동
+          if (page != 1) $(".scroll").scrollTop(100 * length);
+          else $(".scroll").scrollTop($(".scroll").prop("scrollHeight") - height);
+        },
+        error: function (request, error) {
+          console.log(
+            "code:" +
+            request.status +
+            "\n" +
+            "message:" +
+            request.responseText +
+            "\n" +
+            "error:" +
+            error
+          );
+        },
+      });
     }
 
     // 메시지 업로드 기능
     $("#message-submit").click(function () {
-      contents = $("#message-input").val()
+      contents = $("#message-input").val();
       $.ajax({
         type: "post",
         url: "{% url 'debates:detail' %}",
         data: {
           debate_id: "{{debate.debate_id}}",
           contents: contents,
-          csrfmiddlewaretoken: "{{ csrf_token }}"
+          csrfmiddlewaretoken: "{{ csrf_token }}",
         },
         success: function (data) {
-            $(".scroll").html("");  
-            current_page = page;
-            console.log("현재페이지",current_page)
-            for (page = 1; page <= current_page; ++page){    
-                console.log("반복",page) 
-                getList();
-            }
-            has_next = ($("#has_next").val() == 'True');
-                     
-            $(".scroll").scrollTop($(".scroll").prop('scrollHeight') - height);
+          // $(".scroll").html("");
+          // current_page = page;
+          // for (page = 1; page <= current_page; ++page) {
+          //   getList();
+          // }
+          // has_next = $("#has_next").val() == "True";
+          // $(".scroll").scrollTop($(".scroll").prop("scrollHeight") - height);
+          resetMessages();
+          has_next = $("#has_next").val() == "True";
+          $("#message-input").val("");
         },
       });
-    });  
+    });
 
     // 메시지 수정 취소 기능
-    const replyUpdateCancel = (message_id) => {
-        let tdReplyUpdate = document.querySelector(`.tdReplyUpdate${message_id}`);
-        let tdReplyDelete = document.querySelector(`.tdReplyDelete${message_id}`);
-        let tdReplySubmit = document.querySelector(`.tdReplySubmit${message_id}`);
-        let tdReplyUpdateCancel = document.querySelector(`.tdReplyUpdateCancel${message_id}`);
-        let replyContent = document.querySelector(`.replyContent${message_id}`)
-        tdReplyUpdate.style.display = 'inline-block';
-        tdReplyDelete.style.display = 'inline-block';
-        tdReplySubmit.style.display = 'none';
-        tdReplyUpdateCancel.style.display = 'none';
-        replyContent.readOnly = true;
-    }
+    const messageUpdateCancel = (message_id) => {
+      let tdMessageUpdate = document.querySelector(`.tdMessageUpdate${message_id}`);
+      let tdMessageDelete = document.querySelector(`.tdMessageDelete${message_id}`);
+      let tdMessageSubmit = document.querySelector(`.tdMessageSubmit${message_id}`);
+      let tdMessageUpdateCancel = document.querySelector(
+        `.tdMessageUpdateCancel${message_id}`
+      );
+      let messageContent = document.querySelector(`.messageContent${message_id}`);
+      tdMessageUpdate.style.display = "inline-block";
+      tdMessageDelete.style.display = "inline-block";
+      tdMessageSubmit.style.display = "none";
+      tdMessageUpdateCancel.style.display = "none";
+      messageContent.readOnly = true;
+    };
 
-    // 메시지 수정 시작 기능 
-    const replyUpdate = (message_id) => {
-        let tdReplyUpdate = document.querySelector(`.tdReplyUpdate${message_id}`);
-        let tdReplyDelete = document.querySelector(`.tdReplyDelete${message_id}`);
-        let tdReplySubmit = document.querySelector(`.tdReplySubmit${message_id}`);
-        let tdReplyUpdateCancel = document.querySelector(`.tdReplyUpdateCancel${message_id}`);
-        let replyContent = document.querySelector(`.replyContent${message_id}`)
-        tdReplyUpdate.style.display = 'none';
-        tdReplyDelete.style.display = 'none';
-        tdReplySubmit.style.display = 'inline-block';
-        tdReplyUpdateCancel.style.display = 'inline-block';
-        replyContent.readOnly = false;
-    }
+    // 메시지 수정 시작 기능
+    const messageUpdate = (message_id) => {
+      let tdMessageUpdate = document.querySelector(`.tdMessageUpdate${message_id}`);
+      let tdMessageDelete = document.querySelector(`.tdMessageDelete${message_id}`);
+      let tdMessageSubmit = document.querySelector(`.tdMessageSubmit${message_id}`);
+      let tdMessageUpdateCancel = document.querySelector(
+        `.tdMessageUpdateCancel${message_id}`
+      );
+      let messageContent = document.querySelector(`.messageContent${message_id}`);
+      tdMessageUpdate.style.display = "none";
+      tdMessageDelete.style.display = "none";
+      tdMessageSubmit.style.display = "inline-block";
+      tdMessageUpdateCancel.style.display = "inline-block";
+      messageContent.readOnly = false;
+    };
 
-        // 댓글 수정 완료 기능
-    const replySubmit = (message_id) =>{
-        let message_text = document.querySelector(`.replyContent${message_id}`).value;
-        $.ajax({
-                type:"POST",
-                url: "{% url 'debates:update_message' %}",
-                data : {'message_id': message_id,'message_text':message_text, csrfmiddlewaretoken:'{{ csrf_token }}','review_id':'{{debate_id.debate_id}}'},
-                success:function(data){  
-                    alert('댓글이 수정되었습니다.')
-                    $('#review_comments').html(data);
-                }
-        });
-    }
+    // 댓글 수정 완료 기능
+    const messageSubmit = (message_id) => {
+      console.log("수정 시작")
+      let message_text = document.querySelector(`.messageContent${message_id}`).value;
+      console.log(message_text)
+      $.ajax({
+        type: "POST",
+        url: "{% url 'debates:update_message' %}",
+        data: {
+          message_id: message_id,
+          message_text: message_text,
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          debate_id: "{{debate_id.debate_id}}",
+        },
+        success: function (data) {
+          alert("메시지가 수정되었습니다")
+          resetMessages();
+        },
+      });
+    };
 
     // 댓글 삭제 기능
-    const replyDelete = (message_id) =>{
-        $.ajax({
-                type:"POST",
-                url: "{% url 'debates:delete_message' %}",
-                data : {'message_id': message_id,csrfmiddlewaretoken:'{{ csrf_token }}','review_id':'{{debate_id.debate_id}}'},
-                success:function(data){  
-                    alert('댓글이 삭제되었습니다.')
-                    $('#review_comments').html(data);
-                }
-        });
-    }
-</script>
+    const messageDelete = (message_id) => {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'debates:delete_message' %}",
+        data: {
+          message_id: message_id,
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          debate_id: "{{debate_id.debate_id}}",
+        },
+        success: function (data) {
+          alert("메시지가 삭제되었습니다")
+          resetMessages();
+        },
+      });
+    };
+  </script>
