@@ -1,9 +1,111 @@
 {% extends 'bookmmelier_base.html' %}
 {% block content %}
 {% load static %}
-<!-- 홈 페이지 -->
-<h1>메인 페이지</h1>
+<div style="
+  width : 800px;
+  margin: auto;">
+   <!-- 홈 타이틀 -->
+   <h1>사람의 마음을 이어주는 독서<br>
+      서로의 생각을 적어보고 전해보아요.</h1>
 
-<img src="{% static 'img/dancing_duck.gif' %}" alt="Yeeeee~">
+   <!-- url 목록 -->
+   <div style="display: flex;">
+      <a href="{% url 'reviews:write' %}">
+         <div>이미 읽은 책이 있으신가요?<br>서평 작성하기</div>
+      </a>
+
+      <a href="{% url 'users:mypage' %}">
+         <div>내가 얼마나 책을 읽었을까요?<br>독서 현황 확인</div>
+      </a>
+
+      <a href="{% url 'reviews:list' %}">
+         <div>다른 사람들의 생각은 어떨까요?<br>서평 보러가기</div>
+      </a>
+   </div>
+
+   <!-- 인기도서 -->
+   <h1>인기도서</h1>
+   <div style="display: flex;">
+      {% if bestseller_list %}
+      {% for book in bestseller_list %}
+      <div>
+         <img src="{{book.img_url}}" width="50" , height="70">
+         <a href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a>
+         <p>{{book.author}}</p>
+         <p>{{book.publisher}}</p>
+         <p>{{book.ratings}}</p>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>인기 도서가 없습니다.</p>
+      {% endif %}
+   </div>
+
+   <!-- AI 추천 도서 -->
+   <h1>AI 추천 도서</h1>
+   <div style="display: flex;">
+      {% if recommend_list %}
+      {% for book in recommend_list %}
+      <div style="display: flex;">
+         <img src="{{book.img_url}}" width="50" , height="70">
+         <a href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">{{book.title}}</a>
+         <p>{{book.author}}</p>
+         <p>{{book.publisher}}</p>
+         <p>{{book.ratings}}</p>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>추천 도서가 없습니다.</p>
+      {% endif %}
+   </div>
+
+   <!-- 데이터 현황 -->
+   <div style="display: flex;">
+      <!-- 도서 수 -->
+      {% if books_cnt %}
+      <div>{{books_cnt}}<br>books</div>
+      {% endif %}
+      <!-- 리뷰 수 -->
+      {% if reviews_cnt %}
+      <div>{{reviews_cnt}}<br>reviews</div>
+      {% endif %}
+      <!-- 사용자 수 -->
+      {% if users_cnt %}
+      <div>{{users_cnt}}<br>users</div>
+      {% endif %}
+      <!-- 토론 수 -->
+      {% if debates_cnt %}
+      <div>{{debates_cnt}}<br>debates</div>
+      {% endif %}
+   </div>
+
+   <!-- 명언 -->
+   <div>
+   </div>
+
+   <!-- 인기서평 -->
+   <h1>인기서평</h1>
+   <div style="display: flex;">
+      {% if reviews_list %}
+      {% for review in reviews_list %}
+      <div style="display: flex;">
+         <img src="{{review.book.img_url}}" width="50" , height="70">
+         <p>{{review.book.title}}</p>
+         <p>{{review.book.author}}</p>
+         <p><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">{{review.title}}</a></p>
+         <p>{{review.user.name}}</>
+         </p>
+         <p>{{review.user_cnt}}</>
+         </p>
+         <p>{{review.contents|striptags|safe|slice:':100'|truncatechars:30}}</p>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>인기 서평이 없습니다.</p>
+      {% endif %}
+   </div>
+
+</div>
+
 
 {% endblock %}
