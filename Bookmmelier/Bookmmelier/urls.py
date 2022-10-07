@@ -20,8 +20,5 @@ urlpatterns = [
     path('debates/', include('debates.urls')),
     # 서머노트 기반 url
     path('summernote/', include('django_summernote.urls')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    
+]   
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

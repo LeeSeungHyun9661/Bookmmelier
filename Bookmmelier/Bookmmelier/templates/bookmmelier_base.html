@@ -1,11 +1,29 @@
-<!-- 베이스 템플릿 -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>북믈리에</title>
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+    <script src="https://kit.fontawesome.com/f9a809ddea.js" crossorigin="anonymous"></script>
+
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script> -->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
@@ -13,42 +31,13 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
     <!-- ajax 통신에서 post-csrf 토큰 기능 정의 -->
-    <script>        
+    <script>
         $.ajaxSetup({
-          headers: { "X-CSRFToken": '{{csrf_token}}' }
+            headers: {
+                "X-CSRFToken": '{{csrf_token}}'
+            }
         });
     </script>
-
-    <!-- 상단 매뉴바 -->
-    <a href="/"> [북믈리에]</a>
-    <a href="{% url 'books:list' %}"> [도서검색]</a>
-    <a href="{% url 'reviews:list' %}"> [서평구경]</a>
-    <a href="{% url 'reviews:write' %}"> [서평쓰기]</a>
-    <a href="{% url 'debates:list'%}"> [독서토론]</a>
-    <a href="/admin"> [관리자]</a>
-
-    <!-- 서평 검색 부분 -->
-    <a>
-        <form action="{% url 'reviews:list' %}" method="POST">
-            {% csrf_token %}  
-            <select name="review_search_type" id="review_search_type">
-                <option value="전체" selected="true">전체</option>
-                <option value="도서">도서</option>
-                <option value="작성자">작성자</option>
-                <option value="내용">내용</option>
-                </select>
-            <input id = "review_search_input" type="text" name="review_search_input" placeholder="서평 검색">
-        </form>
-    </a>
-    
-    <!-- 로그인에 따른 매뉴 정의 -->
-    {% if request.user.is_authenticated %}
-        <a> {{user.name}}</a>
-        <a href="{% url 'users:mypage'%}"> [마이페이지]</a>
-        <a href="{% url 'users:logout'%}"> [로그아웃]</a>
-    {% else %}
-        <a href="{% url 'users:login'%}?next={{request.path}}"> [로그인]</a>
-    {% endif %}
 
     {% block style %}
     <!-- 스타일 -->
@@ -56,8 +45,53 @@
 </head>
 
 <body>
+    <header>
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-xl-2">
+                    <span class="logo">북믈리에</span>
+                </div>
+                <nav class="col-xl-6">
+                    <span class="menu"><a href="{% url 'books:list' %}">도서검색</a></span>
+                    <span class="menu"><a href="{% url 'reviews:list' %}">서평구경</a></span>
+                    <span class="menu"><a href="{% url 'reviews:write' %}">서평쓰기</a></span>
+                    <span class="menu"><a href="{% url 'debates:list'%}">독서토론</a></span>
+                    <span class="menu"><a href="{% url 'users:mypage'%}">마이 페이지</a></span>
+                </nav>
+                <div class="col-xl-2">
+                    <form action="{% url 'reviews:list' %}" method="POST">
+                        <input id="review_search_input" name="review_search_input" class="search" type="text"
+                            name="search" placeholder="다른 사람이 쓴 서평을 검색해보세요">
+                    </form>
+                </div>
+                <div class="col-xl-2 sign">
+                    <div class="container-fluid">
+                        <div class="row">
+                            {% if request.user.is_authenticated %}
+                            <div class="col-6">
+                                <a href="{% url 'users:logout'%}">Sign out</a>                                
+                            </div>
+                            {%else%}
+                            <div class="col-6">
+                                <a href="{% url 'users:login'%}?next={{request.path}}">Sign in</a>
+                            </div>
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
     {% block content %}
     <!-- 내용 -->
     {% endblock %}
+
+    <footer>
+        FOOTER
+    </footer>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
 </body>
+
 </html>

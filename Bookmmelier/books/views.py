@@ -32,7 +32,7 @@ class books_list(View):
                     books =  Book.objects.filter(Q(author__icontains = search_input))
                 elif search_type == '출판사':
                     books =  Book.objects.filter(Q(publisher__icontains = search_input))
-        # GET 통신 : 페이지 불러오가
+        # GET 통신 : 페이지 불러오기
         else:            
             template_name = 'books_list.html'
 

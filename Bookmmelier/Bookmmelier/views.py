@@ -1,12 +1,10 @@
-from contextlib import redirect_stderr
+
 from django.shortcuts import render,redirect
-from django.contrib import auth
 from django.views.generic import View
-from django.core.paginator import Paginator
 from books.models import Book
 from debates.models import Debate
 from reviews.models import Review
-from django.db.models import Q,Avg,Count
+from django.db.models import Avg,Count
 from users.models import User
 
 # 메인 페이지 뷰 클래스

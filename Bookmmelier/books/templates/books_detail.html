@@ -18,9 +18,8 @@
 	<h6><a href="{% url 'reviews:write' %}?isbn13={{book.isbn13}}">서평 쓰러가기</a></h6>
 	<!-- 서평 3개 출력 -->
 	{%if reviews %} {% for review in reviews %}
-	<div >
-		<h3><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">{{review.user.name}} > {{review.title}}</a>
-		</h3>
+	<div class="review_item" data-href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+		<h3>{{review.title}} / {{review.user.name}}</h3>
 		<h3>평점 : {{review.rate}}</h3>
 		<h3>{{review.contents|slice:':100'|truncatechars:30|safe}}</h3>
 	</div>
@@ -35,8 +34,8 @@
 	<h6><a href="{% url 'debates:create'%}?isbn13={{selected_book.isbn13}}">토론 시작하기</a></h6>
 	<!-- 토론 3개 출력 -->
 	{%if debates %} {% for debate in debates %}
-	<div >
-		<h3><a href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">제목 : {{debate.title}}</a></h3>
+	<div  class="debate_item" data-href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">
+		<h3>제목 : {{debate.title}}</h3>
 		<h3>주제 : {{debate.subtitle}}</h3>
 		<h3>참여자 수 : {{debate.user_count}}</h3>
 		<h3>메시지 수 : {{debate.message_count}}</h3>
@@ -46,7 +45,20 @@
 	{%endif%}
 </div>
 
+<script>
+    // 테이블의 각 요소에 대한 클릭 이벤트 지정
+    $(document).ready(function(){
+		$('.review_item').click(function () {
+			window.location = $(this).data('href');		  
+			return false;
+		})
+		$('.debate_item').click(function () {
+			window.location = $(this).data('href');		  
+			return false;
+		})
+    });
+</script>
 
 <!-- 도서 관련 토론 -->
-
 {% endblock %}
+

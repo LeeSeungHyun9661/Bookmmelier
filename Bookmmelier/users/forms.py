@@ -96,8 +96,6 @@ class ChangePasswordForm(forms.Form):
         current_password = cleaned_data.get('current_password')
         password = cleaned_data.get('password')
         password_check = cleaned_data.get('password_check')
-        print(self.user.name)
-        print(current_password)
 
         if not check_password(current_password,self.user.password):
             self.add_error('current_password','현재 암호와 일치하지 않습니다.')
@@ -109,6 +107,40 @@ class ChangePasswordForm(forms.Form):
                     self.add_error('current_password','현재 비밀번호와 같은 비밀번호입니다.')
                 else:
                     self.new_password = password
+
+class ForgotPasswordForm(forms.Form):
+    id = forms.CharField(max_length=15,label="아이디")
+    email = forms.CharField(label="이메일")
+
+    class Meta:
+        model= User
+        fields = ['id','email']
+
+    def clean(self): 
+        cleaned_data = super().clean() 
+        id = cleaned_data.get('id')
+        email = cleaned_data.get('email')
+
+        self.id = id
+        self.email = email
+
+class ResetPasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput,label="비밀번호")
+    password_check = forms.CharField(widget=forms.PasswordInput,label="비밀번호 확인")
+
+    class Meta:
+        model= User
+        fields = ['password','password_check']
+
+    def clean(self): 
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_check = cleaned_data.get('password_check')
+
+        if password != password_check:
+            self.add_error('password','비밀번호가 일치하지 않습니다.')
+        else:
+            self.new_password = password
 
 class WithdrawForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,label="비밀번호")
