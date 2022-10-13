@@ -10,12 +10,11 @@ from reviews.models import Review
 from users.forms import ForgotPasswordForm, LoginForm,SignupForm, ChangePasswordForm, WithdrawForm, ResetPasswordForm
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse,JsonResponse
+from django.http import JsonResponse
 
 from .models import *
 import requests
 import random
-import re
 
 KAKAO_CONFIG = {
     "KAKAO_REST_API_KEY": '7e50c549e6c27570c3528a7e48425019',
@@ -99,8 +98,7 @@ class login(View):
     template_name = 'users_login.html'
 
     # GET -> 처음 로그인 페이지 접급
-    def get(self,request):
- 
+    def get(self,request): 
         if request.user.is_authenticated :            
             # 현재 사용자가 로그인 중이라면 메인 화면으로 이동
             return redirect('/')
@@ -115,7 +113,6 @@ class login(View):
     def post(self,request): 
         # 폼을 기준으로 POST로 전달받은 값 전달
         forms = LoginForm(request.POST)
-        print(forms)
         # 폼 입력 조건을 만족한 경우
         if forms.is_valid():
             # 로그인
@@ -229,27 +226,16 @@ class resetPassword(View):
                 user = User.objects.get(id = id) 
                 # 암호 재설정
                 user.set_password(forms.new_password)
-
-                print("현재 해쉬:" + user.hash)
                 # 해쉬 리셋
-                enc = hashlib.md5()      
-                enc.update(str(random.randint(1000,10000)).encode('utf-8')) #사용자 이메일의 임의 해시값을 생성함
-                hash = enc.hexdigest()
-                
-                print("변경 해쉬:" + hash)
-
-                user.hash = hash
-                user.save()
-
-                print("변경된 해쉬:" + user.hash)
-                
+                user.hash = getHash()
+                # 변경사항 적용
+                user.save()                
                 self.context = {"success":""}
             else:
+                # 잘못된 계정 접근
                 self.context = {'result' : '존재하지 않는 계정입니다.'}
-
         else:
-            print("입력된 폼 조건 불만족 ")
-            # 
+            # 입력 조건 불만족에 대한 오류 반환
             self.context = forms.errors
         return JsonResponse(self.context)
 
@@ -261,18 +247,27 @@ class mypage(View):
     def get(self,request):
         # 사용자가 로그인중인 경우
         if request.user.is_authenticated:
+            # 최근 작성 서평
             reviews = Review.objects.filter(user = request.user)[:3]
             self.context["reviews"] = reviews
-            return render(request, self.template_name, self.context)
 
+            """
+            서평 분석 결과
+            """
+
+            """
+            AI 추천 도서
+            """
+
+            return render(request, self.template_name, self.context)
         # 로그인중이 아니면 로그인 화면으로 이동
         else:
             return redirect('/login?next=' + request.path)
 
     def post(self,request):
-        return redirect('/')
+        return redirect('/mypage')
 
-# ____ 암호 변경 페이지  ____
+# ____ 암호 변경 요청 페이지  ____
 class changePassword(View):  
     context = {}
     template_name = 'users_changePassword.html'
@@ -290,7 +285,7 @@ class changePassword(View):
                 """
                 return render(request, self.template_name)
         else:
-            return redirect('/')
+            return redirect('/login?next=' + request.path)
 
     def post(self, request): 
         if request.user.type == 'nomal':
@@ -307,34 +302,37 @@ class changePassword(View):
                 return JsonResponse(forms.errors)
 
 # ____ 암호 초기화 메일 요청 페이지  ____
-class forgotPassword(View):    
+class forgotPassword(View):  
+    context = {}    
+    template_name = 'users_forgotPassword.html'
+
     def get(self, request): 
-        context = {}
+        # 사용자가 로그인중인 경우
         if request.user.is_authenticated:
             return redirect('/')
         else:
-            context["forms"] = ForgotPasswordForm()
+            self.context["forms"] = ForgotPasswordForm()
             template_name = 'users_forgotPassword.html'
-            return render(request, template_name,context)
+            return render(request, template_name,self.context)
 
     def post(self, request): 
             # 폼을 통해 응답받은 결과를 지정
             forms = ForgotPasswordForm(request.POST)
             if forms.is_valid():
-                id = forms.id
-                email = forms.email
-
-                if User.objects.filter(id = id).exists():
+                if User.objects.filter(id = forms.id).exists():
                     user = User.objects.get(id = id)               
                     if user.type == 'nomal':
-                        if user.email == email:
+                        if user.email == forms.email:
                             if (send_reset_email(request,user)):
                                 self.context = {"success":""}
                             else:                                
                                 self.context = {'result' : '메일 전송에 실패했습니다.'}
                         else:                             
                             self.context = {'result' : '이메일이 올바르지 않습니다.'}
-                    else:                         
+                    else:
+                        """
+                        카카오로그인 계정에 대한 처리 필요
+                        """                         
                         self.context = {'result' : '카카오 로그인 계정입니다.'}
                 else:                     
                     self.context = {'result' : '아이디가 존재하지 않습니다.'}
@@ -352,7 +350,10 @@ class withdraw(View):
                 context["forms"] = WithdrawForm()
                 template_name = 'users_withdraw.html'
                 return render(request, template_name,context)
-            else:
+            else:                        
+                """
+                카카오로그인 계정에 대한 처리 필요
+                """       
                 return render(request, template_name)
         else:
             return redirect('/login')
@@ -448,15 +449,13 @@ class reviews(View):
 
 # ____ 사용자 로그아웃 기능  ____
 def logout(request):
-    auth.logout(request)
+    if request.user.is_authenticated:
+        auth.logout(request)
     return redirect('/')
 
 # ____ 계정 활성화 요청 링크 발송 기능  ____
 def send_activate_email(request,user):
-    enc = hashlib.md5()      
-    enc.update(str(random.randint(1000,10000)).encode('utf-8')) #사용자 이메일의 임의 해시값을 생성함
-    hash = enc.hexdigest()
-    user.hash = hash
+    user.hash = getHash()
     domain = get_current_site(request).domain #현재 도메인 주소를 받아옴
     email_contents = f"반갑습니다! {user.name}님\n\n아래 링크를 클릭하면 회원가입 인증이 완료됩니다.\n\n회원가입 링크 : http://{domain}/activate/{user.id}/{user.hash}\n\n감사합니다."            
     mail = send_mail(subject='Bookmmelier Account Check', message=email_contents, from_email='dltmdgus@dippingai.com', recipient_list=[user.email]) #메일 작성 후 발송 실행
@@ -468,3 +467,9 @@ def send_reset_email(request,user):
     email_contents = f"{user.name}님\n\n아래 링크를 클릭하면 비밀번호 변경 화면으로 이동합니다.\n\n비밀번호 변경 링크 : http://{domain}/resetpassword?id={user.id}&hash={user.hash}\n\n감사합니다."            
     mail = send_mail(subject='Bookmmelier Account Check', message=email_contents, from_email='dltmdgus@dippingai.com', recipient_list=[user.email]) #메일 작성 후 발송 실행
     return mail
+
+def getHash():
+    enc = hashlib.md5()      
+    enc.update(str(random.randint(1000,10000)).encode('utf-8')) #사용자 이메일의 임의 해시값을 생성함
+    hash = enc.hexdigest()
+    return hash
