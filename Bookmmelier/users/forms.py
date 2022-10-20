@@ -52,31 +52,30 @@ class SignupForm(forms.ModelForm):
         gender = cleaned_data.get('gender')
         age = cleaned_data.get('age')
 
-        if re.search(r'^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{4,15}$/',(id)):
-            self.add_error('id','올바른 아이디를 입력해주세요. (영문, 숫자, 언더바, 4~15자)')
-        else:            
-            self.id = id
-            if re.search(r'^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/',(password)):
-                self.add_error('password','올바른 비밀번호를 입력해주세요. (영문, 숫자, 특수문자 - 8~20자)')
-            else:        
-                if password != password_check:
-                    self.add_error('password_check','비밀번호가 일치하지 않습니다.')
-                else:      
-                    self.password = password 
-                    self.password_check = password_check                     
-                    if not re.search(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',(email)):
-                        self.add_error('email','올바른 이메일 주소를 입력해주세요.')
-                    else:   
-                        self.email = email  
-                        if User.objects.filter(id = id).exists():
-                            self.add_error('id','이미 사용중인 아이디입니다.')
-                        else:
-                            if User.objects.filter(email = email).exists():
-                                self.add_error('email','이미 사용중인 이메일입니다.')
-                            else:
+        if re.search(r'^[A-Za-z0-9_]{8,20}$',id): 
+            if re.search(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%&*?])[A-Za-z\d!@#$%&*?]{8,20}$',password):       
+                if password == password_check:   
+                    if re.search(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',email):
+                        if not User.objects.filter(id = id).exists():                      
+                            if not User.objects.filter(email = email).exists():                                
+                                self.password = password 
+                                self.email = email  
+                                self.id = id
                                 self.name = name
                                 self.gender = gender
                                 self.age = age
+                            else:
+                                self.add_error('email','이미 사용중인 이메일입니다.')   
+                        else: 
+                            self.add_error('id','이미 사용중인 아이디입니다.')
+                    else:
+                        self.add_error('email','올바른 이메일 주소를 입력해주세요.')
+                else:
+                    self.add_error('password_check','비밀번호가 일치하지 않습니다.')
+            else:
+                self.add_error('password','올바른 비밀번호를 입력해주세요. (영문, 숫자, 특수문자 - 8~20자)')
+        else:                 
+            self.add_error('id','올바른 아이디를 입력해주세요. (영문, 숫자, 언더바, 8~15자)')
 
 
 class ChangePasswordForm(forms.Form):

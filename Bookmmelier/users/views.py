@@ -153,9 +153,11 @@ class signup(View):
                 # 회원가입 성공
                 user.save()
                 self.context = {"success":""}
+                print(self.context)
             else:
                 # 이메일 전송 실패
                 self.context = {"email":"이메일 전송에 실패했습니다."}
+                print(self.context)
         else:
             # 입력된 폼 조건 불만족 
             self.context = forms.errors            
@@ -318,21 +320,20 @@ class forgotPassword(View):
     def post(self, request): 
             # 폼을 통해 응답받은 결과를 지정
             forms = ForgotPasswordForm(request.POST)
+            # 폼 형식 확인
             if forms.is_valid():
                 if User.objects.filter(id = forms.id).exists():
-                    user = User.objects.get(id = id)               
+                    user = User.objects.get(id = forms.id)               
                     if user.type == 'nomal':
                         if user.email == forms.email:
                             if (send_reset_email(request,user)):
+                                print("success")
                                 self.context = {"success":""}
                             else:                                
                                 self.context = {'result' : '메일 전송에 실패했습니다.'}
                         else:                             
                             self.context = {'result' : '이메일이 올바르지 않습니다.'}
-                    else:
-                        """
-                        카카오로그인 계정에 대한 처리 필요
-                        """                         
+                    else:                         
                         self.context = {'result' : '카카오 로그인 계정입니다.'}
                 else:                     
                     self.context = {'result' : '아이디가 존재하지 않습니다.'}
