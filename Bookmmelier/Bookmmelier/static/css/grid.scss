@@ -1,0 +1,289 @@
+html, body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+@mixin girds($col,$standard, $condition) {
+    @if ($condition == 'width'){
+        display: flex;
+        align-items: center;
+        width:$col * $standard;
+    }
+    @else if ($condition == 'offset'){
+        margin-right:$col * $standard;
+    }
+    @else if ($condition == 'reverse'){
+        margin-left:$col * $standard;
+    }
+}
+
+.container{
+    width:1200px;
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+
+    .row{
+        display: flex;
+        flex-wrap: wrap;
+        .col-1{
+            @include girds(1,100px, 'width')
+        }
+        .col-2{
+            @include girds(2,100px, 'width')
+        }
+        .col-3{
+            @include girds(3,100px, 'width')
+        }
+        .col-4{
+            @include girds(4,100px, 'width')
+        }
+        .col-5{
+            @include girds(5,100px, 'width')
+        }
+        .col-6{
+            @include girds(6,100px, 'width')
+        }
+        .col-7{
+            @include girds(7,100px, 'width')
+        }
+        .col-8{
+            @include girds(8,100px, 'width')
+        }
+        .col-9{
+            @include girds(9,100px, 'width')
+        }
+        .col-10{
+            @include girds(10,100px, 'width')
+        }
+        .col-11{
+            @include girds(11,100px, 'width')
+        }
+        .col-12{
+            @include girds(12,100px, 'width')
+        }
+        
+
+        .offset-1{
+            @include girds(1,100px, 'offset')
+        }
+        .offset-2{
+            @include girds(2,100px, 'offset')
+        }
+        .offset-3{
+           @include girds(3,100px, 'offset')
+        }
+        .offset-4{
+            @include girds(4,100px, 'offset')
+        }
+        .offset-5{
+            @include girds(5,100px, 'offset')
+        }
+        .offset-6{
+            @include girds(6,100px, 'offset')
+        }
+        .offset-7{
+            @include girds(7,100px, 'offset')
+        }
+        .offset-8{
+            @include girds(8,100px, 'offset')
+        }
+        .offset-9{
+            @include girds(9,100px, 'offset')
+        }
+        .offset-10{
+            @include girds(10,100px, 'offset')
+        }
+        .offset-11{
+            @include girds(11,100px, 'offset')
+        }
+        .offset-12{
+            @include girds(12,100px, 'offset')
+        }
+
+        .reverse-offset-1{
+            @include girds(1,100px, 'reverse')
+        }
+        .reverse-offset-2{
+            @include girds(2,100px, 'reverse')
+        }
+        .reverse-offset-3{
+            @include girds(3,100px, 'reverse')
+        }
+        .reverse-offset-4{
+            @include girds(4,100px, 'reverse')
+        }
+        .reverse-offset-5{
+            @include girds(5,100px, 'reverse')
+        }
+        .reverse-offset-6{
+            @include girds(6,100px, 'reverse')
+        }
+        .reverse-offset-7{
+            @include girds(7,100px, 'reverse')
+        }
+        .reverse-offset-8{
+            @include girds(8,100px, 'reverse')
+        }
+        .reverse-offset-9{
+            @include girds(9,100px, 'reverse')
+        }
+        .reverse-offset-10{
+            @include girds(10,100px, 'reverse')
+        }
+        .reverse-offset-11{
+            @include girds(11,100px, 'reverse')
+        }
+        .reverse-offset-12{
+            @include girds(12,100px, 'reverse')
+        }
+    }
+}
+
+.container-fluid{
+    width:100%;
+    max-width: none;
+    min-width: 1800px;
+    margin: none;
+    padding:none;
+    
+    .row{
+        display: flex;
+        flex-wrap: wrap;
+        .col-1{
+            @include girds(1, 140px, 'width')
+        }
+        .col-2{
+            @include girds(2, 140px, 'width')
+        }
+        .col-3{
+            @include girds(3, 140px, 'width')
+        }
+        .col-4{
+            @include girds(4, 140px, 'width')
+        }
+        .col-5{
+            @include girds(5, 140px, 'width')
+        }
+        .col-6{
+            @include girds(6, 140px, 'width')
+        }
+        .col-7{
+           @include girds(7, 140px, 'width')
+        }
+        .col-8{
+            @include girds(8, 140px, 'width')
+        }
+        .col-9{
+           @include girds(9, 140px, 'width')
+        }
+        .col-10{
+            @include girds(10, 140px, 'width')
+        }
+        .col-11{
+            @include girds(11, 140px, 'width')
+        }
+        .col-12{
+            @include girds(12, 140px, 'width')
+        }
+        
+
+        .offset-1{
+            @include girds(1,140px, 'offset')
+        }
+        .offset-2{
+            @include girds(2,140px, 'offset')
+        }
+        .offset-3{
+            @include girds(3,140px, 'offset')
+        }
+        .offset-4{
+            @include girds(4,140px, 'offset')
+        }
+        .offset-5{
+            @include girds(5,140px, 'offset')
+        }
+        .offset-6{
+            @include girds(6,140px, 'offset')
+        }
+        .offset-7{
+            @include girds(7,140px, 'offset')
+        }
+        .offset-8{
+            @include girds(8,140px, 'offset')
+        }
+        .offset-9{
+            @include girds(9,140px, 'offset')
+        }
+        .offset-10{
+            @include girds(10,140px, 'offset')
+        }
+        .offset-11{
+            @include girds(11,140px, 'offset')
+        }
+        .offset-12{
+            @include girds(12,140px, 'offset')
+        }
+
+        .reverse-offset-1{
+            @include girds(1, 140px, 'reverse')
+        }
+        .reverse-offset-2{
+            @include girds(2, 140px, 'reverse')
+        }
+        .reverse-offset-3{
+            @include girds(3, 140px, 'reverse')
+        }
+        .reverse-offset-4{
+            @include girds(4, 140px, 'reverse')
+        }
+        .reverse-offset-5{
+            @include girds(5, 140px, 'reverse')
+        }
+        .reverse-offset-6{
+            @include girds(6, 140px, 'reverse')
+        }
+        .reverse-offset-7{
+            @include girds(7, 140px, 'reverse')
+        }
+        .reverse-offset-8{
+            @include girds(8, 140px, 'reverse')
+        }
+        .reverse-offset-9{
+            @include girds(9, 140px, 'reverse')
+        }
+        .reverse-offset-10{
+            @include girds(10, 140px, 'reverse')
+        }
+        .reverse-offset-11{
+            @include girds(11, 140px, 'reverse')
+        }
+        .reverse-offset-12{
+            @include girds(12, 140px, 'reverse')
+        }
+    }
+}
+
+.align-items-center{
+    align-items: center;
+}
+
+.justify-content-center{
+    justify-content:center;
+}
+.justify-content-evenly{
+    justify-content:space-evenly;
+}
+.justify-content-between{
+    justify-content:space-between !important;
+}
+
+.no-margin{
+    margin:0 !important;
+}
+
+.no-border{
+    border:none !important;
+}
