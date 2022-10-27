@@ -1,49 +1,67 @@
-{% extends 'bookmmelier_base.html' %}
-{% block content %}
-<h1>로그인</h1>
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
 
-<h3>{{result}}</h3>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>북믈리에</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/customstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <script src="https://kit.fontawesome.com/f9a809ddea.js" crossorigin="anonymous"></script>
 
-<!-- 로그인 입력 부분 -->
-<div id="login_forms">
-    <form id = "login" method="POST">
-        {% csrf_token %}     
-        {% for field in forms %}
-            {{ field.label_tag }} {{ field }} 
-        {% endfor %}    
-        <div id="error_respond"></div>   
-        <input type="hidden" id="next" name="next" value='{{next}}'>
-        <button  type="submit">로그인</button>
-    </form>
-</div>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+</head>
 
-<a href="{% url 'users:forgotPassword' %}">비밀번호를 잊으셨나요</a>
-<a href="{% url 'users:signup' %}">회원가입</a>
-<a href="{% url 'users:kakao-login' %}">카카오로그인</a>
+<body>
 
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-4 sign-container justify-content-center">
+                <img src="{% static 'img/bg.png' %}">
+                <form id="login" method="POST">
+                    {% csrf_token %}
+                    {% for field in forms %}
+                    {{ field.label_tag }} {{ field }}
+                    {% endfor %}
+                    <div id="error_respond"></div>
+                    <input type="hidden" id="next" name="next" value='{{next}}'>
+                    <div class="find_pw"><a href="{% url 'users:forgotPassword' %}">비밀번호를 잊으셨나요?</a></div>
+                    <input type="submit" value="Sign in">
+                    <a href="{% url 'users:signup' %}">
+                        <button class="button">북믈리에가 처음이신가요?</button>
+                    </a>
+                </form>
 
-<script>
-    $('#login').on('submit',function(){
-        event.preventDefault();
-        form_array = $(this).serialize();
-        $.ajax({
-            type:"POST",
-            url: "{% url 'users:login' %}",
-            data : form_array,
-            success:function(data){ 
-                console.log(data)
-                var keys = Object.keys(data); 
-                if (keys =="success"){
-                    alert("로그인 성공!")
-                    window.location.href = (data["success"]);
-                }else{          
-                    for (key in keys){        
-                        $("#error_respond").text(data[keys[key]])
-                    }      
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#login').on('submit', function () {
+            event.preventDefault();
+            form_array = $(this).serialize();
+            $.ajax({
+                type: "POST",
+                url: "{% url 'users:login' %}",
+                data: form_array,
+                success: function (data) {
+                    console.log(data)
+                    var keys = Object.keys(data);
+                    if (keys == "success") {
+                        alert("로그인 성공!")
+                        window.location.href = (data["success"]);
+                    } else {
+                        for (key in keys) {
+                            $("#error_respond").text(data[keys[key]])
+                        }
+                    }
                 }
-            }
-        })
-    }); 
-</script>
+            })
+        });
+    </script>
 
-{% endblock %}
+</body>
+
+</html>

@@ -1,68 +1,147 @@
 <!-- 리뷰 자세히 보기 페이지 -->
 {% extends 'bookmmelier_base.html' %}
 {% block content %}
+{% load static %}
 
-<div class="content">
-    <!-- 리뷰 내용 -->
-    <div class="header"  style="border:1px solid black;">
-        <h2>서평 내용</h2>
-        <h1>제목 : {{review.title}}</h1>
-        <h3>작성자 : {{review.user.name}}</h3>
-        <h3>도서 : {{review.book.title}}</h3>
-        <h3>시간 : {{review.time_retouch}}</h3>
-        <h3>내용 : {{review.contents | safe}}</h3>
+<section class="container" id="main">
+    <div class="row">
+        <div class="col-12 justify-content-between">
+            <span class="main-title">서평제목 {{review.title}}</span>
+            <span class="writer">by {{review.user.id}}</span>
+        </div>
     </div>
 
-    <!-- 작성자 권한에 따라 수정 삭제 -->
+
+    <div class="row">
+        <!-- 도서정보 -->
+        <div class="col-12">
+            <div class="small-content">
+                <div class="content-title">
+                    도서정보
+                </div>
+                <div class="book-container">
+                    {% if book.img_url %}
+                    <img src="{{book.img_url}}">
+                    {% else %}
+                    <img src="{% static 'img/non_image.png' %}">
+                    {% endif %}
+                    <div class="metadata">
+                        <div class="title">
+                            {{review.book.title}}
+                        </div>
+
+                        <table class="bibil">
+                            <tr>
+                                <th>저자</th>
+                                <td>{{review.book.author}}</td>
+                                <th>출판사</th>
+                                <td>{{review.book.publisher}}</td>
+                                <th>출판년도</th>
+                                <td>{{review.book.pub_date}}</td>
+                            </tr>
+                            <tr>
+                                <th>주제</th>
+                                <td>{{review.book.kdc_class_no}}</td>
+                                <th>ISBN</th>
+                                <td>{{review.book.isbn13}}</td>
+                                <th></th>
+                                <td></td>
+                            </tr>
+                        </table>
+                        <div class="row justify-content-between algin-items-center">
+                            <div class="rate">
+                                평점 {{book.ratings}}
+                                <span class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </span>
+                            </div>
+                            {% include 'review_detail_like.html' %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 서평 -->
+    <div class="col-12 small-content">
+        <div class="content-title">
+            서평
+        </div>
+        <div class="content-desc">
+            {{review.contents | safe}}
+        </div>
+    </div>
+
+    <!-- 서평 수정 삭제 -->
     <div style="border:1px solid black;">
-        {%if review.user == request.user %}        
+        {%if review.user == request.user %}
         <a href="{% url 'reviews:update'%}?review_id={{review.review_id}}"> [수정]</a>
-        <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
+        <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');">
+            [삭제]</a>
         {%elif request.user.is_staff%}
-            <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');"> [삭제]</a>
+        <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');">
+            [삭제]</a>
         {%endif%}
     </div>
 
-    <!-- 좋아요 -->
-    {% include 'review_detail_like.html' %}
+    <!-- 댓글 -->
+    <div class="col-12 small-content">
+        <div class=" content-title">
+            댓글
+        </div>
+        <!-- 댓글 보기 -->
+        {% include 'review_detail_comments.html' %}
 
-    <!-- 로그인 중이라면 댓글 작성 가능 -->
-    {% if request.user.is_authenticated %}
-        <form id="upload_comment" method="POST" style="border:1px solid black;">
-            {% csrf_token %} 
-            <h4>작성자 : {{user.name}}</h4>
-            <input type="text" name="comment_text" value="" id="comment_text"><br>            
-            <input type="hidden" name="review_id" id="review_id" value = "{{review.review_id}}">
-            <button  type="submit" >댓글작성</button>
+        <!-- 댓글 작성란 -->
+        {% if request.user.is_authenticated %}
+        <form id="upload_comment" method="POST">
+            {% csrf_token %}
+            <textarea rows="4" cols="50" placeholder="댓글을 입력하세요" name="comment"></textarea>
+            <input type="hidden" name="review_id" id="review_id" value="{{review.review_id}}">
+
+            <div class="button-group">
+                <button onclick="history.back()">목록</button>
+                <input type="submit" value="등록">
+            </div>
+
         </form>
-    {% else %}
+
+        {% else %}
         <a href="{%url 'users:login' %}?next={{request.path}}?review_id={{review.review_id}}">댓글 작성을 위해 로그인이 필요합니다.</a>
-    {% endif %}
+        {% endif %}
+    </div>
+</section>
 
-    <!-- 댓글 보기 -->
-    {% include 'review_detail_comments.html' %}
-
-</div>
 
 <script>
     // 댓글 작성하기 기능
-    $('#upload_comment').on('submit',function(){
+    $('#upload_comment').on('submit', function () {
         event.preventDefault();
         var comment_text = $('#comment_text').val();
         if (comment_text === "") alert("내용을 입력해주세요");
         else {
             $.ajax({
-                type:"POST",
+                type: "POST",
                 url: "{% url 'reviews:comment_upload' %}",
-                data : {'comment_text':$('#comment_text').val(),'review_id':$('#review_id').val(),csrfmiddlewaretoken:'{{ csrf_token }}'},
-                success:function(data){  
+                data: {
+                    'comment_text': $('#comment_text').val(),
+                    'review_id': $('#review_id').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
                     alert('댓글 작성이 완료되었습니다.')
                     $('#review_comments').html(data);
                     $('#comment_text').val("");
                 }
             })
-        } 
-    }); 
+        }
+    });
 </script>
 
 {% endblock %}

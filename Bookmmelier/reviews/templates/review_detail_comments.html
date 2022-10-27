@@ -1,64 +1,68 @@
-<!-- 리뷰 댓글 목록 표시 -->
 <div id="review_comments">
-    
+
     <!-- 댓글 목록 출력 -->
     {% if comments_list %}
     <!-- 댓글 수 출력 -->
     <p><b>{{ comments_list|length }}개의 댓글이 있습니다.</b></p>
-        {%for comment in comments_list%}
-        <div id="comment" style="border:1px solid black;">
-            <!-- 댓글 작성자와 작성 시간 -->
-            <h5>{{comment.user.name}} : [{{comment.time_write}}]</h5>
-            
-            <!-- 댓글 내용 출력 -->
-            <input type="text" class="replyContent{{ comment.comment_id }}" value="{{comment.contents}}" readonly>           
-            
-            <!-- 댓글의 작성자가 사용자일 경우 수정, 삭제 버튼을 보여줌 -->
-            {%if comment.user == request.user %}       
-                <!-- 수정 버튼 -->
+    {%for comment in comments_list%}
+    <div class="comment-container">
+        <div class="metadata">
+            <div class="writer">
+                {{comment.user.name}}
+            </div>
+            <div class="data">
+                &nbsp&nbsp{{comment.time_write}}
+            </div>
+            {%if comment.user == request.user %}
+            <div class="edit">
                 <div class="tdReplyUpdate{{ comment.comment_id }}">
                     <input type="button" value="수정" onclick="replyUpdate('{{ comment.comment_id }}')">
                 </div>
                 <!-- 삭제 버튼 -->
                 <div class="tdReplyDelete{{ comment.comment_id }}">
-                    <input type="button"  value="삭제" onclick="replyDelete('{{ comment.comment_id }}')">
+                    <input type="button" value="삭제" onclick="replyDelete('{{ comment.comment_id }}')">
                 </div>
                 <!-- 수정 완료 버튼 : 수정 버튼 클릭시 나타남 -->
-                <div class="tdReplySubmit{{ comment.comment_id }}"  style="display:none">
-                    <input type="button"  value="수정 완료" onclick="replySubmit('{{comment.comment_id }}')">
+                <div class="tdReplySubmit{{ comment.comment_id }}" style="display:none">
+                    <input type="button" value="수정 완료" onclick="replySubmit('{{comment.comment_id }}')">
                 </div>
                 <!-- 수정 취소 버튼 : 수정 버튼 클릭시 나타남 -->
-                <div class="tdReplyUpdateCancel{{ comment.comment_id }}"  style="display:none">
-                    <input type="button"  value="취소" onclick="replyUpdateCancel('{{ comment.comment_id }}')">
+                <div class="tdReplyUpdateCancel{{ comment.comment_id }}" style="display:none">
+                    <input type="button" value="취소" onclick="replyUpdateCancel('{{ comment.comment_id }}')">
                 </div>
+            </div>
             {%endif%}
         </div>
+        <div class="content">
+            <input type="text" class="replyContent{{ comment.comment_id }}" value="{{comment.contents}}" readonly>
+        </div>
         {%endfor%}
-    {%else%}
-    <h5>댓글이 없습니다.</h5>
-    {%endif%}
+        {%else%}
+        <h5>댓글이 없습니다.</h5>
+        {%endif%}
+    </div>
 
     <!-- 페이지네이션 부분 -->
     <!-- 댓글이 앞 뒤 페이지가 있는 경우 (5개 이상인 경우에 대해) 페이지네이션 표시 -->
     {% if comments_list.has_previous or comments_list.has_next %}
-        <div style="text-align:center">
-            <div class="pagination" id="page">
-                {% if comments_list.has_previous %}
-                <a class="first_page" type="button">맨 앞으로</a>
+    <div style="text-align:center">
+        <div class="pagination" id="page">
+            {% if comments_list.has_previous %}
+            <a class="first_page" type="button">맨 앞으로</a>
+            {% endif %}
+            <div style="width:30%; margin: 5px;">
+                {% for page in comments_list.paginator.page_range %}
+                {% if page >= comments_list.number|add:-5 and page <= comments_list.number|add:5 %}
+                <a class="now_page" type="button">{{page}}</a>
                 {% endif %}
-                <div style="width:30%; margin: 5px;">
-                    {% for page in comments_list.paginator.page_range %}
-                        {% if page >= comments_list.number|add:-5 and page <= comments_list.number|add:5 %} 
-                        <a class="now_page" type="button">{{page}}</a>
-                        {% endif %}
-                    {%endfor %} 
-                </div>
-
-                {% if comments_list.has_next %}
-                <a class="last_page" type="button">맨 뒤로</a>
-                {% endif %}
+                {%endfor %}
             </div>
+
+            {% if comments_list.has_next %}
+            <a class="last_page" type="button">맨 뒤로</a>
+            {% endif %}
         </div>
+    </div>
     {%endif%}
 </div>
 
@@ -92,57 +96,70 @@
     }
 
     // 댓글 수정 완료 기능
-    const replySubmit = (comment_id) =>{
+    const replySubmit = (comment_id) => {
         let comment_text = document.querySelector(`.replyContent${comment_id}`).value;
         $.ajax({
-                type:"POST",
-                url: "{% url 'reviews:comment_update' %}",
-                data : {'comment_id': comment_id,'comment_text': comment_text, csrfmiddlewaretoken:'{{ csrf_token }}','review_id':$('#review_id').val()},
-                success:function(data){  
-                    alert('댓글이 수정되었습니다.')
-                    $('#review_comments').html(data);
-                }
+            type: "POST",
+            url: "{% url 'reviews:comment_update' %}",
+            data: {
+                'comment_id': comment_id,
+                'comment_text': comment_text,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                'review_id': $('#review_id').val()
+            },
+            success: function (data) {
+                alert('댓글이 수정되었습니다.')
+                $('#review_comments').html(data);
+            }
         });
     }
 
     // 댓글 삭제 기능
-    const replyDelete = (comment_id) =>{
+    const replyDelete = (comment_id) => {
         $.ajax({
-                type:"POST",
-                url: "{% url 'reviews:comment_delete' %}",
-                data : {'comment_id': comment_id, csrfmiddlewaretoken:'{{ csrf_token }}','review_id':$('#review_id').val()},
-                success:function(data){  
-                    alert('댓글이 삭제되었습니다.')
-                    $('#review_comments').html(data);
-                }
+            type: "POST",
+            url: "{% url 'reviews:comment_delete' %}",
+            data: {
+                'comment_id': comment_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                'review_id': $('#review_id').val()
+            },
+            success: function (data) {
+                alert('댓글이 삭제되었습니다.')
+                $('#review_comments').html(data);
+            }
         });
     }
 
     // 페이지네이션 기능
-    $(document).on('click', '.first_page', function(){
+    $(document).on('click', '.first_page', function () {
         num_pages = parseInt($('.now_page').first().text());
-            page_click();
+        page_click();
     })
 
-    $(document).on('click', '.last_page', function(){
+    $(document).on('click', '.last_page', function () {
         num_pages = parseInt($('.now_page').last().text());
         page_click();
     })
 
-    $(document).on('click', '.now_page', function(){
+    $(document).on('click', '.now_page', function () {
         num_pages = parseInt($(this).text());
         page_click();
-    })  
-    
-    function page_click(){
+    })
+
+    function page_click() {
         $.ajax({
-            type:"post",
+            type: "post",
             url: "{% url 'reviews:detail' %}",
-            data : {csrfmiddlewaretoken:'{{ csrf_token }}','page':num_pages,'review_id':$('#review_id').val()},
-            success:function(data){
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                'page': num_pages,
+                'review_id': $('#review_id').val()
+            },
+            success: function (data) {
                 $('#review_comments').html(data)
             },
         })
-        
-    }    
+
+    }
 </script>

@@ -1,6 +1,91 @@
 <!-- 리뷰 작성 페이지 -->
 {% extends 'bookmmelier_base.html' %}
 {% block content %}
+<!--main-->
+<section class="container" id="main">
+   <div class="row">
+      <div class="col-12">
+         <form action="#" method="GET" id="form-review">
+            <input type="text" class="title" placeholder="제목을 입력하세요" name="title">
+            <div class="small-content">
+               <div class="content-title">
+                  도서선택
+               </div>
+               <div class="select" onClick="javascript:popOpen();">
+                  선택된 책이 없습니다. 도서를 선택해주세요.
+                  <br>
+                  +
+               </div>
+            </div>
+
+            <div class="small-content">
+               <div class="content-title no-margin">
+                  별점
+               </div>
+               <fieldset>
+                  <input type="radio" name="reviewStar" value="5" id="rate1"><label for="rate1">★</label>
+                  <input type="radio" name="reviewStar" value="4" id="rate2"><label for="rate2">★</label>
+                  <input type="radio" name="reviewStar" value="3" id="rate3"><label for="rate3">★</label>
+                  <input type="radio" name="reviewStar" value="2" id="rate4"><label for="rate4">★</label>
+                  <input type="radio" name="reviewStar" value="1" id="rate5"><label for="rate5">★</label>
+               </fieldset>
+               <!-- 서평 -->
+               <textarea rows="10" cols="50" placeholder="서평을 자유롭게 입력해보세요"></textarea>
+               <div class="button-group">
+                  <button onclick="history.back()">목록</button>
+                  <input type="submit" value="등록">
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+
+
+   <div class="row">
+      <!-- 도서정보 -->
+      <div class="col-12">
+         <div class="small-content">
+            <div class="content-title">
+               도서정보
+            </div>
+            <div class="book-container">
+               <img src="./static/img/bookcover.png">
+               <div class="metadata">
+                  <div class="title">
+                     문과 출신입니다만
+                  </div>
+
+                  <table class="bibil">
+                     <tr>
+                        <th>저자</th>
+                        <td>자청</td>
+                        <th>출판사</th>
+                        <td>자청</td>
+                        <th>출판년도</th>
+                        <td>2022</td>
+                     </tr>
+                     <tr>
+                        <th>주제</th>
+                        <td>한국문학</td>
+                        <th>ISBN</th>
+                        <td>978000000</td>
+                        <th></th>
+                        <td></td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+</section>
+
+
+
+
+
+
 <div class="content">
    <!-- 제목 부분 -->
    <div class="header">

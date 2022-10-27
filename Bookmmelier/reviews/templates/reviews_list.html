@@ -1,12 +1,13 @@
 <!-- 리뷰 작성 페이지 -->
 {% extends 'bookmmelier_base.html' %}
 {% block content %}
-<div class="content">
-    <!-- 제목 부분 -->
-    <div class="header">
-        <h2>서평 구경</h2>
+{% load static %}
+<section class="container" id="main">
+    <div class="row">
+        <div class="col-12">
+            <span class="main-title">서평 구경</span>
+        </div>
     </div>
-
     <!-- 서평 검색 부분 -->
     <div>
         <select name="search_type" id="search_type">
@@ -15,13 +16,10 @@
             <option value="작성자">작성자</option>
             <option value="내용">내용</option>
         </select>
-        <input id="search_input" type="search"/>
-        <button id="search_button" type="submit">검색</button>      
-    </div>  
-
-    <!-- 서평 목록 테이블 정의 -->
+        <input id="search_input" type="search" />
+        <button id="search_button" type="submit">검색</button>
+    </div>
     {% include 'reviews_table.html' %}
 
-</div>
-
+</section>
 {% endblock %}
