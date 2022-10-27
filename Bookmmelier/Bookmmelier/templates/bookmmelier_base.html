@@ -6,10 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>북믈리에</title>
-
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/customstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
 
     <script src="https://kit.fontawesome.com/f9a809ddea.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -34,43 +33,38 @@
     {% block style %}
     <!-- 스타일 -->
     {% endblock %}
+
 </head>
 
 <body>
     <header>
         <div class="container-fluid">
             <div class="row align-items-center">
-                <div class="col-xl-2">
+                <div class="col-2">
                     <span class="logo">북믈리에</span>
                 </div>
-                <nav class="col-xl-6">
+                <nav class="col-6 align-items-center" style="text-align: center;">
                     <span class="menu"><a href="{% url 'books:list' %}">도서검색</a></span>
                     <span class="menu"><a href="{% url 'reviews:list' %}">서평구경</a></span>
                     <span class="menu"><a href="{% url 'reviews:write' %}">서평쓰기</a></span>
                     <span class="menu"><a href="{% url 'debates:list'%}">독서토론</a></span>
                     <span class="menu"><a href="{% url 'users:mypage'%}">마이 페이지</a></span>
                 </nav>
-                <div class="col-xl-2">
+                <div class="col-2">
                     <form action="{% url 'reviews:list' %}" method="POST">
-                        <input id="review_search_input" name="review_search_input" class="search" type="text"
-                            name="search" placeholder="다른 사람이 쓴 서평을 검색해보세요">
+                        <input class="search" type="text" name="review_search_input" id="review_search_input"
+                            placeholder="다른 사람이 쓴 서평을 검색해보세요">
                     </form>
                 </div>
-                <div class="col-xl-2 sign">
-                    <div class="container-fluid">
-                        <div class="row">
-                            {% if request.user.is_authenticated %}
-                            <div class="col-6">
-                                <a href="{% url 'users:logout'%}">Sign out</a>                                
-                            </div>
-                            {%else%}
-                            <div class="col-6">
-                                <a href="{% url 'users:login'%}?next={{request.path}}">Sign in</a>
-                            </div>
-                            {%endif%}
-                        </div>
-                    </div>
+                {% if request.user.is_authenticated %}
+                <div class="col-1">
+                    <a href="{% url 'users:logout'%}">Sign out</a>
                 </div>
+                {%else%}
+                <div class="col-1">
+                    <a href="{% url 'users:login'%}?next={{request.path}}">Sign in</a>
+                </div>
+                {%endif%}
             </div>
         </div>
     </header>

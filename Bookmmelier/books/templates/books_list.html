@@ -1,27 +1,29 @@
 {% extends 'bookmmelier_base.html' %}
 {% block content %}
-<div class="content">    
-<!-- 도서 목록 페이지 -->
+{% load static %}
 
-	<!-- 제목 부분 -->
-	<div class="header">
-		<h2>도서 목록</h2>
+<section class="container" id="main">
+	<div class="row">
+		<div class="col-12">
+			<span class="main-title">도서검색</span>
+		</div>
 	</div>
 
 	<!-- 검색 부분 -->
-	<div>
-		<select name="search_type" id="search_type">
-			<option value="전체">전체</option>
-			<option value="제목">제목</option>
-			<option value="작가">작가</option>
-			<option value="출판사">출판사</option>
-		</select>
-		<input id="search_input" type="search"/>
-		<button id="search_button" type="submit">검색</button>
+	<div class="row">
+		<div class="col-12 search">
+			<form action="#" method="GET">
+				<input id="search_input" type="text" name="search" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
+				<i class='fa-solid fa-magnifying-glass' id="search_button" type="submit"></i>
+			</form>
+		</div>
+		{%if search_input%}
+		<a>검색결과 : {{search_input}}</a>
+		{%endif%}
 	</div>
-
-    <!-- 도서 목록 및 검색 결과-->
+	<!-- 도서 목록 및 검색 결과-->
 	{% include 'books_table.html' %}
 
-</div>
+</section>
+
 {% endblock %}

@@ -1,52 +1,50 @@
+{% load static %}
+<!-- 도서 목록 -->
 <div id="table">
-    <!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
-
-    <!-- 검색 조건과 검색어에 대한 출력 -->
-    {%if search_input%}
-    <a>검색결과 : ({{search_type}}){{search_input}}</a>
-    {%endif%}
-
-    <!-- 도서목록 부분 -->
-    <div>
-        <table class="table-contents"
-            style="padding:10px; border-top: 3px solid #444444; border-collapse: collapse; margin:auto; width: 100%;">
-            <thead>
-                <tr text-align="center"
-                    style="padding:5px; border-bottom: 3px solid #444444; padding: 10px; text-align: center;">
-                    <th>|isbn|</th>
-                    <th>|vol|</th>
-                    <th>|제목|</th>
-                    <th>|작가|</th>
-                    <th>|출판사|</th>
-                    <th>|출판년도|</th>
-                    <th>|평점|</th>
-                    <th>|이미지|</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% if books_list %}
-                {% for book in books_list %}
-                <tr class="{% cycle '' 'even_bgcolor' %}"
-                    style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;"
-                    data-href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
-                    <td>{{book.isbn13}}</td>
-                    <td>{{book.vol}}</td>
-                    <td>{{book.title}}</td>
-                    <td>{{book.author}}</td>
-                    <td>{{book.publisher}}</td>
-                    <td>{{book.pub_date}}</td>
-                    <td>{{book.ratings}}</td>
-                    <td><img src="{{book.img_url}}" width="50" , height="70"></td>
-                </tr>
-                {% endfor %}
+    <div class="row">
+        <div class="book-items">
+            {% if books_list %}
+            {% for book in books_list %}
+            <div class="col-12 item" onclick=location.href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
+                {% if book.img_url %}
+                <img src="{{book.img_url}}">
                 {% else %}
-                <tr>
-                    <td>검색 결과가 없습니다.</td>
-                </tr>
+                <img src="{% static 'img/non_image.png' %}">
                 {% endif %}
-            </tbody>
-        </table>
+                <div class="metadata">
+                    <div class="title">
+                        {{book.title}}
+                    </div>
+                    <table class="bibil">
+                        <tr>
+                            <th>저자</th>
+                            <td>{{book.author}}</td>
+                            <th>출판사</th>
+                            <td>{{book.publisher}}</td>
+                            <th>출판년도</th>
+                            <td>{{book.pub_date}}</td>
+                        </tr>
+                        <tr>
+                            <th>주제</th>
+                            <td>{{book.kdc_class_no}}</td>
+                            <th>ISBN</th>
+                            <td>{{book.isbn13}}</td>
+                            <th></th>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div class="desc">
+                        {{review.contents|truncatechars:30|safe}}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <table class="bibil">
+                <td>검색 결과가 없습니다.</td>
+            </table>
+            {% endif %}
+        </div>
     </div>
 
     <!-- 페이지네이션 부분 -->
@@ -76,11 +74,11 @@
 
 <script>
     // 테이블의 각 요소에 대한 클릭 이벤트 지정
-    $(document).ready(function(){
-      $('table tr').click(function(){
-        window.location = $(this).data('href');
-        return false;
-      });
+    $(document).ready(function () {
+        $('#bookitem').click(function () {
+            window.location = $(this).data('href');
+            return false;
+        });
     });
 
     // 검색에 따른 결과 반영 기능
@@ -90,7 +88,6 @@
             url: "{% url 'books:list' %}",
             data: {
                 'search_input': $('#search_input').val(),
-                'search_type': $('#search_type').val()
             },
             success: function (data) {
                 $('#table').html(data)
@@ -118,10 +115,10 @@
             url: "{% url 'books:list' %}",
             data: {
                 'search_input': $('#search_input').val(),
-                'search_type': $('#search_type').val(),
                 'page': num_pages
             },
             success: function (data) {
+                console.log(data)
                 $('#table').html(data);
             }
         })

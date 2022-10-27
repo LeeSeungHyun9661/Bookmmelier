@@ -1,49 +1,122 @@
 {% extends 'bookmmelier_base.html' %}
-{% load bootstrap4 %} 
+{% load bootstrap4 %}
 {% block content %}
 
+<section class="container" id="main">
+    <div class="row">
+        <div class="col-12">
+            <span class="main-title">마이 페이지</span>
+        </div>
+    </div>
+
+
+    <div class="content-container">
+        <div class="content-title">
+            작성한 서평
+        </div>
+        {%if reviews %}
+        <!-- 작성 서평이 있는 경우 -->
+        <a href="{% url 'users:reviews' %}"> 서평 더보기 </a>        
+        <div class="row review-shortcut-items">
+            {%for review in reviews %}
+            <div class="review-shortcut-container" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+                <div class="title">{{review.book.title}}</div>
+                <div class="metadata"><i class="fa-solid fa-star"></i> {{review.like_users.count}} <i class="fa-solid fa-star"></i> 30</div>
+                <div class="content">
+                    {{review.contents|striptags|safe|slice:':100'|truncatechars:30}}
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+        {%else%}
+        <!-- 작성 서평이 없는 경우 -->
+        작성하신 서평이 없네요?
+        {% endif %}
+    </div>
+
+    <!-- 사용자 참여 토론 목록 -->
+    <div class="content-container">
+        <div class="content-title">
+            서평 분석
+        </div>
+        <div class="container">
+            <div class="row contents-analysis-items">
+
+                <!-- 분석 결과 아이템 -->
+                <div class="col-3 contents-analysis-container">
+                    분석결과1
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 추천 도서 목록 -->
+    <div class="content-container">
+        <div class="content-title">
+            AI 도서 추천
+        </div>
+        <div class="col-4">
+            <div class="sub-contents">
+                <div class="book-items-vertical">
+
+                    <!-- 추천 도서 아이템 -->
+                    <div class="item" onclick="location.href ='#'">
+                        <img src="./static/img/bookcover.png">
+                        <div class="title">
+                            역행자
+                        </div>
+                        <div class="author">
+                            저자 | 자청
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사용자 참여 토론 목록 -->
+    <div class="content-container">
+        <div class="content-title">
+            참여 토론
+        </div>
+        <div class="col-12 debate-container" onclick="location.href='#'">
+            <div class="title">남는 체력이 읎어</div>
+            <div class="status">
+                <div class="status-item">
+                    <i class="fa-regular fa-user"></i>
+                    56
+                </div>
+                <div class="status-item">
+                    <i class="fa-regular fa-comment"></i>
+                    250
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
 <!-- 사용자 정보 -->
-<div style="border-bottom: 3px solid #444444;">
+<!-- <div style="border-bottom: 3px solid #444444;">
     <h1>마이 페이지</h1>
     <h3>아이디: {{user.id}}</h3>
-    <h3>이름  : {{user.name}}</h3>
+    <h3>이름 : {{user.name}}</h3>
     <h3>이메일: {{user.email}}</h3>
-    <h3>성별  : {{user.gender}}</h3>
-    <h3>나이  : {{user.age}}</h3>
-</div>
+    <h3>성별 : {{user.gender}}</h3>
+    <h3>나이 : {{user.age}}</h3>
+</div> -->
 
 
 <!-- 사용자 편집 -->
-<div style="border-bottom: 3px solid #444444;">
+<!-- <div style="border-bottom: 3px solid #444444;">
     {% if user.type == 'nomal'%}
     <a href="./changePassword">비밀번호수정</a>
     <a href="./withdraw">회원탈퇴</a>
     {% else %}
-        <a href="./withdraw_kakao">회원탈퇴</a>
+    <a href="./withdraw_kakao">회원탈퇴</a>
     {% endif %}
-</div>
+</div> -->
 
-<!-- 최근 작성한 서평 -->
-<div style="border-bottom: 3px solid #444444;">
-    <h3>작성한 서평</h3>
-    {%if reviews %}
-    <div>
-        <h3>최근 서평</h3>
-        <a href="{% url 'users:reviews' %}"> 서평 더보기 </a>
-    </div>    
-
-        {%for review in reviews %}  
-        <div style="float:left">
-            <h6>도서 : {{review.book.title}}</h6>                        
-            <h6><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">제목 : {{review.title}}</a></h6>
-            <h6>내용 : {{review.contents|striptags|safe|slice:':100'|truncatechars:30}}</h6> 
-            <h6>좋아요 : {{review.like_users.count}}</h6>  
-            <h6>작성시간 : {{review.time_retouch}}</h6>
-        </div>
-        {%endfor%}
-    {%else%}
-    <h6>작성하신 서평이 없네요?</h6>
-    {% endif %}
-</div>
-
-{% endblock %}  
+{% endblock %}

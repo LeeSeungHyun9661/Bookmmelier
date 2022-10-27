@@ -1,64 +1,161 @@
-{% extends 'bookmmelier_base.html' %} {% block content %}
+{% extends 'bookmmelier_base.html' %}
+{% block content %}
+{% load static %}
 <!-- 도서 상세 페이지 -->
-<h1>도서 페이지</h1>
-
-<!-- 도서 정보 -->
-<div>
-	<img src="{{book.img_url}}" width="500" , height="700">
-	<h1>제목 : {{book.title}}</h1>
-	<h3>출판사 :{{book.publisher}}</h3>
-	<h3>작가 : {{book.author}}</h3>
-	<h3>소개글 : {{book.description}}</h3>
-	<h3>평점 : {{book.ratings}}</h3>
-</div>
-
-<!-- 도서 관련 서평 -->
-<div style="border:3px solid black;">
-	<!-- 서평 작성 -->
-	<h6><a href="{% url 'reviews:write' %}?isbn13={{book.isbn13}}">서평 쓰러가기</a></h6>
-	<!-- 서평 3개 출력 -->
-	{%if reviews %} {% for review in reviews %}
-	<div class="review_item" data-href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
-		<h3>{{review.title}} / {{review.user.name}}</h3>
-		<h3>평점 : {{review.rate}}</h3>
-		<h3>{{review.contents|slice:':100'|truncatechars:30|safe}}</h3>
+<section class="container" id="main">
+	<div class="row">
+		<div class="col-12">
+			<span class="main-title">도서 상세정보</span>
+		</div>
 	</div>
-	{%endfor%} {%else%}
-	<h3>작성된 서평이 없습니다.</h3>
-	{%endif%}
-</div>
 
-<!-- 도서 관련 토론 -->
-<div style="border:3px solid black;">
-	<!-- 토론 생성 -->
-	<h6><a href="{% url 'debates:create'%}?isbn13={{selected_book.isbn13}}">토론 시작하기</a></h6>
-	<!-- 토론 3개 출력 -->
-	{%if debates %} {% for debate in debates %}
-	<div  class="debate_item" data-href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">
-		<h3>제목 : {{debate.title}}</h3>
-		<h3>주제 : {{debate.subtitle}}</h3>
-		<h3>참여자 수 : {{debate.user_count}}</h3>
-		<h3>메시지 수 : {{debate.message_count}}</h3>
+	<div class="row">
+		<div class="col-12 book-items">
+			<div class="item">
+				<!-- 도서 이미지 -->
+				{% if book.img_url %}
+				<img src="{{book.img_url}}">
+				{% else %}
+				<img src="{% static 'img/non_image.png' %}">
+				{% endif %}
+
+				<div class="metadata">
+					<!-- 도서 제목 -->
+					<div class="title">
+						{{book.title}}
+					</div>
+
+					<table class="bibil">
+						<tr>
+							<th>저자</th>
+							<td>{{book.author}}</td>
+							<th>출판사</th>
+							<td>{{book.publisher}}</td>
+							<th>출판년도</th>
+							<td>{{book.pub_date}}</td>
+						</tr>
+						<tr>
+							<th>주제</th>
+							<td>{{book.kdc_class_no}}</td>
+							<th>ISBN</th>
+							<td>{{book.isbn13}}</td>
+							<th></th>
+							<td></td>
+						</tr>
+					</table>
+					<div class="rate">
+						평점 {{book.ratings}}
+						<span class="stars">
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star"></i>
+							<i class="fa-solid fa-star"></i>
+						</span>
+					</div>
+					<div class="shortcut-container">
+						<div class="shortcut-desc">
+							이미 읽은 책이 <br>
+							있으신가요?
+						</div>
+						<div class="shortcut-icon">
+							<i class="fa-solid fa-file-circle-plus"></i>
+						</div>
+						<!-- 버튼 전체 클릭 가능하도록 수정! -->
+						<div class="shortcut-title">
+							<a href="{% url 'reviews:write' %}?isbn13={{book.isbn13}}">서평 작성하기</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	{%endfor%} {%else%}
-	<h3>시작된 토론이 없습니다.</h3>
-	{%endif%}
-</div>
 
-<script>
-    // 테이블의 각 요소에 대한 클릭 이벤트 지정
-    $(document).ready(function(){
-		$('.review_item').click(function () {
-			window.location = $(this).data('href');		  
-			return false;
-		})
-		$('.debate_item').click(function () {
-			window.location = $(this).data('href');		  
-			return false;
-		})
-    });
-</script>
+	<div class="content-container">
+		<div class="content-title">
+			소개글
+		</div>
+		<div class="content-desc">
+			{% if book.description %}
+			{{book.description}}
+			{% else %}
+			도서 설명이 없습니다.
+			{% endif %}
+		</div>
+	</div>
 
+	<div class="content-container">
+		<div class="content-title">
+			서평 분석
+		</div>
+		<div class="container">
+			<div class="row contents-analysis-items">
+				<div class="col-3 contents-analysis-container">
+					분석결과1
+				</div>
+				<div class="col-3 contents-analysis-container">
+					분석결과2
+				</div>
+				<div class="col-3 contents-analysis-container">
+					분석결과3
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content-container">
+		<div class="content-title">
+			서평
+		</div>
+
+		{%if reviews %}
+		{% for review in reviews %}
+		<div class="col-12 review-container" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+			<div class="header">
+				<div class="title">{{review.title}}</div>
+				<div class="writer">by {{review.user.name}}</div>
+			</div>
+			<div class="metadata">
+				<div class="stars">
+					평점 {{book.ratings}}
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+				</div>
+			</div>
+			<div class="contents">
+				{{review.contents|truncatechars:30|safe}}
+			</div>
+		</div>
+		{%endfor%}
+		{%endif%}
+	</div>
+
+	<div class="content-container">
+		<div class="content-title">
+			토론
+		</div>
+
+		{%if debates %}
+		{% for debate in debates %}
+		<div class="col-12 debate-container" onclick=location.href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">
+			<div class="title">{{debate.title}}</div>
+			<div class="status">
+				<div class="status-item">
+					<i class="fa-regular fa-user"></i>
+					{{debate.user_count}}
+				</div>
+				<div class="status-item">
+					<i class="fa-regular fa-comment"></i>
+					{{debate.message_count}}
+				</div>
+			</div>
+		</div>
+		{%endfor%}
+		{%endif%}
+	</div>
+</section>
 <!-- 도서 관련 토론 -->
 {% endblock %}
-

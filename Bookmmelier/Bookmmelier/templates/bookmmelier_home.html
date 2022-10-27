@@ -15,8 +15,8 @@
 <!--shortcut-->
 <section class="container" id="shortcut">
    <div class="row justify-content-center">
-      <div class="col-xl-3">
-         <div class="shortcut-container" data-href="{% url 'reviews:write' %}">
+      <div class="col-3 offset-1">
+         <div class="shortcut-container" onclick=location.href="{% url 'reviews:write' %}">
             <div class="shortcut-desc">
                이미 읽은 책이 <br>
                있으신가요?
@@ -30,8 +30,8 @@
          </div>
       </div>
 
-      <div class="col-xl-3">
-         <div class="shortcut-container" data-href="{% url 'users:mypage' %}">
+      <div class="col-3 offset-1">
+         <div class="shortcut-container" onclick=location.href="{% url 'users:mypage' %}">
             <div class="shortcut-desc">
                내가 얼마나 <br>
                책을 읽었을까요?
@@ -45,8 +45,8 @@
          </div>
       </div>
 
-      <div class="col-xl-3">
-         <div class="shortcut-container" data-href="{% url 'reviews:list' %}">
+      <div class="col-3 offset-1">
+         <div class="shortcut-container" onclick=location.href="{% url 'reviews:list' %}">
             <div class="shortcut-desc">
                다른 사람들은<br>
                어떻게 생각할까요?
@@ -64,61 +64,70 @@
 
 <!--books-->
 <section class="container" id="books">
-   <div class="row justify-content-evenly">
-      <div class="col-xl-4">
-         <span class="sub-title">
-            인기도서
-         </span>
-         <span class="more">
-            <a href="#">더보기></a>
-         </span>
-         <div class="book-items">
-            {% if bestseller_list %}
-            {% for book in bestseller_list %}
-            <div class="item" data-href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
-               {%if book.img_url %}
-               <img src="{{book.img_url}}">
-               {%else%}
-               <img src="{% static 'img/non_image.png' %}">
-               {%endif%}
-               <div class="title">
-                  {{book.title}}
-               </div>
-               <div class="author">
-                  {{book.author}} | {{book.publisher}}
-               </div>
+   <div class="row justify-content-between">
+      <div class="col-4 offset-3">
+         <div class="sub-contents">
+            <div class="header justify-content-between">
+               <span class="sub-title">
+                  인기도서
+               </span>
+               <span class="more">
+                  <a href="#">더보기></a>
+               </span>
             </div>
-            {% endfor %}
-            {% endif %}
+            <div class="book-items-vertical">
+               {% if bestseller_list %}
+               {% for book in bestseller_list %}
+               <div class="item" onclick=location.href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
+                  {%if book.img_url %}
+                  <img src="{{book.img_url}}">
+                  {%else%}
+                  <img src="{% static 'img/non_image.png' %}">
+                  {%endif%}
+
+                  <div class="title">
+                     {{book.title}}
+                  </div>
+                  <div class="author">
+                     {{book.author}} | {{book.publisher}}
+                  </div>
+               </div>
+               {% endfor %}
+               {% endif %}
+            </div>
          </div>
       </div>
 
-
-      <div class="col-xl-4">
-         <span class="sub-title">
-            AI 추천도서
-         </span>
-         <span class="more">
-            <a href="#">더보기></a>
-         </span>
-         <div class="book-items">
-            {% if recommend_list %}
-            {% for book in recommend_list %}
-            <div class="item" data-href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
-               {%if book.img_url %}
-               <img src="{{book.img_url}}">
-               {%else%}
-               <img src="{% static 'img/non_image.png' %}">
-               {%endif%}
-               <div class="title">
-                  {{book.title}}
-               </div>
-               <div class="author">
-                  {{book.author}} | {{book.publisher}}
-               </div>
+      <div class="col-4">
+         <div class="sub-contents">
+            <div class="header justify-content-between">
+               <span class="sub-title">
+                  AI 추천도서
+               </span>
+               <span class="more">
+                  <a href="#">더보기></a>
+               </span>
             </div>
-            {% endfor %}
-            {% endif %}
+
+            <div class="book-items-vertical">
+               {% if recommend_list %}
+               {% for book in recommend_list %}
+               <div class="item" onclick=location.href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
+                  {%if book.img_url %}
+                  <img src="{{book.img_url}}">
+                  {%else%}
+                  <img src="{% static 'img/non_image.png' %}">
+                  {%endif%}
+                  <div class="title">
+                     {{book.title}}
+                  </div>
+                  <div class="author">
+                     {{book.author}} | {{book.publisher}}
+                  </div>
+               </div>
+               {% endfor %}
+               {% endif %}
+            </div>
          </div>
       </div>
    </div>
@@ -126,10 +135,8 @@
 
 <!--status-->
 <section class="container" id="status">
-   <div class="row status-items">
-
-
-      <div class="col-xl-3">
+   <div class="row status-items justify-content-between">
+      <div class="col-3">
          <div class="item">
             <div class="rate">
                {{books_cnt}}
@@ -140,9 +147,11 @@
          </div>
       </div>
 
-      <div class="col-xl-3">
+
+      <div class="col-3">
          <div class="item">
             <div class="rate">
+
                {{reviews_cnt}}
             </div>
             <div class="desc">
@@ -151,7 +160,7 @@
          </div>
       </div>
 
-      <div class="col-xl-3">
+      <div class="col-3">
          <div class="item">
             <div class="rate">
                {{users_cnt}}
@@ -162,7 +171,7 @@
          </div>
       </div>
 
-      <div class="col-xl-3">
+      <div class="col-3">
          <div class="item">
             <div class="rate">
                {{debates_cnt}}
@@ -177,11 +186,10 @@
 
 <!--phrase-->
 <section class="container-fluid" id="phrase">
-   <div class="row">
+   <div class="row justify-content-center">
       <div class="col-12">
          <blockquote>
-            <p>Reading is<br>
-               Departure and Arrival</p>
+            <p>Reading is Departure and Arrival</p>
          </blockquote>
       </div>
    </div>
@@ -197,20 +205,25 @@
       <div class="col-12 review-items">
          {% if reviews_list %}
          {% for review in reviews_list %}
-         <div class="item" data-href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+         <div class="item" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
             <div class="book">
+               <!-- 도서 이미지 -->
                {%if review.book.img_url %}
                <img src="{{review.book.img_url}}">
                {%else%}
                <img src="{% static 'img/non_image.png' %}">
                {%endif%}
+
+               <!-- 도서 제목 -->
                <div class="title">
                   {{review.book.title}}
                </div>
+               <!-- 도서 저자 -->
                <div class="author">
-                  {{review.book.title}} | {{review.book.author}}
+                  저자 | {{review.book.author}}
                </div>
             </div>
+            <!-- 리뷰 정보 -->
             <div class="review">
                <span class="title">{{review.title}}</span>
                <span class="writer">{{review.user.name}}</span>
@@ -220,20 +233,9 @@
             </div>
          </div>
          {% endfor %}
+
          {% endif %}
       </div>
    </div>
 </section>
-
-<script>
-   $('.shortcut-container').click(function () {
-      window.location = $(this).data('href');
-      return false;
-   });
-
-   $('.item').click(function () {
-      window.location = $(this).data('href');
-      return false;
-   });
-</script>
 {% endblock %}
