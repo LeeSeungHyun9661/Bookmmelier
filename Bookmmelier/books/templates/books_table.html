@@ -1,3 +1,5 @@
+<!-- 도서 검색 결과 템플릿 -->
+
 {% load static %}
 <!-- 도서 목록 -->
 <div id="table">
@@ -5,14 +7,14 @@
         <div class="book-items">
             {% if books_list %}
             {% for book in books_list %}
-            <div class="col-12 item" onclick=location.href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
+            <div class="col-12 item" >
                 {% if book.img_url %}
                 <img src="{{book.img_url}}">
                 {% else %}
                 <img src="{% static 'img/non_image.png' %}">
                 {% endif %}
                 <div class="metadata">
-                    <div class="title">
+                    <div class="title" onclick=location.href="{% url 'books:detail'%}?isbn13={{book.isbn13}}">
                         {{book.title}}
                     </div>
                     <table class="bibil">

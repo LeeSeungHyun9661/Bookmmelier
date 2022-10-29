@@ -1,24 +1,28 @@
 <!-- 리뷰 작성 페이지 -->
 {% extends 'bookmmelier_base.html' %}
+{% load static %}
+
+{% block style %}
+<script src="{% static 'js/modal.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-<!--main-->
+{% load static %}
 <section class="container" id="main">
    <div class="row">
       <div class="col-12">
-         <form action="#" method="GET" id="form-review">
+         <form id="form-review" method="POST">
+            <!-- 제목 입력 -->
             <input type="text" class="title" placeholder="제목을 입력하세요" name="title">
             <div class="small-content">
                <div class="content-title">
                   도서선택
                </div>
-               <div class="select" onClick="javascript:popOpen();">
-                  선택된 책이 없습니다. 도서를 선택해주세요.
-                  <br>
-                  +
-               </div>
+               <!-- 도서 선택 버튼 or 선택된 도서 출력 -->
+               {% include 'review_write_selected_book.html' %}
             </div>
-
             <div class="small-content">
+               <!-- 별점 선택 -->
                <div class="content-title no-margin">
                   별점
                </div>
@@ -39,119 +43,31 @@
          </form>
       </div>
    </div>
-
-
-   <div class="row">
-      <!-- 도서정보 -->
-      <div class="col-12">
-         <div class="small-content">
-            <div class="content-title">
-               도서정보
-            </div>
-            <div class="book-container">
-               <img src="./static/img/bookcover.png">
-               <div class="metadata">
-                  <div class="title">
-                     문과 출신입니다만
-                  </div>
-
-                  <table class="bibil">
-                     <tr>
-                        <th>저자</th>
-                        <td>자청</td>
-                        <th>출판사</th>
-                        <td>자청</td>
-                        <th>출판년도</th>
-                        <td>2022</td>
-                     </tr>
-                     <tr>
-                        <th>주제</th>
-                        <td>한국문학</td>
-                        <th>ISBN</th>
-                        <td>978000000</td>
-                        <th></th>
-                        <td></td>
-                     </tr>
-                  </table>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-
 </section>
 
 
-
-
-
-
-<div class="content">
-   <!-- 제목 부분 -->
-   <div class="header">
-      <h2>서평 쓰기</h2>
-   </div>
-
-   <!-- 도서 선택 또는 변경에 대한 모달 불러오기 버튼 -->
-   <a href="#" data-toggle="modal" data-target="#myModal">도서 불러오기</a>
-
-   <!-- 모달 -->
-   <div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-         <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-               <h4 class="modal-title">도서 검색</h4>
-               <div>
-                  <select name="search_type" id="search_type">
-                     <option value="전체">전체</option>
-                     <option value="제목">제목</option>
-                     <option value="작가">작가</option>
-                     <option value="출판사">출판사</option>
-                  </select>
-                  <input id="search_input" type="search" />
-                  <button id="search_button" type="submit">검색</button>
-               </div>
-
-               <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-               <!-- 도서목록 부분 -->
-               <div id="search_result_table">
-                  {% include 'review_write_search_result.html' %}
-               </div>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                  Close
-               </button>
-            </div>
-         </div>
+<div class="modal-bg" onClick="javascript:popClose();"></div>
+<div class="modal-wrap">
+   <div class="container">
+      <button class="modal-close" onClick="javascript:popClose();">X</button>
+      <div class="title">
+         도서검색
+      </div>
+      <div class="search">
+         <input type="text" name="search" id="search_input" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
+         <i class='fa-solid fa-magnifying-glass' id="search_button"></i>
       </div>
    </div>
-   <div id="modal"></div>
-
-   <!-- 서평 작성 부분 -->
-   <form id="upload_review" method="POST">
-      {% include 'review_write_selected_book.html' %} {% csrf_token %}
-      {{forms|safe}}
-      <button type="submit">작성완료</button>
-   </form>
+   {% include 'review_write_search_result.html' %}
 </div>
 
 <script>
-   $("#search_button").click(function () {
+   $("#search_button").click(function (){
       $.ajax({
          type: "get",
          url: "{% url 'reviews:modal_search_Books' %}",
          data: {
-            search_input: $("#search_input").val(),
-            search_type: $("#search_type").val(),
+            search_input: $("#search_input").val()
          },
          success: function (data) {
             $("#search_result_table").html(data);
@@ -180,7 +96,6 @@
          url: "{% url 'reviews:modal_search_Books' %}",
          data: {
             search_input: $("#search_input").val(),
-            search_type: $("#search_type").val(),
             page: num_pages,
          },
          success: function (data) {
@@ -189,7 +104,7 @@
       });
    }
 
-   $(document).on("click", ".book_title", function () {
+   $(document).on("click", ".item", function () {
       $.ajax({
          type: "post",
          url: "{% url 'reviews:modal_select_Books' %}",
@@ -198,12 +113,13 @@
             csrfmiddlewaretoken: "{{ csrf_token }}",
          },
          success: function (data) {
+            popClose();
             $("#selected_book").html(data);
          },
       });
    });
 
-   $("#upload_review").on("submit", function () {
+   $("#form-review").on("submit", function () {
       event.preventDefault();
       form_array = $(this).serialize();
       // 도서가 선택되지 않은 경우, 오류 반환

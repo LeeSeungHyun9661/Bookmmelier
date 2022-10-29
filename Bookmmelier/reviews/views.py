@@ -216,21 +216,15 @@ def review_write_modal_search_Books(request):
     if  request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': #ajax로 통신 -> 페이지 또는 검색        
         print("ajax 통신 확인")   
         if search_input: #검색어가 있을 경우 - 해당 검색어로 필터링
-            if search_type == '전체':
-                books = Book.objects.filter(
-                    Q(title__icontains = search_input) | 
-                    Q(author__icontains = search_input) | 
-                    Q(publisher__icontains = search_input)
-                )
-            elif search_type == '제목':
-                books =  Book.objects.filter(Q(title__icontains = search_input))
-            elif search_type == '작가':
-                books =  Book.objects.filter(Q(author__icontains = search_input))
-            elif search_type == '출판사':
-                books =  Book.objects.filter(Q(publisher__icontains = search_input))
+            books = Book.objects.filter(
+                Q(title__icontains = search_input) | 
+                Q(author__icontains = search_input) | 
+                Q(publisher__icontains = search_input)
+            )
+        print(search_input)
         paginator = Paginator(books, 10)
         books_list = paginator.get_page(page)
-        return render(request, 'review_write_search_result.html',{"books_list":books_list,"search_input":search_input,"search_type":search_type})
+        return render(request, 'review_write_search_result.html',{"books_list":books_list,"search_input":search_input})
 
 # _____리뷰 삭제_____
 def review_delete(request):

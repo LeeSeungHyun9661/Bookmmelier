@@ -1,21 +1,19 @@
 <!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
 <div id="table">
-    {%if search_input%}
-    <a>검색결과 : ({{search_type}}){{search_input}}</a>
-    {%endif%}
 
+    <!-- 서평 아이템 목록 -->
     <div class="row">
         <div class="content-container no-margin">
-            <!-- 서평 -->
+            <!-- 서평 아이템 -->
             {% if reviews_list %}
             {% for review in reviews_list %}
             <div class="col-12 review-container" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
                 <div class="header">
                     <div class="title">{{review.title}}</div>
-                    <div class="writer">{{review.user.name}}</div>
+                    <div class="writer">by {{review.user.name}}</div>
                 </div>
                 <div class="metadata">
-                    <!-- 리뷰 사용자 및  -->
+                    <!-- 리뷰 사용자 및 댓글 수 확인 -->
                     <div class="status">
                         <i class="fa-solid fa-star"></i>
                         {{review.like_users.count}}
@@ -31,6 +29,7 @@
             </div>
             {% endfor %}
             {% else %}
+            <!-- 서평 검색 결과가 없는 경우 -->
             <tr>
                 <td>작성된 서평이 없습니다.</td>
             </tr>

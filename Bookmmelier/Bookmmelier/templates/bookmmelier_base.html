@@ -31,7 +31,7 @@
     </script>
 
     {% block style %}
-    <!-- 스타일 -->
+    <!-- 스타일 블록 -->
     {% endblock %}
 
 </head>
@@ -40,9 +40,11 @@
     <header>
         <div class="container-fluid">
             <div class="row align-items-center">
+                <!-- 로고 아이콘 -->
                 <div class="col-2">
                     <span class="logo">북믈리에</span>
                 </div>
+                <!-- 네비게이션 메뉴 -->
                 <nav class="col-6 align-items-center" style="text-align: center;">
                     <span class="menu"><a href="{% url 'books:list' %}">도서검색</a></span>
                     <span class="menu"><a href="{% url 'reviews:list' %}">서평구경</a></span>
@@ -50,16 +52,21 @@
                     <span class="menu"><a href="{% url 'debates:list'%}">독서토론</a></span>
                     <span class="menu"><a href="{% url 'users:mypage'%}">마이 페이지</a></span>
                 </nav>
+
+                <!-- 서평 검색 -->
                 <div class="col-2">
                     <form action="{% url 'reviews:list' %}" method="POST">
                         <input class="search" type="text" name="review_search_input" id="review_search_input"
                             placeholder="다른 사람이 쓴 서평을 검색해보세요">
                     </form>
                 </div>
+                
+                <!-- 시용자가 로그인 중인 경우 : 로그아웃 -->
                 {% if request.user.is_authenticated %}
                 <div class="col-1">
                     <a href="{% url 'users:logout'%}">Sign out</a>
                 </div>
+                <!-- 시용자가 로그인 중인 경우 : 로그아웃 -->
                 {%else%}
                 <div class="col-1">
                     <a href="{% url 'users:login'%}?next={{request.path}}">Sign in</a>
