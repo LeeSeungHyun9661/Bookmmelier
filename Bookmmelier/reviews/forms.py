@@ -9,11 +9,9 @@ class ReviewWriteFrom(forms.ModelForm):
     title = forms.CharField(label="제목",max_length=50,widget=forms.TextInput(attrs={'placeholder':'제목','id': 'post-text'}))
     contents = SummernoteTextField()
     rate = forms.ChoiceField(label='별점',widget=forms.RadioSelect,choices=((1,'1'),(2,'2'),(3,'3'),(4,'4'),(5,'5')))
-    is_shared = forms.ChoiceField(label='공유',widget=forms.RadioSelect,choices=((1,'공개'),(0,'비공개')))
-
     class Meta:
         model= Review
-        fields = ['title','contents','rate','is_shared']
+        fields = ['title','contents','rate']
         widgets = {
             'contents': SummernoteWidget(),
         }
@@ -23,7 +21,6 @@ class ReviewWriteFrom(forms.ModelForm):
         title = cleaned_data.get('title')
         contents = cleaned_data.get('contents')
         rate = cleaned_data.get('rate')
-        is_shared = cleaned_data.get('is_shared')
 
         if not contents:
             self.add_error('contents', '내용을 입력해주세요')
@@ -34,5 +31,4 @@ class ReviewWriteFrom(forms.ModelForm):
                 self.title = title
                 self.contents = contents
                 self.rate = rate
-                self.is_shared = is_shared
 

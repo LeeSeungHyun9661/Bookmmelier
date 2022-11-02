@@ -1,11 +1,51 @@
 <!-- 리뷰 작성 페이지 : 선택된 도서 -->
+{% load static %}
 <div id="selected_book">
     {% if selected_book %}
-    <h2>선택된 도서</h2>
-    <a>제목 : {{selected_book.title}}</a><br>
-    <a>작가 : {{selected_book.author}}</a><br>
-    <a>출판사{{selected_book.publisher}}</a><br>
-    <input type="hidden" name="isbn13" id="isbn13" value="{{selected_book.isbn13}}">
+    <div class="row">
+        <!-- 도서정보 -->
+        <div class="col-12">
+            <div class="small-content">
+                <div class="content-title">
+                    도서정보
+                </div>
+                <div class="book-container">
+                    <!-- 도서 이미지 -->
+                    {% if selected_book.img_url %}
+                    <img src="{{selected_book.img_url}}">
+                    {% else %}
+                    <img src="{% static 'img/non_image.png' %}">
+                    {% endif %}
+                    <!-- 도서 정보 -->
+                    <div class="metadata">
+                        <div class="title">
+                            {{selected_book.title}}
+                        </div>
+
+                        <table class="bibil">
+                            <tr>
+                                <th>저자</th>
+                                <td>{{selected_book.author}}</td>
+                                <th>출판사</th>
+                                <td>{{selected_book.publisher}}</td>
+                                <th>출판년도</th>
+                                <td>{{selected_book.pub_date}}</td>
+                            </tr>
+                            <tr>
+                                <th>주제</th>
+                                <td>{{selected_book.kdc_class_no}}</td>
+                                <th>ISBN</th>
+                                <td>{{selected_book.isbn13}}</td>
+                                <th></th>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="isbn13" id="isbn13" value = "{{selected_book.isbn13}}">
     {%else%}
     <div class="select" onClick="javascript:popOpen();">
         선택된 책이 없습니다. 도서를 선택해주세요.

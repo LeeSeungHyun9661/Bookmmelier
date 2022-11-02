@@ -73,6 +73,7 @@ class reviews_list_View(View):
 class reviews_write_View(View): 
     # 페이지 접근   
     def get(self,request):
+        print("GET 시작")
         context={}
         #사용자가 현재 로그인중인지 확인
         if request.user.is_authenticated:
@@ -107,6 +108,7 @@ class reviews_write_View(View):
         if form.is_valid():  
             # 리뷰를 먼저 save
             review = form.save(commit=False)
+            review.is_shared = 1
             # 작성자의 정보를 현재 사용자와 연결
             review.user = request.user  
             # 리뷰의 도서를 isbn을 통해 검색한 도서 객체와 연결
@@ -114,8 +116,12 @@ class reviews_write_View(View):
             #데이터베이스에 저장함
             review.save()
             # 작성된 리뷰 페이지로 이동
-            context["review_id"] = review.review_id
+            context["success"] = review.review_id
             return JsonResponse(context)
+        else:
+            # 입력된 폼 조건 불만족 
+            return JsonResponse(form.errors)
+
 
 # _____리뷰 수정 페이지_____
 class review_update_View(View):
@@ -146,7 +152,7 @@ class review_update_View(View):
         # isbn을 통해 현재 입력받은 도서의 isbn 확인
         isbn13 = request.POST.get('isbn13')
         # 수정 리뷰의 아이디 확인
-        review_id = request.POST.get('review_id')    
+        review_id = request.POST.get('review_id')  
         # 현재 수정중인 리뷰가 존재하는지 확인
         if Review.objects.filter(review_id = review_id).exists():
             review = Review.objects.get(review_id = review_id)

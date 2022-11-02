@@ -47,7 +47,6 @@
                 url: "{% url 'users:login' %}",
                 data: form_array,
                 success: function (data) {
-                    console.log(data)
                     var keys = Object.keys(data);
                     if (keys == "success") {
                         alert("로그인 성공!")

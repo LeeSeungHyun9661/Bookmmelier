@@ -9,7 +9,6 @@
         {% else %}
         <img src="{% static 'img/non_image.png' %}">
         {% endif %}
-
         <div class="metadata">
             <div class="title">
                 {{book.title}}
@@ -42,7 +41,9 @@
         </div>
     </div>
     {% endfor %}
-    <!-- 페이지 부분 -->
+
+    <!-- 페이지네이션 부분 -->
+    {% if books_list.has_previous or books_list.has_next %}
     <div style="text-align:center">
         <div class="pagination" id="page">
             {% if books_list.has_previous %}
@@ -62,6 +63,8 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
+
     <!-- 도서 목록이 없는 경우 -->
     {% else %}
     <tr>
