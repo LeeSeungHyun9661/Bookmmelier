@@ -8,20 +8,40 @@
             <span class="main-title">마이 페이지</span>
         </div>
     </div>
+    <div class="content-container">
+        <div class="content-title">
+            회원정보
+        </div>
+    </div>
 
 
     <div class="content-container">
-        <div class="content-title">
-            작성한 서평
+        <div class="content-header">
+            <div class="content-title">
+                작성한 서평
+            </div>
+
+            {%if reviews %}
+            <!-- 작성 서평이 있는 경우 -->
+            <div class="more">
+                <a href="{% url 'users:reviews' %}">더보기></a>
+            </div>
         </div>
-        {%if reviews %}
-        <!-- 작성 서평이 있는 경우 -->
-        <a href="{% url 'users:reviews' %}"> 서평 더보기 </a>        
+
         <div class="row review-shortcut-items">
             {%for review in reviews %}
-            <div class="review-shortcut-container" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+            <div class="review-shortcut-container"
+                onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
                 <div class="title">{{review.book.title}}</div>
-                <div class="metadata"><i class="fa-solid fa-star"></i> {{review.like_users.count}} <i class="fa-solid fa-star"></i> 30</div>
+                <div class="metadata">
+                    <span class="item">
+                        <i class="fa-regular fa-thumbs-up"></i>{{review.like_users.count}}
+                    </span>
+
+                    <span class="item">
+                        <i class="fa-regular fa-comment"></i> 30
+                    </span>
+                </div>
                 <div class="content">
                     {{review.contents|striptags|safe|slice:':100'|truncatechars:30}}
                 </div>
@@ -78,23 +98,30 @@
 
     <!-- 사용자 참여 토론 목록 -->
     <div class="content-container">
-        <div class="content-title">
-            참여 토론
-        </div>
-        <div class="col-12 debate-container" onclick="location.href='#'">
-            <div class="title">남는 체력이 읎어</div>
-            <div class="status">
-                <div class="status-item">
-                    <i class="fa-regular fa-user"></i>
-                    56
-                </div>
-                <div class="status-item">
-                    <i class="fa-regular fa-comment"></i>
-                    250
+        <div class="content-header">
+            <div class="content-title">
+                참여 토론
+            </div>
+
+            <div class="more">
+                <a href="#">더보기></a>
+            </div>
+            
+            <!-- 참여 토론 정보 -->
+            <div class="col-12 debate-container" onclick="location.href='#'">
+                <div class="title">남는 체력이 읎어</div>
+                <div class="status">
+                    <div class="status-item">
+                        <i class="fa-regular fa-user"></i>
+                        56
+                    </div>
+                    <div class="status-item">
+                        <i class="fa-regular fa-comment"></i>
+                        250
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 

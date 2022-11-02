@@ -9,19 +9,13 @@
         </div>
     </div>
 
-    <!-- 서평 검색 부분 -->
-    <!-- <div>
-        <select name="search_type" id="search_type">
-            <option value="전체" selected="true">전체</option>
-            <option value="도서">도서</option>
-            <option value="작성자">작성자</option>
-            <option value="내용">내용</option>
-        </select>
-        <input id="search_input" type="search" />
-        <button id="search_button" type="submit">검색</button>
-    </div> -->
+    <div class="row">
+        <div class="col-12 search">
+            <input id="search_input" type="text" name="search" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
+            <i class='fa-solid fa-magnifying-glass' id="search_button" type="submit"></i>
+        </div>
+    </div>
 
     {% include 'reviews_table.html' %}
-
 </section>
 {% endblock %}

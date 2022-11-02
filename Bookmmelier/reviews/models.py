@@ -3,7 +3,7 @@ from books.models import Book
 from users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings 
-
+from django.db.models import Count
 
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)
@@ -21,7 +21,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
-    review = models.ForeignKey(Review, models.CASCADE, db_column='review_id')
+    review = models.ForeignKey(Review, models.CASCADE, db_column='review_id',related_name='comments')
     user = models.ForeignKey(User, models.CASCADE)
     time_write = models.DateTimeField(auto_now_add=True)
     contents = models.TextField()

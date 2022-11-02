@@ -1,25 +1,34 @@
 <!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
 <div id="table">
 
+    {% if reviews_list %}
     <!-- 서평 아이템 목록 -->
     <div class="row">
         <div class="content-container no-margin">
             <!-- 서평 아이템 -->
-            {% if reviews_list %}
             {% for review in reviews_list %}
-            <div class="col-12 review-container" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+            <div class="col-12 review-container"
+                onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
                 <div class="header">
-                    <div class="title">{{review.title}}</div>
+                    <div class="title">{{review.title}}<span class="book">in 역행자</span></div>
                     <div class="writer">by {{review.user.name}}</div>
                 </div>
+
                 <div class="metadata">
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-star"></i>
+                    </div>
                     <!-- 리뷰 사용자 및 댓글 수 확인 -->
                     <div class="status">
-                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-regular fa-thumbs-up"></i>
                         {{review.like_users.count}}
                         &nbsp;
-                        <i class="fa-solid fa-star"></i>
-                        6
+                        <i class="fa-regular fa-comment"></i>
+                        {{review.comments.count}}
                     </div>
                 </div>
 
@@ -28,35 +37,42 @@
                 </div>
             </div>
             {% endfor %}
-            {% else %}
-            <!-- 서평 검색 결과가 없는 경우 -->
-            <tr>
-                <td>작성된 서평이 없습니다.</td>
-            </tr>
-            {% endif %}
-        </div>
-    </div>
-    
-    <!-- 페이지 부분 -->
-    <div style="text-align:center">
-        <div class="pagination" id="page">
-            {% if reviews_list.has_previous %}
-            <a class="first_page" type="button">맨 앞으로</a>
-            {% endif %}
+            <!-- 페이지네이션 부분 -->
+            {% if comments_list.has_previous or comments_list.has_next %}
+            <div class="row justify-content-center">
+                <div class=" col-8 pagination">
+                    <!-- 처음으로 버튼 -->
+                    <a class="first_page">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <i class="fa-solid fa-chevron-left"></i></a>
+                    <!-- 각 페이지 버튼 -->
+                    {% for page in books_list.paginator.page_range %}
+                    {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %}
+                    <a class="now_page">{{page}}</a>
+                    {% endif %}
+                    {%endfor %}
+                    <!-- 마지막으로 버튼 -->
+                    <a class="last_page">
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
 
-            <div style="width:30%; margin: 5px;">
-                {% for page in reviews_list.paginator.page_range %}
-                {% if page >= reviews_list.number|add:-5 and page <= reviews_list.number|add:5 %}
-                <a class="now_page" type="button">{{page}}</a>
-                {% endif %}
-                {%endfor %}
+                </div>
             </div>
-
-            {% if reviews_list.has_next %}
-            <a class="last_page" type="button">맨 뒤로</a>
-            {% endif %}
+            {%endif%}
         </div>
     </div>
+
+    {% else %}
+    <!-- 검색결과 없는 경우 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="no-result">
+                <p><b>INPUT</b>과 일치하는 검색결과가 없습니다. 다른 키워드로 검색해보세요.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <script>
@@ -65,10 +81,10 @@
             type: "get",
             url: "{% url 'reviews:list' %}",
             data: {
-                'search_input': $('#search_input').val(),
-                'search_type': $('#search_type').val()
+                'search_input': $('#search_input').val()
             },
             success: function (data) {
+                console.log(data)
                 $('#table').html(data)
             }
         })
@@ -94,9 +110,7 @@
             type: "get",
             url: "{% url 'reviews:list' %}",
             data: {
-                'search_input': $('#search_input').val(),
-                'search_type': $('#search_type').val(),
-                'page': num_pages
+                'search_input': $('#search_input').val()
             },
             success: function (data) {
                 $('#table').html(data)

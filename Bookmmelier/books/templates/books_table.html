@@ -3,11 +3,12 @@
 {% load static %}
 <!-- 도서 목록 -->
 <div id="table">
+    <!-- 검색결과 있는경우 -->
+    {% if books_list %}
     <div class="row">
         <div class="book-items">
-            {% if books_list %}
             {% for book in books_list %}
-            <div class="col-12 item" >
+            <div class="col-12 item">
                 {% if book.img_url %}
                 <img src="{{book.img_url}}">
                 {% else %}
@@ -41,37 +42,40 @@
                 </div>
             </div>
             {% endfor %}
-            {% else %}
-            <table class="bibil">
-                <td>검색 결과가 없습니다.</td>
-            </table>
-            {% endif %}
         </div>
     </div>
-
+    
     <!-- 페이지네이션 부분 -->
-    <div style="text-align:center">
-        <div class="pagination" id="page">
-            <!-- 페이지네이션 : 처음으로 -->
-            {% if books_list.has_previous %}
-            <a class="first_page" type="button">맨 앞으로</a>
+    <div class="row justify-content-center">
+        <div class=" col-8 pagination">
+            <!-- 처음으로 버튼 -->
+            <a class="first_page" >
+                <i class="fa-solid fa-chevron-left"></i>
+                <i class="fa-solid fa-chevron-left"></i></a>
+            <!-- 각 페이지 버튼 -->
+            {% for page in books_list.paginator.page_range %}
+            {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %}
+            <a class="now_page">{{page}}</a>
             {% endif %}
+            {%endfor %}
+            <!-- 마지막으로 버튼 -->
+            <a class="last_page">
+                <i class="fa-solid fa-chevron-right"></i>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
 
-            <!-- 페이지네이션 : 각 페이지로 -->
-            <div style="width:30%; margin: 5px;">
-                {% for page in books_list.paginator.page_range %}
-                {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %}
-                <a class="now_page" type="button">{{page}}</a>
-                {% endif %}
-                {%endfor %}
-            </div>
-
-            <!-- 페이지네이션 : 마지막으로 -->
-            {% if books_list.has_next %}
-            <a class="last_page" type="button">맨 뒤로</a>
-            {% endif %}
         </div>
     </div>
+
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="no-result">
+                <p><b>{{search_input}}</b>과 일치하는 검색결과가 없습니다. 다른 키워드로 검색해보세요.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <script>

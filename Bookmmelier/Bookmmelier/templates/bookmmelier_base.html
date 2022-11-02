@@ -41,8 +41,10 @@
         <div class="container-fluid">
             <div class="row align-items-center">
                 <!-- 로고 아이콘 -->
-                <div class="col-2">
-                    <span class="logo">북믈리에</span>
+                <div class="col-2 align-items-center">
+                    <a href="{% url 'home' %}" class="logo">
+                        <img src="{% static 'img/bg.png' %}">북믈리에
+                    </a>
                 </div>
                 <!-- 네비게이션 메뉴 -->
                 <nav class="col-6 align-items-center" style="text-align: center;">
@@ -60,16 +62,19 @@
                             placeholder="다른 사람이 쓴 서평을 검색해보세요">
                     </form>
                 </div>
-                
+
                 <!-- 시용자가 로그인 중인 경우 : 로그아웃 -->
                 {% if request.user.is_authenticated %}
                 <div class="col-1">
                     <a href="{% url 'users:logout'%}">Sign out</a>
                 </div>
-                <!-- 시용자가 로그인 중인 경우 : 로그아웃 -->
+                <!-- 시용자가 로그인 중이 아닌 경우 : 로그인 및 회원 가입 -->
                 {%else%}
                 <div class="col-1">
                     <a href="{% url 'users:login'%}?next={{request.path}}">Sign in</a>
+                </div>
+                <div class="col-1">
+                    <a href="{% url 'users:signup'%}">Sign up</a>
                 </div>
                 {%endif%}
             </div>

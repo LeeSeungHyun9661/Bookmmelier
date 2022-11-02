@@ -6,8 +6,15 @@
 <section class="container" id="main">
     <div class="row">
         <div class="col-12 justify-content-between">
-            <span class="main-title">서평제목 {{review.title}}</span>
-            <span class="writer">by {{review.user.id}}</span>
+            <span class="main-title">{{review.title}}</span>
+            <span class="subset">
+                <span class='writer'>by {{review.user.id}}</span>
+                {%if review.user == request.user %}
+                <span class='edit'><a href="{% url 'reviews:update'%}?review_id={{review.review_id}}">수정</a></span>
+                <span class='delete'><a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}"
+                        onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a></span>
+                {%endif%}
+            </span>
         </div>
     </div>
 
@@ -21,7 +28,7 @@
                 </div>
                 <div class="book-container">
                     {% if book.img_url %}
-                    <img src="{{book.img_url}}">
+                    <img src="{{review.book.img_url}}">
                     {% else %}
                     <img src="{% static 'img/non_image.png' %}">
                     {% endif %}
@@ -59,7 +66,6 @@
                                     <i class="fa-solid fa-star"></i>
                                 </span>
                             </div>
-                            {% include 'review_detail_like.html' %}
                         </div>
 
                     </div>
@@ -76,18 +82,8 @@
         <div class="content-desc">
             {{review.contents | safe}}
         </div>
-    </div>
+        {% include 'review_detail_like.html' %}
 
-    <!-- 서평 수정 삭제 -->
-    <div style="border:1px solid black;">
-        {%if review.user == request.user %}
-        <a href="{% url 'reviews:update'%}?review_id={{review.review_id}}"> [수정]</a>
-        <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');">
-            [삭제]</a>
-        {%elif request.user.is_staff%}
-        <a href="{% url 'reviews:delete'%}?review_id={{review.review_id}}" onclick="return confirm('정말 삭제하시겠습니까?');">
-            [삭제]</a>
-        {%endif%}
     </div>
 
     <!-- 댓글 -->
@@ -98,50 +94,13 @@
         <!-- 댓글 보기 -->
         {% include 'review_detail_comments.html' %}
 
-        <!-- 댓글 작성란 -->
-        {% if request.user.is_authenticated %}
-        <form id="upload_comment" method="POST">
-            {% csrf_token %}
-            <textarea rows="4" cols="50" placeholder="댓글을 입력하세요" name="comment"></textarea>
-            <input type="hidden" name="review_id" id="review_id" value="{{review.review_id}}">
 
-            <div class="button-group">
-                <button onclick="history.back()">목록</button>
-                <input type="submit" value="등록">
-            </div>
-
-        </form>
-
-        {% else %}
-        <a href="{%url 'users:login' %}?next={{request.path}}?review_id={{review.review_id}}">댓글 작성을 위해 로그인이 필요합니다.</a>
-        {% endif %}
     </div>
 </section>
 
 
 <script>
-    // 댓글 작성하기 기능
-    $('#upload_comment').on('submit', function () {
-        event.preventDefault();
-        var comment_text = $('#comment_text').val();
-        if (comment_text === "") alert("내용을 입력해주세요");
-        else {
-            $.ajax({
-                type: "POST",
-                url: "{% url 'reviews:comment_upload' %}",
-                data: {
-                    'comment_text': $('#comment_text').val(),
-                    'review_id': $('#review_id').val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function (data) {
-                    alert('댓글 작성이 완료되었습니다.')
-                    $('#review_comments').html(data);
-                    $('#comment_text').val("");
-                }
-            })
-        }
-    });
+
 </script>
 
 {% endblock %}

@@ -187,9 +187,9 @@
 <!--phrase-->
 <section class="container-fluid" id="phrase">
    <div class="row justify-content-center">
-      <div class="col-12">
+      <div class="col-12 justify-content-center">
          <blockquote>
-            <p>Reading is Departure and Arrival</p>
+            <p>Reading is<br> Departure and Arrival</p>
          </blockquote>
       </div>
    </div>
@@ -198,46 +198,43 @@
 <!-- 리뷰 목록 -->
 <section class="container" id="reviews">
    <div class="row">
-      <div class="col-12">
-         <div class="sub-title">
-            인기서평
-         </div>
-      </div>
-      <div class="col-12 review-items">
-         {% if reviews_list %}
-         {% for review in reviews_list %}
-         <div class="item" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
-            <div class="book">
-               <!-- 도서 이미지 -->
-               {%if review.book.img_url %}
-               <img src="{{review.book.img_url}}">
-               {%else%}
-               <img src="{% static 'img/non_image.png' %}">
-               {%endif%}
-
-               <!-- 도서 제목 -->
-               <div class="title">
-                  {{review.book.title}}
-               </div>
-               <!-- 도서 저자 -->
-               <div class="author">
-                  저자 | {{review.book.author}}
-               </div>
-            </div>
-            <!-- 리뷰 정보 -->
-            <div class="review">
-               <span class="title">{{review.title}}</span>
-               <span class="writer">{{review.user.name}}</span>
-               <div class="content">
-                  {{review.contents|striptags|safe|slice:':100'|truncatechars:30}}
-               </div>
+      <div class="sub-contents">
+         <div class="col-12">
+            <div class="sub-title">
+               인기서평
             </div>
          </div>
-         {% endfor %}
-
-         {% endif %}
+         <div class="col-12 review-items">
+            {% if reviews_list %}
+            {% for review in reviews_list %}
+            <div class="item" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+               <div class="book">
+                  {%if review.book.img_url %}
+                  <img src="{{review.book.img_url}}">
+                  {%else%}
+                  <img src="{% static 'img/non_image.png' %}">
+                  {%endif%}
+                  <div class="title">
+                     {{review.book.title}}
+                  </div>
+                  <div class="author">
+                     저자 | {{review.book.author}}
+                  </div>
+               </div>
+               <div class="review">
+                  <span class="title">{{review.title}}</span>
+                  <span class="writer">{{review.user.name}}</span>
+                  <div class="content">
+                     {{review.contents|striptags|safe|slice:':100'|truncatechars:30}}
+                  </div>
+               </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+         </div>
       </div>
    </div>
 </section>
+
 
 {% endblock %}
