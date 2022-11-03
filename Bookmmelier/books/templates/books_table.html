@@ -1,5 +1,4 @@
 <!-- 도서 검색 결과 템플릿 -->
-
 {% load static %}
 <!-- 도서 목록 -->
 <div id="table">
@@ -47,11 +46,12 @@
     
     <!-- 페이지네이션 부분 -->
     <div class="row justify-content-center">
-        <div class=" col-8 pagination">
+        <div class="col-8 pagination">
             <!-- 처음으로 버튼 -->
             <a class="first_page" >
                 <i class="fa-solid fa-chevron-left"></i>
-                <i class="fa-solid fa-chevron-left"></i></a>
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
             <!-- 각 페이지 버튼 -->
             {% for page in books_list.paginator.page_range %}
             {% if page >= books_list.number|add:-5 and page <= books_list.number|add:5 %}

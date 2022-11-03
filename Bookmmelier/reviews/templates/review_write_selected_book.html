@@ -45,8 +45,11 @@
             </div>
         </div>
     </div>
-    <input type="hidden" name="isbn13" id="isbn13" value = "{{selected_book.isbn13}}">
-    {%else%}
+    <input type="hidden" name="isbn13" id="isbn13" value="{{selected_book.isbn13}}">
+    {%else%} 
+    <div class="content-title">
+        도서선택
+    </div>
     <div class="select" onClick="javascript:popOpen();">
         선택된 책이 없습니다. 도서를 선택해주세요.
         <br>

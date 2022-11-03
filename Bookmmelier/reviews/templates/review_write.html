@@ -15,9 +15,6 @@
             <!-- 제목 입력 -->
             <input type="text" class="title" placeholder="제목을 입력하세요" name="title">
             <div class="small-content">
-               <div class="content-title">
-                  도서선택
-               </div>
                <!-- 도서 선택 버튼 or 선택된 도서 출력 -->
                {% include 'review_write_selected_book.html' %}
             </div>
@@ -55,15 +52,18 @@
          도서검색
       </div>
       <div class="search">
-         <input type="text" name="search" id="search_input" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
-         <i class='fa-solid fa-magnifying-glass' id="search_button"></i>
+         <form action="#" method="GET">
+            <input type="text" name="search" id="search_input" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
+            <i class='fa-solid fa-magnifying-glass' id="search_button"></i>
+         </form>
       </div>
    </div>
    {% include 'review_write_search_result.html' %}
 </div>
 
 <script>
-   $("#search_button").click(function () {
+   $("#search_button").click(function () {      
+      event.preventDefault();
       $.ajax({
          type: "get",
          url: "{% url 'reviews:modal_search_Books' %}",
@@ -123,7 +123,6 @@
    $("#form-review").on("submit", function () {
       event.preventDefault();
       form_array = $(this).serialize();
-      console.log(form_array)
       // 도서가 선택되지 않은 경우, 오류 반환
       if ($("#isbn13").val() === undefined) alert("도서를 선택해주세요");
       // 조건을 만족한 경우 결과 반환
@@ -138,12 +137,12 @@
                if (keys == "success") {
                   alert("리뷰 작성이 완료되었습니다");
                   window.location.href =
-                  "{% url 'reviews:detail' %}?review_id=" + data["success"];
+                     "{% url 'reviews:detail' %}?review_id=" + data["success"];
                } else {
                   for (key in keys) {
                      $("#error_respond").text(data[keys[key]])
                   }
-               }               
+               }
             },
          });
       }

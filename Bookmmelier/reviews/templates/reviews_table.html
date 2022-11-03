@@ -10,7 +10,7 @@
             <div class="col-12 review-container"
                 onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
                 <div class="header">
-                    <div class="title">{{review.title}}<span class="book">in 역행자</span></div>
+                    <div class="title">{{review.title}}<span class="book">in {{review.book.title}}</span></div>
                     <div class="writer">by {{review.user.name}}</div>
                 </div>
 
