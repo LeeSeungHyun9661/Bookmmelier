@@ -70,11 +70,10 @@ class reviews_list_View(View):
         return render(request, 'reviews_list.html',{"reviews_list":reviews_list,"search_input":search_input,"search_type":search_type})
 
 # _____리뷰 작성 페이지_____
-class reviews_write_View(View): 
+class reviews_write_View(View):  
     # 페이지 접근   
-    def get(self,request):
-        print("GET 시작")
-        context={}
+    def get(self,request): 
+        context = {}
         #사용자가 현재 로그인중인지 확인
         if request.user.is_authenticated:
             #기본적인 도서 목록 데이터 호출
@@ -99,7 +98,7 @@ class reviews_write_View(View):
     
     # 리뷰 작성 요청  
     def post(self,request):
-        context={}
+        context = {}
         # 응답 받은 별괄를 form으로 저장
         form = ReviewWriteFrom(request.POST)
         #isbn을 통해 현재 입력받은 도서의 isbn 확인
@@ -116,7 +115,7 @@ class reviews_write_View(View):
             #데이터베이스에 저장함
             review.save()
             # 작성된 리뷰 페이지로 이동
-            context["success"] = review.review_id
+            self.context["success"] = review.review_id
             return JsonResponse(context)
         else:
             # 입력된 폼 조건 불만족 
@@ -127,31 +126,32 @@ class reviews_write_View(View):
 class review_update_View(View):
     # 페이지 접근
     def get(self,request):
+        context = {}
         #사용자가 현재 로그인중인지 확인
         if request.user.is_authenticated:
             #기본적인 도서 목록 데이터 호출
             paginator = Paginator(Book.objects.all(), 10)                
             books_list = paginator.get_page(1)
+            context["books_list"] = books_list
             #현재 리뷰 페이지 아이디 불러오기
             review_id = request.GET.get('review_id', '')
             #현재 존재하는 리뷰인지 확인
             if Review.objects.filter(review_id = review_id).exists():
                 review = Review.objects.get(review_id = review_id) 
+                context["review"] = review
+                context["selected_book"] = review.book
                 #리뷰의 작성자가 현재 로그인중인 작성자와 동일한지 확인
                 if review.user == request.user: 
-                    #리뷰 폼에 받은 정보를 담아서 폼에 저장
-                    forms = ReviewWriteFrom(instance=review)
-                    return render(request, 'review_update.html',{"books_list":books_list,"forms":forms,"review_id":review.review_id,"selected_book":review.book})
+                    return render(request, 'review_update.html',context)
         else:
             return redirect('/login?next=' + request.path)   
 
     # 리뷰 수정 요청
     def post(self,request):
+        context = {}
         # 응답 받은 결과를 form으로 저장
         form = ReviewWriteFrom(request.POST)
         # isbn을 통해 현재 입력받은 도서의 isbn 확인
-        isbn13 = request.POST.get('isbn13')
-        # 수정 리뷰의 아이디 확인
         review_id = request.POST.get('review_id')  
         # 현재 수정중인 리뷰가 존재하는지 확인
         if Review.objects.filter(review_id = review_id).exists():
@@ -161,12 +161,14 @@ class review_update_View(View):
                 review.title = form.title
                 review.contents = form.contents
                 review.rate = form.rate
-                review.is_shared = form.is_shared
-                # 도서가 갱신된 상태라면 반영
-                review.book = Book.objects.get(isbn13 = isbn13)
+                review.is_shared = 1
                 # 리뷰 데이터를 업데이트함
-                review.save(force_update=True)
-                return JsonResponse({"review_id":review_id})
+                review.save(force_update=True)                               
+                context["success"] = review.review_id
+                return JsonResponse(context)
+            else:
+                # 입력된 폼 조건 불만족 
+                return JsonResponse(form.errors)
 
 # _____리뷰 상세보기 페이지_____
 class review_detail_View(View):
@@ -193,6 +195,7 @@ class review_detail_View(View):
             comments_list = paginator.get_page(page)
             context['comments_list'] = comments_list
             return render(request, 'review_detail_comments.html',context)
+
 
 # _____리뷰 작성 - 모달에서의 도서 선택_____
 def review_write_modal_select_book(request):

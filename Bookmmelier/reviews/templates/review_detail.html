@@ -27,7 +27,7 @@
                     도서정보
                 </div>
                 <div class="book-container">
-                    {% if book.img_url %}
+                    {% if review.book.img_url %}
                     <img src="{{review.book.img_url}}">
                     {% else %}
                     <img src="{% static 'img/non_image.png' %}">

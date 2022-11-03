@@ -1,67 +1,67 @@
-<!-- 리뷰 수정 페이지 -->
+<!-- 리뷰 작성 페이지 -->
 {% extends 'bookmmelier_base.html' %}
+{% load static %}
+
+{% block style %}
+<script src="{% static 'js/modal.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-<div class="content">
-	<!-- 제목 부분 -->
-	<div class="header">
-		<h2>서평 수정</h2>
-	</div>
 
-	<!-- 도서 선택 또는 변경에 대한 모달 불러오기 버튼 -->
-	<a href="#" data-toggle="modal" data-target="#myModal">도서 변경하기</a>
+<section class="container" id="main">
+	<div class="row">
+		<div class="col-12">
+			<form id="form-review" method="POST">
+				{% csrf_token %}
+				<input type="hidden" name="review_id" id="review_id" value="{{review.review_id}}">
 
-	<!-- 모달 -->
-	<div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog modal-xl modal-dialog-centered">
-			<div class="modal-content">
+				<!-- 제목 입력 -->
+				<input type="text" class="title" placeholder="제목을 입력하세요" name="title" value="{{review.title}}">
 
-				<!-- Modal Header -->
-				<div class="modal-header">
-					<h4 class="modal-title">도서 검색</h4>
-					<div>
-						<select name="search_type" id="search_type">
-							<option value="전체">전체</option>
-							<option value="제목">제목</option>
-							<option value="작가">작가</option>
-							<option value="출판사">출판사</option>
-						</select>
-						<input id="search_input" type="search" />
-						<button id="search_button" type="submit">검색</button>
+				<div class="small-content">
+					<!-- 도서 선택 버튼 or 선택된 도서 출력 -->
+					{% include 'review_write_selected_book.html' %}
+				</div>
+				<div class="small-content">
+					<!-- 별점 선택 -->
+					<div class="content-title no-margin">
+						별점 {{review.rate}}
 					</div>
-
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-
-				<!-- Modal body -->
-				<div class="modal-body">
-					<!-- 도서목록 부분 -->
-					<div id="search_result_table">
-						{% include 'review_write_search_result.html' %}
+					<fieldset>
+						<input type="radio" name="rate" value="5" id="rate1"><label for="rate1">★</label>
+						<input type="radio" name="rate" value="4" id="rate2"><label for="rate2">★</label>
+						<input type="radio" name="rate" value="3" id="rate3"><label for="rate3">★</label>
+						<input type="radio" name="rate" value="2" id="rate4"><label for="rate4">★</label>
+						<input type="radio" name="rate" value="1" id="rate5"><label for="rate5">★</label>
+					</fieldset>
+					<!-- 서평 -->
+					<textarea rows="10" name="contents" id="contents" cols="50" placeholder="서평을 자유롭게 입력해보세요">{{review.contents}}</textarea>
+					<div class="button-group">
+						<button onclick="history.back()">목록</button>
+						<input type="submit" value="수정">
 					</div>
+					<div id="error_respond"></div>
 				</div>
-
-				<!-- Modal footer -->
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				</div>
-
-			</div>
+			</form>
 		</div>
-
 	</div>
-	<div id="modal">
+</section>
+
+<div class="modal-bg" onClick="javascript:popClose();"></div>
+<div class="modal-wrap">
+	<div class="container">
+		<button class="modal-close" onClick="javascript:popClose();">X</button>
+		<div class="title">
+			도서검색
+		</div>
+		<div class="search">
+			<form action="#" method="GET">
+				<input type="text" name="search" id="search_input" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
+				<i class='fa-solid fa-magnifying-glass' id="search_button"></i>
+			</form>
+		</div>
 	</div>
-
-
-	<!-- 서평 수정하는 부분 -->
-	<form id="update_review" method="POST">
-		<input type="hidden" name="review_id" id="review_id" value="{{review_id}}">
-		{% include 'review_write_selected_book.html' %}
-		{% csrf_token %}
-		{{forms|safe}}
-		<button type="submit">수정완료</button>
-	</form>
-
+	{% include 'review_write_search_result.html' %}
 </div>
 
 <script>
@@ -123,7 +123,7 @@
 		})
 	})
 
-	$('#update_review').on('submit', function () {
+	$('#form-review').on('submit', function () {
 		event.preventDefault();
 		form_array = $(this).serialize();
 		$.ajax({
@@ -131,9 +131,16 @@
 			url: "{% url 'reviews:update' %}",
 			data: form_array,
 			success: function (data) {
-				alert("리뷰 수정이 완료되었습니다")
-				window.location.href = ("{% url 'reviews:detail' %}?review_id=" + data[
-					"review_id"]);
+				var keys = Object.keys(data);
+				if (keys == "success") {
+					alert("리뷰 수정이 완료되었습니다")
+					window.location.href =
+						"{% url 'reviews:detail' %}?review_id=" + data["success"];
+				} else {
+					for (key in keys) {
+						$("#error_respond").text(data[keys[key]])
+					}
+				}
 			}
 		})
 	});

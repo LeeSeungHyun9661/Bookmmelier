@@ -7,11 +7,11 @@
 {% endblock %}
 
 {% block content %}
-{% load static %}
 <section class="container" id="main">
    <div class="row">
       <div class="col-12">
          <form id="form-review" method="POST">
+            {% csrf_token %}
             <!-- 제목 입력 -->
             <input type="text" class="title" placeholder="제목을 입력하세요" name="title">
             <div class="small-content">
@@ -62,7 +62,7 @@
 </div>
 
 <script>
-   $("#search_button").click(function () {      
+   $("#search_button").click(function () {
       event.preventDefault();
       $.ajax({
          type: "get",
@@ -132,10 +132,9 @@
             url: "{% url 'reviews:write' %}",
             data: form_array,
             success: function (data) {
-               console.log(data)
                var keys = Object.keys(data);
                if (keys == "success") {
-                  alert("리뷰 작성이 완료되었습니다");
+                  alert("리뷰 작성이 완료되었습니다")
                   window.location.href =
                      "{% url 'reviews:detail' %}?review_id=" + data["success"];
                } else {
