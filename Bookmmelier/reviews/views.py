@@ -115,7 +115,7 @@ class reviews_write_View(View):
             #데이터베이스에 저장함
             review.save()
             # 작성된 리뷰 페이지로 이동
-            self.context["success"] = review.review_id
+            context["success"] = review.review_id
             return JsonResponse(context)
         else:
             # 입력된 폼 조건 불만족 

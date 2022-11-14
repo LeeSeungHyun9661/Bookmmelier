@@ -65,17 +65,11 @@
     </div>
     {% endif %}
 
-    <!-- 도서 목록이 없는 경우 -->
-    {% else %}
-    <!-- 검색결과 없는 경우 -->
-    <div class="row">
-        <div class="col-12">
-            <div class="no-result">
-                <p><b>{{search_input}}</b>과 일치하는 검색결과가 없습니다. 다른 키워드로 검색해보세요.</p>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-
 </div>
+<!-- 도서 목록이 없는 경우 -->
+{% else %}
+<!-- 검색결과 없는 경우 -->
+<div class="table">
+    <p>검색어와 일치하는 결과를 찾지 못했습니다.</p>
+</div>
+{% endif %}

@@ -1,104 +1,127 @@
 <!-- 도서 검색 및 페이지 이동에 대한 결과 테이블 -->
-<div id="table"  >
-    {%if search_input%}
-    <a>검색결과 : ({{search_type}}){{search_input}}</a>
-    {%endif%}
-
-    <!-- 서평 목록 부분 -->
-    <div>
-        <table class="table-contents"  style="padding:10px; border-top: 3px solid #444444; border-collapse: collapse; margin:auto; width: 100%;">
-            <thead>
-                <tr text-align="center" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
-                    <th>ID</th>
-                    <th>book</th>
-                    <th>title</th>
-                    <th>contents</th>
-                    <th>rate</th>
-                    <th>likes</th>
-                    <th>time_retouch</th>
-                </tr>
-            </thead>            
-
-            <tbody>
-                {% if reviews_list %}
-                {% for review in reviews_list %}
-                    <tr class="{% cycle '' 'even_bgcolor' %}" style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
-                        <td>{{review.review_id}}</td>
-                        <td>{{review.book.title}}</td>                     
-                        <td><a href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">{{review.title}}</a></td>
-                        <td>{{review.contents|striptags|safe|slice:':100'|truncatechars:30 }}</td>
-                        <td>{{review.rate}}</td> 
-                        <td>{{review.like_users.count}}</td>  
-                        <td>{{review.time_retouch}}</td>
-                    </tr>                    
-                {% endfor %}
-                {% else %}
-                <tr>
-                    <td>작성된 서평이 없습니다.</td>
-                </tr>
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- 페이지 부분 -->
-    <div style="text-align:center">
-        <div class="pagination" id="page">
-            {% if reviews_list.has_previous %}
-            <a class="first_page" type="button">맨 앞으로</a>
-            {% endif %}
-
-            <div style="width:30%; margin: 5px;">
-                {% for page in reviews_list.paginator.page_range %}
-                    {% if page >= reviews_list.number|add:-5 and page <= reviews_list.number|add:5 %} 
-                    <a class="now_page" type="button">{{page}}</a>
-                    {% endif %}
-                {%endfor %} 
+<div id="table">
+    {% if reviews_list %}
+    <div class="content-container no-margin">
+        <!-- 서평 목록 테이블 정의 -->
+        {% for review in reviews_list %}
+        <div class="col-12 review-container"
+            onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+            <div class="header">
+                <!-- 서평제목 -->
+                <div class="title">{{review.title}}
+                    <!-- 도서제목 -->
+                    <span class="book">in {{review.book.title}}</span>
+                </div>
+                <!-- 작성자 -->
+                <div class="writer">by {{review.user.id}}</div>
             </div>
-
-            {% if reviews_list.has_next %}
-            <a class="last_page" type="button">맨 뒤로</a>
-            {% endif %}
+            <!-- 메타데이터 -->
+            <div class="metadata">
+                <!-- 평점 -->
+                <div class="stars">
+                    {{review.rate}}
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                </div>
+                <!-- 상태 -->
+                <div class="status">
+                    <!-- 좋아요 -->
+                    <i class="fa-regular fa-thumbs-up"></i>
+                    {{review.like_users.count}}
+                    &nbsp;
+                    <!-- 댓글 수 -->
+                    <i class="fa-regular fa-comment"></i>
+                    6
+                </div>
+            </div>
+            <!-- 서평 컨텐츠 -->
+            <div class="contents">
+                {{review.contents|striptags|safe|slice:':100'|truncatechars:30 }}
+            </div>
         </div>
+        {% endfor %}
+        <!-- 페이지네이션 부분 -->
+        {% if reviews_list.has_previous or reviews_list.has_next %}
+        <div class="row justify-content-center">
+            <div class=" col-8 pagination">
+                <!-- 처음으로 버튼 -->
+                <a class="first_page">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <i class="fa-solid fa-chevron-left"></i></a>
+                <!-- 각 페이지 버튼 -->
+                {% for page in reviews_list.paginator.page_range %}
+                {% if page >= reviews_list.number|add:-5 and page <= reviews_list.number|add:5 %}
+                <a class="now_page">{{page}}</a>
+                {% endif %}
+                {%endfor %}
+                <!-- 마지막으로 버튼 -->
+                <a class="last_page">
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+        {%endif%}
     </div>
+    {% else %}
+    <div class="no-result">
+        <p>아직 작성한 서평이 없습니다.</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    {% endif %}
 </div>
 
-<script>     
-    $('#search_button').click(function(){
+<script>
+    $('#search_button').click(function () {
         $.ajax({
-            type:"get",
+            type: "get",
             url: "{% url 'reviews:list' %}",
-            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val()},
-            success:function(data){
+            data: {
+                'search_input': $('#search_input').val(),
+                'search_type': $('#search_type').val()
+            },
+            success: function (data) {
                 $('#table').html(data)
             }
         })
     })
 
-    $(document).on('click', '.first_page', function(){
+    $(document).on('click', '.first_page', function () {
         num_pages = parseInt($('.now_page').first().text());
-            page_click();
+        page_click();
     })
 
-    $(document).on('click', '.last_page', function(){
+    $(document).on('click', '.last_page', function () {
         num_pages = parseInt($('.now_page').last().text());
         page_click();
     })
 
-    $(document).on('click', '.now_page', function(){
+    $(document).on('click', '.now_page', function () {
         num_pages = parseInt($(this).text());
         page_click();
-    })  
-    
-    function page_click(){
+    })
+
+    function page_click() {
         $.ajax({
-            type:"get",
+            type: "get",
             url: "{% url 'reviews:list' %}",
-            data : {'search_input':$('#search_input').val(), 'search_type': $('#search_type').val(),'page':num_pages},
-            success:function(data){
+            data: {
+                'search_input': $('#search_input').val(),
+                'search_type': $('#search_type').val(),
+                'page': num_pages
+            },
+            success: function (data) {
                 $('#table').html(data)
             },
         })
-        
-    }    
+
+    }
 </script>

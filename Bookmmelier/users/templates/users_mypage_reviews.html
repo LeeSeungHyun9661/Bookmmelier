@@ -1,26 +1,18 @@
 {% extends 'bookmmelier_base.html' %}
-{% load bootstrap4 %} 
+{% load bootstrap4 %}
 {% block content %}
 
-<div>
-    <h1>{{request.user.name}}님의 서평 목록</h1>
-</div>
+<section class="container" id="main">
+    <div class="row">
+        <div class="col-12">
+            <span class="main-title">작성한 서평</span>
+        </div>
+    </div>
+    <div class="table">
+        <div class="row">
+            {% include 'users_mypage_reviews_table.html' %}
+        </div>
+    </div>
+</section>
 
-<!-- 서평 검색 부분 -->
-<div>
-    <select name="search_type" id="search_type">
-        <option value="전체" selected="true">전체</option>
-        <option value="도서">도서</option>
-        <option value="작성자">작성자</option>
-        <option value="내용">내용</option>
-    </select>
-    <input id="search_input" type="search"/>
-    <button id="search_button" type="submit">검색</button>      
-</div>  
-
-<!-- 서평 목록 테이블 정의 -->
-{% include 'users_mypage_reviews_table.html' %}
-
-<!-- 작성한 서평 목록 -->
-
-{% endblock %}  
+{% endblock %}

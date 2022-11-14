@@ -107,10 +107,10 @@
 		<div class="content-title">
 			서평
 		</div>
-
 		{%if reviews %}
 		{% for review in reviews %}
-		<div class="col-12 review-container" onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
+		<div class="col-12 review-container"
+			onclick=location.href="{% url 'reviews:detail'%}?review_id={{review.review_id}}">
 			<div class="header">
 				<div class="title">{{review.title}}</div>
 				<div class="writer">by {{review.user.name}}</div>
@@ -130,6 +130,10 @@
 			</div>
 		</div>
 		{%endfor%}
+		{%else%}
+		<div class="table">
+			아직 이 도서의 서평이 없습니다.
+		</div>
 		{%endif%}
 	</div>
 
@@ -140,7 +144,8 @@
 
 		{%if debates %}
 		{% for debate in debates %}
-		<div class="col-12 debate-container" onclick=location.href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">
+		<div class="col-12 debate-container"
+			onclick=location.href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">
 			<div class="title">{{debate.title}}</div>
 			<div class="status">
 				<div class="status-item">
@@ -154,6 +159,10 @@
 			</div>
 		</div>
 		{%endfor%}
+		{%else%}
+		<div class="table">
+			아직 이 도서의 서평이 없습니다.
+		</div>
 		{%endif%}
 	</div>
 </section>

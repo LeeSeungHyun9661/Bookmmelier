@@ -16,17 +16,17 @@
 
 
     <div class="content-container">
+        {%if reviews %}
         <div class="content-header">
             <div class="content-title">
                 작성한 서평
             </div>
 
-            {%if reviews %}
-            <!-- 작성 서평이 있는 경우 -->
             <div class="more">
                 <a href="{% url 'users:reviews' %}">더보기></a>
             </div>
         </div>
+        <!-- 작성 서평이 있는 경우 -->
 
         <div class="row review-shortcut-items">
             {%for review in reviews %}
@@ -49,8 +49,26 @@
             {%endfor%}
         </div>
         {%else%}
-        <!-- 작성 서평이 없는 경우 -->
-        작성하신 서평이 없네요?
+        <div class="row">
+            <div class="col-12">
+                <span class="main-title">작성한 서평</span>
+            </div>
+        </div>
+        <div class="table">
+            <div class="row">
+                <div class="col-12">
+                    <div class="no-result">
+                        <p>아직 작성한 서평이 없습니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+        </div>
         {% endif %}
     </div>
 
@@ -106,7 +124,7 @@
             <div class="more">
                 <a href="#">더보기></a>
             </div>
-            
+
             <!-- 참여 토론 정보 -->
             <div class="col-12 debate-container" onclick="location.href='#'">
                 <div class="title">남는 체력이 읎어</div>

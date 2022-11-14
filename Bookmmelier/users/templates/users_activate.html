@@ -1,7 +1,34 @@
-{% extends 'bookmmelier_base.html' %}
-{% block content %}
-<!-- 이메일 인증 결과 출력 -->
-<h1>이메일 인증 결과</h1>
-<h3>{{result}}</h3>
+<!DOCTYPE html>
+<html lang="en">
 
-{% endblock %}
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <title>북믈리에</title>
+   {% load static %}
+   <link rel="stylesheet" type="text/css" href="{% static 'css/customstyle.css' %}">
+   <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+
+   <script src="https://kit.fontawesome.com/f9a809ddea.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+   <div class="container-fluid">
+      <div class="row justify-content-center">
+         <div class="col-4 sign-container justify-content-center">
+            <img src="{% static 'img/bg.png' %}">북믈리에
+            <div class="form-container">
+               <div class="title">
+                  이메일 인증 결과
+               </div>
+               <div class="result">{{result}}</div>
+            </div>
+
+         </div>
+      </div>
+   </div>
+
+</body>
+
+</html>
