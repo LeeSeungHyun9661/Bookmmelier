@@ -1,70 +1,75 @@
-<!-- 토론 생성 모달 : 도서 검색 결과 표시 -->
-<table class="table-contents" style="
-    padding: 10px;
-    border-top: 3px solid #444444;
-    border-collapse: collapse;
-    margin: auto;
-    width: 100%;
-  ">
-  <!-- 검색 결과 -->
-  {%if search_input%}
-  <a>검색결과 : ({{search_type}}){{search_input}}</a>
-  {%endif%}
-  <!-- 테이블 헤드 -->
-  <thead>
-    <tr text-align="center" style="
-        padding: 5px;
-        border-bottom: 1px solid #444444;
-        padding: 10px;
-        text-align: center;
-      ">
-      <th>title</th>
-      <th>author</th>
-      <th>publisher</th>
-      <th>img_url</th>
-    </tr>
-  </thead>
-
-  <!-- 테이블 내용 -->
-  <tbody>
-    {% if books_list %} {% for book in books_list %}
-    <tr class="{% cycle '' 'even_bgcolor' %}" style="
-        padding: 5px;
-        border-bottom: 3px solid #444444;
-        padding: 10px;
-        text-align: center;
-      ">
-      <td class="book_title" type="button" value="{{book.isbn13}}" data-dismiss="modal">
-        {{book.title}}
-      </td>
-      <td>{{book.author}}</td>
-      <td>{{book.publisher}}</td>
-      <td><img src="{{book.img_url}}" width="50" , height="70" /></td>
-    </tr>
-    {% endfor %} {% else %}
-    <tr>
-      <td>검색 결과가 없습니다.</td>
-    </tr>
-    {% endif %}
-  </tbody>
-</table>
-
-<!-- 페이지 부분 -->
-<div style="text-align: center">
-  <div class="pagination" id="page">
-    {% if books_list.has_previous %}
-    <a class="first_page" id="first_page" type="button">맨 앞으로</a>
-    {% endif %}
-
-    <div style="width: 30%; margin: 5px">
-      {% for page in books_list.paginator.page_range %}
-      {% if page >= books_list.number|add:-3 and page <= books_list.number|add:3 %}
-      <a class="now_page" id="now_page" type="button">{{page}}</a>
-      {% endif %} {%endfor %}
+{% load static %}
+<div class="book-items" id="search_result_table">
+    <!-- 도서 아이템 목록 -->
+    {% if books_list %}
+    {% for book in books_list %}
+    <div class="item" value="{{book.isbn13}}">
+        {% if book.img_url %}
+        <img src="{{book.img_url}}">
+        {% else %}
+        <img src="{% static 'img/non_image.png' %}">
+        {% endif %}
+        <div class="metadata">
+            <div class="title">
+                {{book.title}}
+            </div>
+            <table class="bibil">
+                <tr>
+                    <th>저자</th>
+                    <td>{{book.author}}</td>
+                    <th>출판사</th>
+                    <td>{{book.publisher}}</td>
+                    <th>출판년도</th>
+                    <td>{{book.pub_date}}</td>
+                </tr>
+                <tr>
+                    <th>주제</th>
+                    <td>{{book.kdc_class_no}}</td>
+                    <th>ISBN</th>
+                    <td>{{book.isbn13}}</td>
+                    <th></th>
+                    <td></td>
+                </tr>
+            </table>
+            <div class="desc">
+                {% if book.description %}
+                {{book.description}}
+                {% else %}
+                도서 설명이 없습니다.
+                {% endif %}
+            </div>
+        </div>
     </div>
+    {% endfor %}
 
-    {% if books_list.has_next %}
-    <a class="last_page" id="last_page" type="button">맨 뒤로</a>
+    <!-- 페이지네이션 부분 -->
+    {% if books_list.has_previous or books_list.has_next %}
+    <div style="text-align:center">
+        <div class="pagination" id="page">
+            {% if books_list.has_previous %}
+            <a class="first_page" id="first_page" type="button">맨 앞으로</a>
+            {% endif %}
+
+            <div style="width:30%; margin: 5px;">
+                {% for page in books_list.paginator.page_range %}
+                {% if page >= books_list.number|add:-3 and page <= books_list.number|add:3 %}
+                <a class="now_page" id="now_page" type="button">{{page}}</a>
+                {% endif %}
+                {%endfor %}
+            </div>
+
+            {% if books_list.has_next %}
+            <a class="last_page" id="last_page" type="button">맨 뒤로</a>
+            {% endif %}
+        </div>
+    </div>
     {% endif %}
-  </div>
+
 </div>
+<!-- 도서 목록이 없는 경우 -->
+{% else %}
+<!-- 검색결과 없는 경우 -->
+<div class="table">
+    <p>검색어와 일치하는 결과를 찾지 못했습니다.</p>
+</div>
+{% endif %}

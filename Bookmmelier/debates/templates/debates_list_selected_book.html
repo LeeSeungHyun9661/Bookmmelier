@@ -1,58 +1,121 @@
 <!--  토론 목록 모달 : 선택된 도서 -->
+{% load static %}
 <div id="selected_book">
   {% if selected_book %}
-  <h2>선택된 도서</h2>
-  <a>제목 : {{selected_book.title}}</a><br />
-  <a>작가 : {{selected_book.author}}</a><br />
-  <a>출판사{{selected_book.publisher}}</a><br />
-  <input type="hidden" name="isbn13" id="isbn13" value="{{selected_book.isbn13}}" />
-
-  <a href="{% url 'debates:create'%}?isbn13={{selected_book.isbn13}}">해당 도서로 토론 시작하기</a></td>
-
-
-  <!-- 도서에 따른 토론 목록 -->
-  <div>
-    <table class="table-contents"
-      style="padding:10px; border-top: 3px solid #444444; border-collapse: collapse; margin:auto; width: 100%;">
-      <thead>
-        <tr text-align="center"
-          style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
-          <th>ID</th>
-          <th>owner</th>
-          <th>time_created</th>
-          <th>title</th>
-          <th>subtitle</th>
-          <th>participant</th>
-          <th>messages</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% if debates_list %}
-        <p><b>{{ debates_list|length }}개의 토론이 있습니다.</b></p>
-        {% for debate in debates_list %}
-        <tr class="{% cycle '' 'even_bgcolor' %}"
-          style="padding:5px; border-bottom: 1px solid #444444; padding: 10px; text-align: center;">
-          <td>{{debate.debate_id}}</td>
-          <td>{{debate.owner}}</td>
-          <td>{{debate.time_created}}</td>
-          <td><a href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">{{debate.title}}</a></td>
-          <td>{{debate.subtitle}}</td>
-          <td>{{debate.user_count}}</td>
-          <td>{{debate.message_count}}</td>
-        </tr>
-        {% endfor %}
-
-        {% else %}
-        <tr>
-          <h5>만들어진 토론이 없습니다!</h5>
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
+  <div class="content-title">
+    도서별 주제
+  </div>
+  <!-- 선택된 도서 정보 -->
+  <div class="small-content" style="margin-bottom: 50px;">
+    <div class="content-title">
+      도서정보
+    </div>
+    <div class="book-container">
+      {% if selected_book.img_url %}
+      <img src="{{selected_book.img_url}}">
+      {% else %}
+      <img src="{% static 'img/non_image.png' %}">
+      {% endif %}
+      <div class="metadata">
+        <div class="title">
+          {{selected_book.title}}
+        </div>
+        <div class="row justify-content-between">
+          <table class="bibil-small">
+            <tr>
+              <th>저자</th>
+              <td>{{selected_book.author}}</td>
+              <th>출판사</th>
+              <td>{{selected_book.publisher}}</td>
+              <th>출판년도</th>
+              <td>{{selected_book.pub_date}}</td>
+            </tr>
+            <tr>
+              <th>주제</th>
+              <td>{{selected_book.kdc_class_no}}</td>
+              <th>ISBN</th>
+              <td>{{selected_book.isbn13}}</td>
+              <th></th>
+              <td></td>
+            </tr>
+          </table>
+          <div class="shortcut-container">
+            <div class="shortcut-desc">
+              원하는 주제가 없나요?
+            </div>
+            <div class="shortcut-icon">
+              <i class="fa-solid fa-file-circle-plus"></i>
+            </div>
+            <div class="shortcut-title"
+              onclick=location.href="{% url 'debates:create'%}?isbn13={{selected_book.isbn13}}">
+              토론방 만들기
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
+  <div class="row">
+    <div class="col-8">
+      <!-- 토론 검색 기능 -->
+      <div class="search">
+        <form action="#" method="GET">
+          <input type="text" name="search" placeholder="도서명, 저자, 출판사 등을 입력해주세요">
+          <i class='fa-solid fa-magnifying-glass'></i>
+        </form>
+      </div>
+    </div>
+    <div class="col-4 justify-content-evenly">
+      <div class="sort"><a href='#'>참가자 많은 순</a></div>
+      <div class="sort"><a href='#'>글 많은 순</a></div>
+      <div class="sort"><a href='#'>최신순</a></div>
+    </div>
+  </div>
+
+
+  <!-- 토론 리스트 -->
+  {% if debates_list %}
+  <div class="table">
+    {% for debate in debates_list %}
+    <!-- for start -->
+    <div class="col-12 debate-container"
+      onclick=location.href="{% url 'debates:detail'%}?debate_id={{debate.debate_id}}">
+      <!-- 토론 제목 -->
+      <div class="title">{{debate.title}}</div>
+      <div class="status">
+        <div class="status-item">
+          <!-- 토론참가자수 -->
+          <i class="fa-regular fa-user"></i>
+          {{debate.user_count}}
+        <div class="status-item">
+          <!-- 토론 의견 수 -->
+          <i class="fa-regular fa-comment"></i>
+          {{debate.message_count}}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- 토론 리스트 -->
+  <div class="table">
+    아직 이 도서와 관련된 토론이 없습니다.
+  </div>
+  {% endif %}  
+
+  <input type="hidden" name="isbn13" id="isbn13" value="{{selected_book.isbn13}}" />
+
+
+
   {%else%}
-    <h5>선택된 도서가 없습니다</h5>
+  <div class="content-title">
+    도서선택
+  </div>
+  <div class="select" onClick="javascript:popOpen();">
+    선택된 책이 없습니다. 도서를 선택해주세요.
+    <br>
+    +
+  </div>
   {%endif%}
 </div>
